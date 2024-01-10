@@ -1,5 +1,5 @@
 name: Bug Report
-description: File a bug report
+description: Create a report to help us improve
 title: "[Bug]: "
 labels: ["bug", "triage"]
 assignees:
@@ -9,6 +9,12 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
+        ⚠
+        Verify first that your issue is not [already reported on
+        GitHub][issue search] and keep in mind that we may have to keep
+        the current behavior because [every change breaks someone's
+        workflow][XKCD 1172].
+        We try to be mindful about this.
   - type: input
     id: contact
     attributes:
