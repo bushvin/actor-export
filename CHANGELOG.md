@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.7] 2024-01-10
+
+### Changed
+
+- pf2e-remaster provider: hide Spell Casting Entity title if there are no cantrips or spells
+
+### Fixed
+
+- pf2e-remaster provider: fix destination filename when selecting multiple files to download
+- pf2e-remaster provider: wait for PDF to be saved before going to the next one
+
 ## [0.0.6] - 2024-01-10
 
 ### Changed
