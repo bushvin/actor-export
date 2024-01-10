@@ -1077,11 +1077,43 @@ if (is_spellcaster) {
             }
             spell_slots[rank].push(info.max);
         });
+        const cantrip_count = actor.items.filter(
+            (i) =>
+                i.type === 'spell' &&
+                i.system.location.value === sce._id &&
+                i.isCantrip &&
+                !i.isFocusSpell &&
+                !i.isRitual
+        ).length;
+        let spell_count = 0;
+        for (let r = 1; r <= actor_spell_rank; r++) {
+            spell_count =
+                spell_count +
+                actor.items.filter(
+                    (i) =>
+                        i.type === 'spell' &&
+                        (i.rank == r ||
+                            (sce.isPrepared &&
+                                ((i.system.heightening?.type === 'interval' &&
+                                    i.rank < r &&
+                                    parseInt((r - i.rank) / i.system.heightening?.interval) ==
+                                        (r - i.rank) / i.system.heightening?.interval) ||
+                                    (i.system.heightening?.type === 'fixed' && i.rank < r)))) &&
+                        i.system.location.value === sce._id &&
+                        !i.isFocusSpell &&
+                        !i.isRitual &&
+                        !i.isCantrip
+                ).length;
+        }
         if (spellcasting.length > 1) {
-            mapper.field('all', `spell_entry${spell_index}_name`, sce.name);
-            mapper.field('all', `cantrip_entry${cantrip_index}_name`, sce.name);
-            spell_index = spell_index + 1;
-            cantrip_index = cantrip_index + 1;
+            if (spell_count > 0) {
+                mapper.field('all', `spell_entry${spell_index}_name`, sce.name);
+                spell_index = spell_index + 1;
+            }
+            if (cantrip_count > 0) {
+                mapper.field('all', `cantrip_entry${cantrip_index}_name`, sce.name);
+                cantrip_index = cantrip_index + 1;
+            }
         }
 
         /* cantrips */
