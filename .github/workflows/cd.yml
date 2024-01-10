@@ -53,6 +53,17 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ env.systemVersion }}
 
+  notify_discord:
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord notification
+        uses: cl8dep/action-discord@v0
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: "A new release of ${{ env.fvtt_module_id }} is published: `${{ github.ref_name }}`. Go get it!"
+
   publish:
     needs:
     - build
