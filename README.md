@@ -4,9 +4,11 @@
 
 ![badge_fvtt_versions]
 
-![badge_mastodon]
+![badge_mastodon] ![badge_discord]
 
 A system agnostic Foundry VTT module which allows exporting your actors in a variety of formats through the use of (custom) providers.
+
+Feel free to join [#actor-export](https://discord.gg/XNsDbFRv) on Discord for help.
 
 ## Installation
 
@@ -30,9 +32,15 @@ Selecting providers will enable/disable access to certain providers to your play
 
 #### Custom Providers
 
-Additionally to the standard providers, a Gamemaster can create their own provider and add it through the settings page. More on this in the Wiki.
+Additionally to the standard providers, a Gamemaster can create their own provider and add it through the settings page. More on this in the Wiki (TBD).
 
 ### Exporting Actors
+
+Open your character from the *Actors* page and click the `Export` button. Then select the files you wish to export as and click `Download`.
+
+![Select Provider Files](assets/player-export-actor.png "Select Provider Files")
+
+Depending on the number of and complexity of the selected files, the export might take some time, so be patient when clicking `Download`.
 
 ## Providers
 
@@ -56,3 +64,5 @@ See [CHANGELOG.md](CHANGELOG.md)
 [badge_fvtt_versions]: https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/bushvin/actor-export/releases/latest/download/module.json&style=flat-square&color=ff6400
 
 [badge_mastodon]: https://img.shields.io/mastodon/follow/1084764?domain=https%3A%2F%2Fmastodon.social&logo=mastodon&logoColor=white&style=flat-square&label=%40bushvin%40mastodon.social
+
+[badge_discord]: https://img.shields.io/discord/1194592282205237290?style=flat-square&logo=discord
