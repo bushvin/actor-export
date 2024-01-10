@@ -1,5 +1,7 @@
 import { pdfProvider } from '../../scripts/lib/providers/PDFProvider.js';
 import { PF2eHelper } from '../../scripts/lib/helpers/PF2eHelper.js';
+import { semVer } from '../../scripts/lib/SemVer.js';
+
 // actor is available as a global variable
 // game is available as a global variable
 
@@ -366,16 +368,30 @@ if (assurance.length > 0) {
 mapper.field('all', 'skill_notes', skill_notes.join('\n'));
 
 /* Languages Section */
-mapper.field(
-    'all',
-    'languages',
-    actor.system.traits.languages.value
-        .concat([actor.system.traits.languages.custom])
-        .filter(function (a) {
-            return a.trim() != '';
-        })
-        .join(', ')
-);
+if (semVer.gte(game.system.version, '5.12.0')) {
+    //if (actor.system.details.languages !== undefined) {
+    mapper.field(
+        'all',
+        'languages',
+        actor.system.details.languages.value
+            .filter(function (a) {
+                return a.trim() != '';
+            })
+            .join(', ')
+    );
+} else {
+    // pre pf2e v5.12.0
+    mapper.field(
+        'all',
+        'languages',
+        actor.system.traits.languages.value
+            .concat([actor.system.traits.languages.custom])
+            .filter(function (a) {
+                return a.trim() != '';
+            })
+            .join(', ')
+    );
+}
 
 /* Perception Section  */
 mapper.field('all', 'perception', PF2eHelper.quantifyNumber(actor.perception.mod));
@@ -399,19 +415,36 @@ mapper.field('all', 'perception_expert', actor.perception.rank >= 2 || '');
 mapper.field('all', 'perception_master', actor.perception.rank >= 3 || '');
 mapper.field('all', 'perception_legendary', actor.perception.rank >= 4 || '');
 
-mapper.field(
-    'all',
-    'senses_notes',
-    actor.system.traits.senses
-        .filter((i) => i.type)
-        .map((i) => i.label)
-        .join(', ') +
-        ' \n' +
-        actor.system.attributes.perception.modifiers
-            .filter((i) => i.type === 'item' || i.type === 'untyped')
-            .map((i) => ' ' + (i.slug ? i.slug : i.label) + ' ' + (i.modifier < 0 ? '' : '+') + i.modifier)
+if (semVer.gte(game.system.version, '5.12.0')) {
+    //if (actor.system.perception.senses !== undefined) {
+    mapper.field(
+        'all',
+        'senses_notes',
+        actor.system.perception.senses
+            .filter((i) => i.type)
+            .map((i) => i.label)
+            .concat(
+                actor.system.perception.modifiers
+                    .filter((i) => i.type === 'item' || i.type === 'untyped')
+                    .map((i) => ' ' + (i.slug ? i.slug : i.label) + ' ' + (i.modifier < 0 ? '' : '+') + i.modifier)
+            )
             .join(', ')
-);
+    );
+} else {
+    mapper.field(
+        'all',
+        'senses_notes',
+        actor.system.traits.senses
+            .filter((i) => i.type)
+            .map((i) => i.label)
+            .concat(
+                actor.system.attributes.perception.modifiers
+                    .filter((i) => i.type === 'item' || i.type === 'untyped')
+                    .map((i) => ' ' + (i.slug ? i.slug : i.label) + ' ' + (i.modifier < 0 ? '' : '+') + i.modifier)
+            )
+            .join(', ')
+    );
+}
 
 /* Speed Section */
 mapper.field(
@@ -493,7 +526,9 @@ mapper.field(
 mapper.field(
     'all',
     '1_background_skill_feat',
-    actor.background.system.items[Object.keys(actor.background.system.items)[0]].name
+    Object.keys(actor.background.system.items).length > 0
+        ? actor.background.system.items[Object.keys(actor.background.system.items)[0]].name
+        : ''
 );
 mapper.field(
     'all',
