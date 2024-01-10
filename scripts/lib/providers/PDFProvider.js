@@ -160,8 +160,15 @@ export class pdfProvider extends baseProvider {
      * @returns
      */
     async embedImage(pdf, imageData) {
-        const htmlImage = await this.loadImage(getRoute(imageData.path));
-        const buffer = await fetch(getRoute(imageData.path)).then((res) => res.arrayBuffer());
+        const htmlImage = await this.loadImage(imageData.path);
+        const imageHeaders = await fetch(imageData.path).then((res) => res.headers);
+        const buffer = await fetch(imageData.path).then((res) => res.arrayBuffer());
+        let contentType = undefined;
+        imageHeaders.forEach((value, key) => {
+            if (key === 'content-type') {
+                contentType = value;
+            }
+        });
         let scale_height = 1;
         let scale_width = 1;
         if (imageData.max_height > 0) {
@@ -182,14 +189,17 @@ export class pdfProvider extends baseProvider {
         }
         let embeddedImage = null;
         const fileExtension = imageData.path.split('.').pop().toLowerCase();
-        switch (fileExtension) {
+        switch (contentType || fileExtension) {
+            case 'image/jpeg':
             case 'jpg':
             case 'jpeg':
                 embeddedImage = await pdf.embedJpg(buffer);
                 break;
+            case 'image/png':
             case 'png':
                 embeddedImage = await pdf.embedPng(buffer);
                 break;
+            case 'image/webp':
             case 'webp':
                 const canvas = new OffscreenCanvas(1, 1);
                 canvas.width = htmlImage.width;
@@ -201,7 +211,7 @@ export class pdfProvider extends baseProvider {
                 embeddedImage = await pdf.embedPng(webpBuffer);
                 break;
             default:
-                this.notify('warn', `${fileExtension} files are not (yet) supported.`);
+                this.notify('warn', `${contentType || fileExtension} files are not (yet) supported.`);
                 return;
         }
         if (!(typeof embeddedImage === 'object' && !embeddedImage)) {
