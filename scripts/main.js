@@ -316,7 +316,7 @@ class actorExportDialog extends FormApplication {
                         actorExport.log('error', error);
                     });
             } else {
-                dataUri = `/modules/${actorExport.ID}/providers/${providerId}/provider.js`;
+                dataUri = `/modules/${actorExport.ID}/providers/${providerId}/provider.js?t=${Date.now()}`;
                 import(dataUri).then((module) => {
                     if (module.mapper === undefined) {
                         ui.notifications.error(
