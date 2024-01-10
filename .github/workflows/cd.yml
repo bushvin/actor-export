@@ -1,0 +1,79 @@
+name: "Foundry VTT Pf2e module"
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+env:
+  fvtt_minimum: 11
+  fvtt_verified: 11
+  fvtt_dry_run: true
+  fvtt_module_id: actor-export
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Print module version
+      run: |
+        echo "github.ref_name: ${{ github.ref_name }}"
+
+    - name: Substitute Manifest and Download Links For Versioned Ones
+      id: sub_manifest_link_version
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: 'module.json'
+      env:
+        version: ${{ github.ref_name }}
+        url: https://github.com/${{ github.repository }}
+        manifest: https://github.com/${{ github.repository }}/releases/latest/download/module.json
+        download: https://github.com/${{ github.repository }}/releases/latest/download/${{ env.fvtt_module_id }}.zip
+
+    - name: Zip files
+      uses: thedoctor0/zip-release@0.7.1
+      with:
+        type: 'zip'
+        filename: 'pf2e-export-scribe.zip'
+        exclusions: '*.git* .vscode assets src'
+
+    - name: Create Version Release
+      id: create_version_release
+      uses: ncipollo/release-action@v1
+      with:
+        name: ${{ env.systemVersion }}
+        allowUpdates: false
+        draft: false
+        prerelease: false
+        artifacts: "module.json,${{ env.fvtt_module_id }}.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ env.systemVersion }}
+
+  publish:
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Submit package to FoundryVTT Package Release API
+        run: |
+          curl -X POST "https://api.foundryvtt.com/_api/packages/release_version/" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: ${{ secrets.FOUNDRYVTT_RELEASE_TOKEN }}" \
+            -d '{
+              "id": "${{ env.fvtt_module_id }}",
+              "dry-run": ${{ env.fvtt_dry_run }},
+              "release": {
+                "version": "${{ github.ref_name }}",
+                "manifest": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/module.json",
+                "notes": "https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md",
+                "compatibility": {
+                  "minimum": "${{ env.fvtt_minimum }}",
+                  "verified": "${{ env.fvtt_verified }}"
+                }
+              }
+            }'

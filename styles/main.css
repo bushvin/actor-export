@@ -1,0 +1,37 @@
+.provider.name {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.provider.file_name input[type=checkbox] {
+    width: 16px;
+    height: 16px;
+    margin: 0 3px;
+}
+
+.provider.file_description {
+    margin-left: 25px;
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.provider.info {
+    margin-bottom: 5px;
+}
+
+.actions button {
+    width: 100px;
+}
+
+#actor-export-custom-provider-javascript {
+    background-color: #ffffff;
+    height: 200px;
+    width: 100%;
+}
+
+.code.javascript pre {
+    background-color: #000;
+    color: #fff;
+    font-family: monospace;
+    padding: 10px;
+}

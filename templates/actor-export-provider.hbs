@@ -1,0 +1,22 @@
+<form>
+    <p class="notes">Please select the Providers you wish to allow</p>
+    {{#each providers}}
+    {{#if allowed}}
+    <div class="form-group">
+        <label for="{{ id }}">{{ name }}</label>
+        <div class="form-fields">
+            <input type="checkbox" name="{{ id }}" data-dtype="Boolean" {{checked isEnabled}}/>
+        </div>
+        <p class="notes">{{ description }}</p>
+    </div>
+    {{/if}}
+    {{/each}}
+    <div class="form-group buttons">
+        <button type="submit">
+            <i class="fa-regular fa-save"></i> Save Changes
+        </button>
+        <button type="reset">
+            <i class="fa-solid fa-undo"></i> Undo
+        </button>
+    </div>
+</form>

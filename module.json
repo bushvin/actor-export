@@ -1,0 +1,30 @@
+{
+    "id": "actor-export",
+    "title": "Actor export",
+    "description": "Export actors for offline reference",
+    "version": "0.0.1",
+    "compatibility": {
+        "minimum": 11,
+        "verified": 11
+    },
+    "authors": [
+        {
+            "name": "William Leemans",
+            "url": "https://github.com/bushvin",
+            "discord": "bushvin"
+        }
+    ],
+    "bugs": "https://github.com/bushvin/actor-export/issues",
+    "changelog": "CHANGELOG.md",
+    "readme": "README.md",
+    "url": "https://github.com/bushvin/actor-export",
+    "esmodules": ["scripts/main.js"],
+    "styles": ["styles/main.css"],
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "languages/en.json"
+        }
+    ]
+}

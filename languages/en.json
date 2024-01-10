@@ -1,0 +1,46 @@
+{
+    "ACTOR-EXPORT": {
+        "settings": {
+            "actorExportProviderDialog": {
+                "title": "Export Providers"
+            },
+            "actorExportCustomProvider": {
+                "title": "Custom Provider"
+            },
+            "exportProviderCustom": {
+                "name": "Custom Export Provider",
+                "hint": "Custom Javascript code to generate a single download",
+                "label": "Custom Provider"
+            },
+            "exportProviderFilter": {
+                "name": "Select Actor Export Providers",
+                "hint": "Allows you to limit the Actor Export Providers for non-Gamemaster users",
+                "label": "Filter Providers"
+            },
+            "exportProviderCustomCode": {
+                "name": "Custom Provider Javascript code",
+                "hint": "Custom Javascript code to generate a single download"
+            },
+            "exportSelectedProviderFiles": {
+                "name": "Selected Provider Files",
+                "hint": "The list of selected Provider files to export"
+            },
+            "enabledProviders": {
+                "name": "Enabled Providers",
+                "hint": "Providers enabled by your Gamemaster"
+            },
+            "relationProvider": {
+                "name": "Relation Provider Selector",
+                "hint": "Select the provider to translate actor data into a file"
+            }
+        },
+        "actor-dialog": {
+            "header-button": {
+                "label": "Export"
+            }
+        },
+        "export-dialog": {
+            "title": "Export Actor"
+        }
+    }
+}
