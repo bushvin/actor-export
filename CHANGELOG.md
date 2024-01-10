@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.6] - 2024-01-10
+
+### Changed
+
+- improve content detection and fall back on extension for image parsing
+
+### Fixed
+
+- avoid caching when importing `provider.js`
+- remove `getRoute` as it prefixes all paths with `/`
+- pf2e-remaster provider: catch deprecated properties < 5.12.0
+- pf2e-remaster provider: backgrounds should not fail when none is selected
+
 ## [0.0.5] - 2024-01-09
 
 ### Fixed
