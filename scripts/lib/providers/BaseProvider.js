@@ -6,9 +6,9 @@ export class baseProvider {
     constructor(actor) {
         this.actor = actor;
         this.actorName = this.actor.name || '';
-        this.downloadFileName = '';
-        this.file = '';
         this.logPrefix = 'actor-export';
+        this.sourceFileURI = undefined;
+        this.destinationFileName = undefined;
     }
 
     /**
@@ -55,5 +55,5 @@ export class baseProvider {
      * The default function to download whatever provider is used
      * This is here to not fail when the provider definition doesn't have it.
      */
-    download() {}
+    download(sourceFileURI, destinationFileName) {}
 }
