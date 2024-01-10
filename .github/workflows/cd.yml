@@ -59,9 +59,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Discord notification
-        uses: cl8dep/action-discord@v0
+        uses: appleboy/discord-action@master
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
+          webhook_id: ${{ secrets.WEBHOOK_ID }}
           message: "A new release of ${{ env.fvtt_module_id }} is published: `${{ github.ref_name }}`. Go get it!"
 
   publish:
