@@ -36,15 +36,15 @@ jobs:
         download: https://github.com/${{ github.repository }}/releases/latest/download/${{ env.fvtt_module_id }}.zip
 
     - name: Zip files
-      uses: thedoctor0/zip-release@0.7.1
+      uses: thedoctor0/zip-release@0.7.6
       with:
         type: 'zip'
         filename: '${{ env.fvtt_module_id }}.zip'
-        exclusions: '*.git* .vscode assets src'
+        exclusions: '*.git* .vscode assets src tmp'
 
     - name: Create Version Release
       id: create_version_release
-      uses: ncipollo/release-action@v1
+      uses: ncipollo/release-action@v1.13.0
       with:
         name: ${{ env.systemVersion }}
         allowUpdates: false
