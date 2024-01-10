@@ -39,7 +39,7 @@ jobs:
       uses: thedoctor0/zip-release@0.7.1
       with:
         type: 'zip'
-        filename: 'pf2e-export-scribe.zip'
+        filename: '${{ env.fvtt_module_id }}.zip'
         exclusions: '*.git* .vscode assets src'
 
     - name: Create Version Release
