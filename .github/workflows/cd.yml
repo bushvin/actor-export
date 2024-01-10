@@ -40,7 +40,7 @@ jobs:
       with:
         type: 'zip'
         filename: '${{ env.fvtt_module_id }}.zip'
-        exclusions: '*.git* .vscode assets/ src/ tmp/'
+        exclusions: '*.git* ./.vscode/ ./assets/ ./src/ ./tmp/'
 
     - name: Create Version Release
       id: create_version_release
