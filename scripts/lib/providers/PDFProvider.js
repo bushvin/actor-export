@@ -297,18 +297,26 @@ export class pdfProvider extends baseProvider {
     /**
      * Function to generate the PDF and download it
      */
-    download() {
-        super.download();
-        fetch(this.file).then((data) => {
-            this.parseFile(data);
+    download(sourceFileURI, destinationFileName) {
+        super.download(sourceFileURI, destinationFileName);
+        let ret = undefined;
+        fetch(this.sourceFileURI || sourceFileURI).then((data) => {
+            this.parseFile(
+                data,
+                this.sourceFileURI || sourceFileURI,
+                this.destinationFileName || destinationFileName
+            ).then((res) => {
+                ret = res;
+            });
         });
+        return ret;
     }
 
     /**
      * Parse the provided data and fill out pdf form fields
      * @param {fetch} data - the fetched data
      */
-    async parseFile(data) {
+    async parseFile(data, sourceFileURI, destinationFileName) {
         const buffer = await data.arrayBuffer();
         const pdf = await PDFDocument.load(buffer);
 
@@ -319,7 +327,7 @@ export class pdfProvider extends baseProvider {
             pdfForm = pdf.getForm();
             pdfFormFields = pdfForm.getFields();
         } catch (error) {
-            this.notify('error', `An error ocurred loading the pdf form for ${this.file}: ${error.message}`, {
+            this.notify('error', `An error ocurred loading the pdf form for ${sourceFileURI}: ${error.message}`, {
                 permanent: true,
             });
             return;
@@ -333,12 +341,14 @@ export class pdfProvider extends baseProvider {
             if (this.fieldExists(fieldName)) {
                 switch (fieldType) {
                     case 'PDFTextField':
-                        let stringValue = String(this.getFieldValue(this.file.split('/').pop(), fieldName, ''));
+                        let stringValue = String(this.getFieldValue(sourceFileURI.split('/').pop(), fieldName, ''));
                         pdfField.setText(stringValue);
                         pdfField.markAsClean();
                         break;
                     case 'PDFCheckBox':
-                        let booleanValue = Boolean(this.getFieldValue(this.file.split('/').pop(), fieldName, false));
+                        let booleanValue = Boolean(
+                            this.getFieldValue(sourceFileURI.split('/').pop(), fieldName, false)
+                        );
                         booleanValue ? pdfField.check() : pdfField.uncheck();
                         break;
                     default:
@@ -355,13 +365,12 @@ export class pdfProvider extends baseProvider {
             const image = this.pdfImages[i];
             if (
                 image.file.toLowerCase() === 'all' ||
-                image.file.toLowerCase() === this.file.toLowerCase().split('/').pop()
+                image.file.toLowerCase() === sourceFileURI.toLowerCase().split('/').pop()
             ) {
                 await this.embedImage(pdf, image);
             }
         }
-
         const blob = new Blob([await pdf.save()], { type: 'application/pdf' });
-        saveAs(blob, this.downloadFileName);
+        await saveAs(blob, destinationFileName);
     }
 }

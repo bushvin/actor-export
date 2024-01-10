@@ -115,6 +115,10 @@ class actorExport {
         return providers;
     }
 
+    static sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
     /**
      * Evaluate and enrich the provider information. Returns the same object
      * with an additional property indicating if the provider is available to the current
@@ -330,10 +334,11 @@ class actorExportDialog extends FormApplication {
                         );
                     } else {
                         for (let f = 0; f < selectedFiles[providerId].length; f++) {
-                            const exportFile = this.providers[p].files[f];
-                            module.mapper.file = actorExport.parseFilePath(exportFile.uri, providerId);
-                            module.mapper.downloadFileName = `${module.mapper.actorName} - ${exportFile.uri}`;
-                            module.mapper.download();
+                            const sourceFileURI = actorExport.parseFilePath(this.providers[p].files[f].uri, providerId);
+                            const destinationFileName = `${module.mapper.actorName} - ${sourceFileURI
+                                .split('/')
+                                .pop()}`;
+                            module.mapper.download(sourceFileURI, destinationFileName);
                         }
                     }
                 });
