@@ -40,7 +40,7 @@ jobs:
       with:
         type: 'zip'
         filename: '${{ env.fvtt_module_id }}.zip'
-        exclusions: '*.git* assets src tmp'
+        exclusions: '*.git* *assets* *src* *tmp*'
     # - name: Zip files
     #   run: |
     #     zip -r ./${{ env.fvtt_module_id }}.zip . -x \*.git\* \*assets/\* \*src/\*
