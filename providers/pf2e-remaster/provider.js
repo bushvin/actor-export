@@ -445,18 +445,19 @@ if (semVer.gte(game.system.version, '5.12.0')) {
 }
 
 /* Speed Section */
-mapper.field(
-    'all',
-    'speed',
-    actor.system.attributes.speed.value +
-        actor.system.attributes.speed.totalModifier +
-        actor.items
-            .filter((i) => i.type === 'armor' && i.isEquipped)
-            .map((i) => i.speedPenalty)
-            .reduce((a, v) => {
-                return a + v;
-            }, 0)
-);
+let speed = actor.system.attributes.speed.value + actor.system.attributes.speed.totalModifier;
+const armorList = actor.items.filter((i) => i.type === 'armor' && i.isEquipped);
+let armor = undefined;
+let armorSpeedPenalty = 0;
+if (armorList.length > 0) {
+    armor = armorList[0];
+    armorSpeedPenalty = armor.speedPenalty;
+    if (armorSpeedPenalty < 0 && armor.strength <= actor.abilities.str.mod) {
+        armorSpeedPenalty = armorSpeedPenalty + 5 > 0 ? 0 : armorSpeedPenalty + 5;
+    }
+}
+
+mapper.field('all', 'speed', speed + armorSpeedPenalty);
 mapper.field(
     'all',
     'special_movement',
