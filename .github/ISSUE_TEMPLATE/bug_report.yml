@@ -11,14 +11,11 @@ body:
         Thanks for taking the time to fill out this bug report!
         ⚠
         Verify first that your issue is not [already reported on
-        GitHub][issue search] and keep in mind that we may have to keep
+        GitHub](../search?q=is%3Aissue&type=issues) and keep in mind that we may have to keep
         the current behavior because [every change breaks someone's
-        workflow][XKCD 1172].
+        workflow](https://xkcd.com/1172/).
         We try to be mindful about this.
 
-        [issue search]: ../search?q=is%3Aissue&type=issues
-
-        [XKCD 1172]: https://xkcd.com/1172/
   - type: input
     id: contact
     attributes:
