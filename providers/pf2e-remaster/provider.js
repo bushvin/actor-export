@@ -98,7 +98,8 @@ class pf2ePDFProvider extends pdfProvider {
 }
 
 const spellcasting_traditions = ['arcane', 'occult', 'primal', 'divine'];
-const prepared_types = ['prepared', 'spontaneous'];
+const spellcasting_types = ['prepared', 'spontaneous'];
+const innate_types = ['innate'];
 const actor_spell_rank = Math.ceil((actor?.level ?? 0) / 2);
 
 const mapper = new pf2ePDFProvider(actor);
@@ -171,29 +172,27 @@ mapper.field(
 mapper.field(
     'all',
     'ac_shield_bonus',
-    actor.items.filter((i) => i.system.category === 'shield' && i.isEquipped).map((i) => i.system.acBonus)[0] || ''
+    actor.items.filter((i) => i.type === 'shield' && i.isEquipped).map((i) => i.system.acBonus)[0] || ''
 );
 mapper.field(
     'all',
     'shield_hardness',
-    actor.items.filter((i) => i.system.category === 'shield' && i.isEquipped).map((i) => i.system.hardness)[0] || '-'
+    actor.items.filter((i) => i.type === 'shield' && i.isEquipped).map((i) => i.system.hardness)[0] || '-'
 );
 mapper.field(
     'all',
     'shield_max_hp',
-    actor.items.filter((i) => i.system.category === 'shield' && i.isEquipped).map((i) => i.system.hp.max)[0] || '-'
+    actor.items.filter((i) => i.type === 'shield' && i.isEquipped).map((i) => i.system.hp.max)[0] || '-'
 );
 mapper.field(
     'all',
     'shield_bt',
-    actor.items
-        .filter((i) => i.system.category === 'shield' && i.isEquipped)
-        .map((i) => i.system.hp.brokenThreshold)[0] || '-'
+    actor.items.filter((i) => i.type === 'shield' && i.isEquipped).map((i) => i.system.hp.brokenThreshold)[0] || '-'
 );
 mapper.field(
     'all',
     'shield_current_hp',
-    actor.items.filter((i) => i.system.category === 'shield' && i.isEquipped).map((i) => i.system.hp.value)[0] || '-'
+    actor.items.filter((i) => i.type === 'shield' && i.isEquipped).map((i) => i.system.hp.value)[0] || '-'
 );
 
 /* Armor proficiencies */
@@ -983,7 +982,7 @@ mapper.field(
             .filter(
                 (i) =>
                     spellcasting_traditions.includes(i.system?.tradition?.value) &&
-                    prepared_types.includes(i.system?.prepared?.value)
+                    spellcasting_types.includes(i.system?.prepared?.value)
             )
             .sort((a, b) =>
                 a.statistic.check.mod < b.statistic.check.mod
@@ -1004,7 +1003,7 @@ mapper.field(
         .filter(
             (i) =>
                 spellcasting_traditions.includes(i.system?.tradition?.value) &&
-                prepared_types.includes(i.system?.prepared?.value)
+                spellcasting_types.includes(i.system?.prepared?.value)
         )
         .sort((a, b) =>
             a.statistic.check.mod < b.statistic.check.mod ? -1 : a.statistic.check.mod > b.statistic.check.mod ? 1 : 0
@@ -1020,7 +1019,7 @@ mapper.field(
         .filter(
             (i) =>
                 spellcasting_traditions.includes(i.system?.tradition?.value) &&
-                prepared_types.includes(i.system?.prepared?.value)
+                spellcasting_types.includes(i.system?.prepared?.value)
         )
         .sort((a, b) =>
             a.statistic.check.mod < b.statistic.check.mod ? -1 : a.statistic.check.mod > b.statistic.check.mod ? 1 : 0
@@ -1048,19 +1047,29 @@ mapper.field(
         ? Math.round(actor.system.details.level.value / 2)
         : ''
 );
-/* Spells (regular) */
 
+/* Spells (regular) */
 let spell_proficiency_modifier = [];
 let spell_attribute_modifier = [];
 let spell_slots = {};
 let spell_proficiency = [];
-let spellcasting = actor.spellcasting.filter(
-    (i) =>
-        spellcasting_traditions.includes(i.system?.tradition?.value) &&
-        prepared_types.includes(i.system?.prepared?.value)
-);
-let is_spellcaster = spellcasting.length > 0;
-if (is_spellcaster) {
+let spellcasting = actor.spellcasting
+    .filter(
+        (i) =>
+            spellcasting_traditions.includes(i.system?.tradition?.value) &&
+            spellcasting_types.includes(i.system?.prepared?.value)
+    )
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+let innate_spellcasting = actor.spellcasting
+    .filter(
+        (i) =>
+            spellcasting_traditions.includes(i.system?.tradition?.value) &&
+            innate_types.includes(i.system?.prepared?.value)
+    )
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+let is_spell_caster = spellcasting.length > 0;
+let is_innate_caster = innate_spellcasting.length > 0;
+if (is_spell_caster) {
     let spell_index = 0;
     let cantrip_index = 0;
     spellcasting.forEach((sce) => {
