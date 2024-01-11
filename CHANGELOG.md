@@ -5,13 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.8] 2024-01-11
+## [0.0.9] - 2024-01-11
+
+### Fixed
+
+- pf2e-remaster provider: there can be more than 1 level dependent feature/feat
+- pf2e-remaster provider: spelllists (cantrip, focus, spells) have been overhauled to show all
+
+## [0.0.8] - 2024-01-11
 
 ### Fixed
 
 - pf2e-remaster provider: fix deprecated shield information
 
-## [0.0.7] 2024-01-10
+## [0.0.7] - 2024-01-10
 
 ### Changed
 
