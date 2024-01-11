@@ -7,7 +7,7 @@ assignees:
 body:
   - type: markdown
     attributes:
-      value: |
+      value: >
         Thanks for taking the time to fill out this bug report!
         ⚠
         Verify first that your issue is not [already reported on
@@ -15,6 +15,10 @@ body:
         the current behavior because [every change breaks someone's
         workflow][XKCD 1172].
         We try to be mindful about this.
+
+        [issue search]: ../search?q=is%3Aissue&type=issues
+
+        [XKCD 1172]: https://xkcd.com/1172/
   - type: input
     id: contact
     attributes:
