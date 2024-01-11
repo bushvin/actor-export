@@ -334,7 +334,16 @@ class actorExportDialog extends FormApplication {
                         );
                     } else {
                         for (let f = 0; f < selectedFiles[providerId].length; f++) {
-                            const sourceFileURI = actorExport.parseFilePath(this.providers[p].files[f].uri, providerId);
+                            const fileInfo = this.providers[p].files.filter(
+                                (i) => i.uri === selectedFiles[providerId][f]
+                            );
+                            if (fileInfo.length != 1) {
+                                ui.notifications.error(
+                                    `${actorExport.ID} | Something bad happened trying to locate file information for ${selectedFiles[providerId][f]} in provider ${p}.`
+                                );
+                                return;
+                            }
+                            const sourceFileURI = actorExport.parseFilePath(fileInfo[0].uri, providerId);
                             const destinationFileName = `${module.mapper.actorName} - ${sourceFileURI
                                 .split('/')
                                 .pop()}`;
