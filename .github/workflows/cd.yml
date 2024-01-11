@@ -9,7 +9,7 @@ on:
 env:
   fvtt_minimum: 11
   fvtt_verified: 11
-  fvtt_dry_run: true
+  fvtt_dry_run: false
   fvtt_module_id: actor-export
 
 jobs:
