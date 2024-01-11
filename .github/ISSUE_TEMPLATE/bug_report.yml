@@ -40,12 +40,13 @@ body:
       placeholder: ex 11.315
     validations:
       required: true
-  - type: input
+  - type: dropdown
     id: game_system
     attributes:
       label: Game system
       description: Please enter the name of your game system
-      placeholder: ex PF2e
+      options:
+        - pf2e
     validations:
       required: true
   - type: input
@@ -71,4 +72,10 @@ body:
     attributes:
       label: Relevant log output
       description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-      render: shell
+      render: Shell
+  - type: textarea
+    id: actor
+    attributes:
+      label: Sample Actor
+      description: Please paste your exported actor here
+      render: JSON
