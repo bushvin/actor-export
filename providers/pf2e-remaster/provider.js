@@ -1075,6 +1075,9 @@ mapper.field(
 );
 
 /* Spells: innate, prepared, spontaneous, focus and cantrips */
+let spell_proficiency = [];
+let spell_proficiency_modifier = [];
+let spell_attribute_modifier = [];
 const spellCastingEntries = actor.spellcasting.filter((i) => i.type === 'spellcastingEntry');
 let spell_slots = {};
 let cantrip_count = 0;
@@ -1101,6 +1104,13 @@ spellCastingEntries
         let hasInnateTitle = false;
         let hasFocusTitle = false;
         let hasSpellTitle = false;
+        spell_proficiency_modifier.push(
+            sce.statistic.modifiers.filter((i) => i.type === 'proficiency').map((i) => i.modifier)[0] || 0
+        );
+        spell_attribute_modifier.push(
+            sce.statistic.modifiers.filter((i) => i.type === 'ability').map((i) => i.modifier)[0] || 0
+        );
+        spell_proficiency.push(sce.system?.proficiency?.value || 0);
         for (let r = 1; r <= actor_spell_rank; r++) {
             const rankSpells = sce.spells
                 .filter(
@@ -1216,6 +1226,30 @@ spellCastingEntries
 Object.keys(spell_slots).forEach((key) => {
     mapper.field('all', `spell${key}_slots`, spell_slots[key].join('|'));
 });
+mapper.field('all', 'spell_proficiency_modifier', spell_proficiency_modifier[0] || '');
+mapper.field('all', 'spell_attribute_modifier', spell_attribute_modifier[0] || '');
+mapper.field('all', 'spell_dc_proficiency_modifier', spell_proficiency_modifier[0] || '');
+mapper.field('all', 'spell_dc_attribute_modifier', spell_attribute_modifier[0] || '');
+mapper.field('all', 'attack_spell_trained', spell_proficiency[0] >= 1);
+mapper.field('all', 'attack_spell_expert', spell_proficiency[0] >= 2);
+mapper.field('all', 'attack_spell_master', spell_proficiency[0] >= 3);
+mapper.field('all', 'attack_spell_legendary', spell_proficiency[0] >= 4);
+mapper.field('all', 'spell_dc_trained', spell_proficiency[0] >= 1);
+mapper.field('all', 'spell_dc_expert', spell_proficiency[0] >= 2);
+mapper.field('all', 'spell_dc_master', spell_proficiency[0] >= 3);
+mapper.field('all', 'spell_dc_legendary', spell_proficiency[0] >= 4);
+
+/* Rituals */
+const ritualList = actor.items.filter((i) => i.system.ritual !== undefined);
+let ritual_count = 0;
+actor.items
+    .filter((i) => i.system.ritual !== undefined)
+    .forEach((r) => {
+        const ritual_prefix = `ritual_entry${ritual_count++}`;
+        mapper.field('all', `${ritual_prefix}_name`, r.name);
+        mapper.field('all', `${ritual_prefix}_rank`, r.rank);
+        mapper.field('all', `${ritual_prefix}_cost`, r.system.cost.value);
+    });
 
 /* Formulas */
 actor.system.crafting.formulas
