@@ -99,7 +99,6 @@ class pf2ePDFProvider extends pdfProvider {
 
 const spellcasting_traditions = ['arcane', 'occult', 'primal', 'divine'];
 const spellcasting_types = ['prepared', 'spontaneous'];
-const innate_types = ['innate'];
 const actor_spell_rank = Math.ceil((actor?.level ?? 0) / 2);
 
 const mapper = new pf2ePDFProvider(actor);
@@ -1075,199 +1074,148 @@ mapper.field(
         : ''
 );
 
-/* Spells (regular) */
-let spell_proficiency_modifier = [];
-let spell_attribute_modifier = [];
+/* Spells: innate, prepared, spontaneous, focus and cantrips */
+const spellCastingEntries = actor.spellcasting.filter((i) => i.type === 'spellcastingEntry');
 let spell_slots = {};
-let spell_proficiency = [];
-let spellcasting = actor.spellcasting
-    .filter(
-        (i) =>
-            spellcasting_traditions.includes(i.system?.tradition?.value) &&
-            spellcasting_types.includes(i.system?.prepared?.value)
-    )
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
-let innate_spellcasting = actor.spellcasting
-    .filter(
-        (i) =>
-            spellcasting_traditions.includes(i.system?.tradition?.value) &&
-            innate_types.includes(i.system?.prepared?.value)
-    )
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
-let is_spell_caster = spellcasting.length > 0;
-let is_innate_caster = innate_spellcasting.length > 0;
-if (is_spell_caster) {
-    let spell_index = 0;
-    let cantrip_index = 0;
-    spellcasting.forEach((sce) => {
-        spell_proficiency_modifier.push(
-            sce.statistic.modifiers.filter((i) => i.type === 'proficiency').map((i) => i.modifier)[0] || 0
-        );
-        spell_attribute_modifier.push(
-            sce.statistic.modifiers.filter((i) => i.type === 'ability').map((i) => i.modifier)[0] || 0
-        );
-        spell_proficiency.push(sce.system?.proficiency?.value || 0);
-        Object.entries(sce.spells.entry.system.slots).forEach(([rank, info]) => {
-            if (!Object.keys(spell_slots).includes(rank)) {
-                spell_slots[rank] = [];
-            }
-            spell_slots[rank].push(info.max);
-        });
-        const cantrip_count = actor.items.filter(
-            (i) =>
-                i.type === 'spell' &&
-                i.system.location.value === sce._id &&
-                i.isCantrip &&
-                !i.isFocusSpell &&
-                !i.isRitual
-        ).length;
-        let spell_count = 0;
+let cantrip_count = 0;
+let innate_spell_count = 0;
+let spell_count = 0;
+let focus_spell_count = 0;
+spellCastingEntries
+    .sort((a, b) => {
+        return a.system.prepared.value < b.system.prepared.value
+            ? -1
+            : a.system.prepared.value > b.system.prepared.value
+            ? 1
+            : 0;
+    })
+    .sort((a, b) => {
+        return a.system.tradition.value < b.system.tradition.value
+            ? -1
+            : a.system.tradition.value > b.system.tradition.value
+            ? 1
+            : 0;
+    })
+    .forEach((sce) => {
+        let hasCantripTitle = false;
+        let hasInnateTitle = false;
+        let hasFocusTitle = false;
+        let hasSpellTitle = false;
         for (let r = 1; r <= actor_spell_rank; r++) {
-            spell_count =
-                spell_count +
-                actor.items.filter(
-                    (i) =>
-                        i.type === 'spell' &&
-                        (i.rank == r ||
-                            (sce.isPrepared &&
-                                ((i.system.heightening?.type === 'interval' &&
-                                    i.rank < r &&
-                                    parseInt((r - i.rank) / i.system.heightening?.interval) ==
-                                        (r - i.rank) / i.system.heightening?.interval) ||
-                                    (i.system.heightening?.type === 'fixed' && i.rank < r)))) &&
-                        i.system.location.value === sce._id &&
-                        !i.isFocusSpell &&
-                        !i.isRitual &&
-                        !i.isCantrip
-                ).length;
-        }
-        if (spellcasting.length > 1) {
-            if (spell_count > 0) {
-                mapper.field('all', `spell_entry${spell_index}_name`, sce.name);
-                spell_index = spell_index + 1;
-            }
-            if (cantrip_count > 0) {
-                mapper.field('all', `cantrip_entry${cantrip_index}_name`, sce.name);
-                cantrip_index = cantrip_index + 1;
-            }
-        }
-
-        /* cantrips */
-        actor.items
-            .filter(
-                (i) =>
-                    i.type === 'spell' &&
-                    i.system.location.value === sce._id &&
-                    i.isCantrip &&
-                    !i.isFocusSpell &&
-                    !i.isRitual
-            )
-            .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-            .forEach((cantrip) => {
-                let prepared_count =
-                    Object.values(sce.spells.entry.system.slots.slot0.prepared).filter((i) => i.id === cantrip._id)
-                        .length || 0;
-                mapper.field('all', `cantrip_entry${cantrip_index}_name`, cantrip.name);
-                mapper.field(
-                    'all',
-                    `cantrip_entry${cantrip_index}_actions`,
-                    PF2eHelper.actionsToSymbols(cantrip.system.time.value)
-                );
-                mapper.field('all', `cantrip_entry${cantrip_index}_prep`, '0'.repeat(prepared_count));
-                cantrip_index = cantrip_index + 1;
-            });
-
-        /* spells ranks 1 => 10 */
-        for (let r = 1; r <= actor_spell_rank; r++) {
-            actor.items
+            const rankSpells = sce.spells
                 .filter(
                     (i) =>
-                        i.type === 'spell' &&
-                        (i.rank == r ||
-                            (sce.isPrepared &&
-                                ((i.system.heightening?.type === 'interval' &&
-                                    i.rank < r &&
-                                    parseInt((r - i.rank) / i.system.heightening?.interval) ==
-                                        (r - i.rank) / i.system.heightening?.interval) ||
-                                    (i.system.heightening?.type === 'fixed' && i.rank < r)))) &&
-                        i.system.location.value === sce._id &&
-                        !i.isFocusSpell &&
-                        !i.isRitual &&
-                        !i.isCantrip
+                        (i.type !== undefined && i.rank === r) ||
+                        (sce.isPrepared &&
+                            i.system.heightening !== undefined &&
+                            ((i.system.heightening.type === 'interval' &&
+                                i.rank < r &&
+                                parseInt((r - i.rank) / i.system.heightening.interval) ==
+                                    (r - i.rank) / i.system.heightening.interval) ||
+                                (i.system.heightening.type === 'fixed' && i.rank < r)))
                 )
-                .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-                .forEach((spell) => {
-                    let prepared_count =
-                        Object.values(sce.spells.entry.system.slots[`slot${r}`].prepared).filter(
-                            (i) => i.id === spell._id
-                        ).length || 0;
-                    let spell_name = `${spell.name}`;
-                    if (
-                        spell.system.heightening?.type === 'fixed' &&
-                        !Object.keys(spell.system.heightening.levels)
-                            .concat([spell.system.level.value])
-                            .map((i) => parseInt(i))
-                            .includes(r)
-                    ) {
-                        return;
-                    }
-                    if (spell.system.heightening?.type === 'fixed' && spell.system.level.value != r) {
-                        let h = r - spell.system.level.value;
-                        spell_name = `${spell_name} (+${h})`;
-                    } else if (spell.system.heightening?.type === 'interval' && spell.system.level.value != r) {
-                        let h = (r - spell.system.level.value) / spell.system.heightening.interval;
-                        spell_name = `${spell_name} (+${h})`;
-                    }
-                    mapper.field('all', `spell_entry${spell_index}_name`, spell_name);
-                    mapper.field(
-                        'all',
-                        `spell_entry${spell_index}_actions`,
-                        PF2eHelper.actionsToSymbols(spell.system.time.value)
-                    );
-                    mapper.field('all', `spell_entry${spell_index}_rank`, r);
-                    mapper.field('all', `spell_entry${spell_index}_prep`, '0'.repeat(prepared_count));
-                    spell_index = spell_index + 1;
+                .sort((a, b) => {
+                    return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
                 });
-        }
-        if (spellcasting.length > 1) {
-            spell_index = spell_index + 1;
-            cantrip_index = cantrip_index + 1;
-        }
-    });
-    /* Spell Slots */
-    Object.keys(spell_slots).forEach((key) => {
-        mapper.field('all', `spell${key.substring(4)}_slots`, spell_slots[key].join('|'));
-    });
-    mapper.field('all', 'spell_proficiency_modifier', spell_proficiency_modifier[0] || '');
-    mapper.field('all', 'spell_attribute_modifier', spell_attribute_modifier[0] || '');
-    mapper.field('all', 'spell_dc_proficiency_modifier', spell_proficiency_modifier[0] || '');
-    mapper.field('all', 'spell_dc_attribute_modifier', spell_attribute_modifier[0] || '');
-    mapper.field('all', 'attack_spell_trained', spell_proficiency[0] >= 1);
-    mapper.field('all', 'attack_spell_expert', spell_proficiency[0] >= 2);
-    mapper.field('all', 'attack_spell_master', spell_proficiency[0] >= 3);
-    mapper.field('all', 'attack_spell_legendary', spell_proficiency[0] >= 4);
-    mapper.field('all', 'spell_dc_trained', spell_proficiency[0] >= 1);
-    mapper.field('all', 'spell_dc_expert', spell_proficiency[0] >= 2);
-    mapper.field('all', 'spell_dc_master', spell_proficiency[0] >= 3);
-    mapper.field('all', 'spell_dc_legendary', spell_proficiency[0] >= 4);
-}
+            if (
+                !hasCantripTitle &&
+                spellCastingEntries.length > 0 &&
+                rankSpells.filter((i) => i.isCantrip).length > 0
+            ) {
+                mapper.field('all', `cantrip_entry${cantrip_count++}_name`, sce.name);
+                hasCantripTitle = true;
+            }
+            if (
+                !hasInnateTitle &&
+                spellCastingEntries.length > 0 &&
+                rankSpells.filter((i) => !i.isCantrip).length > 0 &&
+                sce.system.prepared.value === 'innate'
+            ) {
+                mapper.field('all', `innate_spell_entry${innate_spell_count++}_name`, sce.name);
+                hasInnateTitle = true;
+            } else if (
+                !hasSpellTitle &&
+                spellCastingEntries.length > 0 &&
+                rankSpells.filter((i) => !i.isCantrip).length > 0 &&
+                ['prepared', 'spontaneous'].includes(sce.system.prepared.value)
+            ) {
+                mapper.field('all', `spell_entry${spell_count++}_name`, sce.name);
+                hasSpellTitle = true;
+            } else if (
+                !hasFocusTitle &&
+                spellCastingEntries.length > 0 &&
+                rankSpells.filter((i) => !i.isCantrip).length > 0 &&
+                sce.system.prepared.value === 'focus'
+            ) {
+                mapper.field('all', `focus_spell_entry${focus_spell_count++}_name`, sce.name);
+                hasFocusTitle = true;
+            }
+            rankSpells.forEach((s) => {
+                let spell_name = s.name;
+                let spell_actions = PF2eHelper.actionsToSymbols(s.system.time.value);
+                let spell_rank = r;
+                let spell_prep = Object.values(sce.system.slots[`slot${r}`].prepared).filter(
+                    (i) => i.id === s._id
+                ).length;
+                if (s.system.heightening !== undefined && s.system.heightening.type === 'fixed' && s.rank != r) {
+                    let h = r - s.rank;
+                    spell_name = `${s.name} (+${h})`;
+                } else if (
+                    s.system.heightening !== undefined &&
+                    s.system.heightening.type === 'interval' &&
+                    s.rank != r
+                ) {
+                    let h = (r - s.rank) / s.system.heightening.interval;
+                    spell_name = `${s.name} (+${h})`;
+                }
+                let field_prefix = 'unknown';
+                if (s.isCantrip) {
+                    field_prefix = `cantrip_entry${cantrip_count++}`;
+                } else if (sce.system.prepared.value === 'innate') {
+                    field_prefix = `innate_spell_entry${innate_spell_count++}`;
+                } else if (['prepared', 'spontaneous'].includes(sce.system.prepared.value)) {
+                    field_prefix = `spell_entry${spell_count++}`;
+                } else if (sce.system.prepared.value === 'focus') {
+                    field_prefix = `focus_spell_entry${focus_spell_count++}`;
+                } else {
+                    mapper.notify('warn', `Unknown prepared type: ${sce.system.prepared.value}`);
+                }
 
-/* Focus spells */
-actor.items
-    .filter((i) => i.type === 'spell' && i.isFocusSpell && !i.isRitual)
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-    .forEach((focus_spell, index) => {
-        mapper.field('all', `focus_spell_entry${index}_name`, focus_spell.name);
-        mapper.field(
-            'all',
-            `focus_spell_entry${index}_actions`,
-            PF2eHelper.actionsToSymbols(focus_spell.system.time.value)
-        );
+                mapper.field('all', `${field_prefix}_name`, spell_name);
+                mapper.field('all', `${field_prefix}_actions`, spell_actions);
+                mapper.field('all', `${field_prefix}_rank`, spell_rank);
+                mapper.field('all', `${field_prefix}_prep`, spell_prep === 0 ? '' : spell_prep);
+            });
+            if (spellCastingEntries.length > 0 && rankSpells.filter((i) => i.isCantrip).length > 0) {
+                mapper.field('all', `cantrip_entry${cantrip_count++}_name`, '');
+            }
+            if (
+                spellCastingEntries.length > 0 &&
+                rankSpells.filter((i) => !i.isCantrip).length > 0 &&
+                sce.system.prepared.value === 'innate'
+            ) {
+                mapper.field('all', `innate_spell_entry${innate_spell_count++}_name`, '');
+            } else if (
+                spellCastingEntries.length > 0 &&
+                rankSpells.filter((i) => !i.isCantrip).length > 0 &&
+                ['prepared', 'spontaneous'].includes(sce.system.prepared.value)
+            ) {
+                mapper.field('all', `spell_entry${spell_count++}_name`, '');
+            } else if (
+                spellCastingEntries.length > 0 &&
+                rankSpells.filter((i) => !i.isCantrip).length > 0 &&
+                sce.system.prepared.value === 'focus'
+            ) {
+                mapper.field('all', `focus_spell_entry${focus_spell_count++}_name`, '');
+            }
+            if (!sce.isCantrip && (sce.isPrepared || sce.isSpontaneous)) {
+                spell_slots[r] = (spell_slots[r] || []).concat([sce.system.slots[`slot${r}`].max]);
+            }
+        }
     });
-
-/* Innate Spell Section */
-/* FIXME: include innate spells */
-mapper.field('all', 'list_innate_spells', '');
+Object.keys(spell_slots).forEach((key) => {
+    mapper.field('all', `spell${key}_slots`, spell_slots[key].join('|'));
+});
 
 /* Formulas */
 actor.system.crafting.formulas
