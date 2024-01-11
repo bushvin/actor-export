@@ -79,3 +79,9 @@ body:
       label: Sample Actor
       description: Please paste your exported actor here
       render: JSON
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Attachments
+      description: Please add any attachments here
+
