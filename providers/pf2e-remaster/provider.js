@@ -494,7 +494,7 @@ mapper.field('all', 'attack_other_notes', '');
 mapper.field('all', 'critical_specializations', '');
 
 /* Class DC Section */
-mapper.field('all', 'class_dc', actor.classDC?.mod || 0 + 10);
+mapper.field('all', 'class_dc', (actor.classDC?.mod || 0) + 10);
 mapper.field('all', 'class_dc_attribute_modifier', actor.classDC?.attributeModifier.value || 0);
 mapper.field(
     'all',
