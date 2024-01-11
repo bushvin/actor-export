@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- download the correct files
+- module: download the correct files
 
 ## [0.0.9] - 2024-01-11
 
