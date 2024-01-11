@@ -334,12 +334,17 @@ class actorExportDialog extends FormApplication {
                         );
                     } else {
                         for (let f = 0; f < selectedFiles[providerId].length; f++) {
-                            const fileInfo = this.providers[p].files.filter(
-                                (i) => i.uri === selectedFiles[providerId][f]
-                            );
+                            if (this.providers.filter((i) => i.id === providerId).length !== 1) {
+                                ui.notifications.error(
+                                    `${actorExport.ID} | Could not find provider info for ${providerId}.`
+                                );
+                                return;
+                            }
+                            const providerInfo = this.providers.filter((i) => i.id === providerId)[0];
+                            const fileInfo = providerInfo.files.filter((i) => i.uri === selectedFiles[providerId][f]);
                             if (fileInfo.length != 1) {
                                 ui.notifications.error(
-                                    `${actorExport.ID} | Something bad happened trying to locate file information for ${selectedFiles[providerId][f]} in provider ${p}.`
+                                    `${actorExport.ID} | Something bad happened trying to locate file information for ${selectedFiles[providerId][f]} in provider ${providerId}.`
                                 );
                                 return;
                             }
