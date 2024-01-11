@@ -655,7 +655,8 @@ mapper.field(
     actor.items
         .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 3)
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)[0] || ''
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
@@ -668,7 +669,8 @@ mapper.field(
     actor.items
         .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 5)
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)[0] || ''
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
@@ -681,7 +683,8 @@ mapper.field(
     actor.items
         .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 7)
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)[0] || ''
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
@@ -694,12 +697,16 @@ mapper.field(
     actor.items
         .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 9)
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)[0] || ''
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
     '10_class_feat',
-    actor.items.filter((i) => i.type === 'feat' && i.system.location === 'class-10').map((i) => i.name)[0] || ''
+    actor.items
+        .filter((i) => i.type === 'feat' && i.system.location === 'class-10')
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
@@ -707,12 +714,16 @@ mapper.field(
     actor.items
         .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 11)
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)[0] || ''
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
     '12_class_feat',
-    actor.items.filter((i) => i.type === 'feat' && i.system.location === 'class-12').map((i) => i.name)[0] || ''
+    actor.items
+        .filter((i) => i.type === 'feat' && i.system.location === 'class-12')
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
@@ -720,12 +731,16 @@ mapper.field(
     actor.items
         .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 13)
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)[0] || ''
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
     '14_class_feat',
-    actor.items.filter((i) => i.type === 'feat' && i.system.location === 'class-14').map((i) => i.name)[0] || ''
+    actor.items
+        .filter((i) => i.type === 'feat' && i.system.location === 'class-14')
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
@@ -733,12 +748,16 @@ mapper.field(
     actor.items
         .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 15)
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)[0] || ''
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
     '16_class_feat',
-    actor.items.filter((i) => i.type === 'feat' && i.system.location === 'class-16').map((i) => i.name)[0] || ''
+    actor.items
+        .filter((i) => i.type === 'feat' && i.system.location === 'class-16')
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
@@ -746,12 +765,16 @@ mapper.field(
     actor.items
         .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 17)
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)[0] || ''
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
     '18_class_feat',
-    actor.items.filter((i) => i.type === 'feat' && i.system.location === 'class-18').map((i) => i.name)[0] || ''
+    actor.items
+        .filter((i) => i.type === 'feat' && i.system.location === 'class-18')
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
@@ -759,12 +782,16 @@ mapper.field(
     actor.items
         .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 18)
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)[0] || ''
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 mapper.field(
     'all',
     '20_class_feat',
-    actor.items.filter((i) => i.type === 'feat' && i.system.location === 'class-20').map((i) => i.name)[0] || ''
+    actor.items
+        .filter((i) => i.type === 'feat' && i.system.location === 'class-20')
+        .map((i) => i.name)
+        .join(', ') || ''
 );
 
 /* Inventory Section */
