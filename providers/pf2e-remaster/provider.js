@@ -28,7 +28,7 @@ class pf2ePDFProvider extends pdfProvider {
             .filter(
                 (i) =>
                     i.type === 'strike' &&
-                    (i.domains.includes(domain) || i.altUsages.filter((f) => f.domains.includes(domain)).length > 0)
+                    (i.domains?.includes(domain) || i.altUsages?.filter((f) => f.domains?.includes(domain)).length > 0)
             )
             .sort((a, b) => (a.ready > b.ready ? 1 : a.ready < b.ready ? -1 : 0))
             .reverse()
@@ -110,8 +110,8 @@ const mapper = new pf2ePDFProvider(actor);
 mapper.image('pf2e-remastered.pdf', 2, 29, 39, actor.img, 178, 265);
 
 /* Ancestry Section*/
-mapper.field('all', 'ancestry', actor.ancestry.name);
-mapper.field('all', 'heritage_and_traits', actor.heritage.name);
+mapper.field('all', 'ancestry', actor.ancestry?.name || '');
+mapper.field('all', 'heritage_and_traits', actor.heritage?.name || '');
 mapper.field('all', 'size', actor.system.traits.size.value);
 
 /* Character Name Section*/
@@ -128,16 +128,16 @@ mapper.field(
 );
 
 /* Background Section */
-mapper.field('all', 'background', actor.background.name);
+mapper.field('all', 'background', actor.background?.name || '');
 /* FIXME: complete background notes */
 mapper.field('all', 'background_notes', '');
 
 /* Level Section */
 mapper.field('all', 'level', actor.system.details.level.value);
-mapper.field('all', 'xp', actor.system.details.xp.value);
+mapper.field('all', 'xp', actor.system.details.xp?.value || '');
 
 /* Class Section */
-mapper.field('all', 'class', actor.class.name);
+mapper.field('all', 'class', actor.class?.name || '');
 /* FIXME: complete class notes */
 mapper.field('all', 'class_notes', '');
 
@@ -195,7 +195,7 @@ mapper.field(
 );
 
 /* Armor proficiencies */
-Object.keys(actor.system.proficiencies.defenses).forEach((d) => {
+Object.keys(actor.system.proficiencies?.defenses || []).forEach((d) => {
     mapper.field('all', `defense_${d}_trained`, actor.system.proficiencies.defenses[d].rank >= 1 || false);
     mapper.field('all', `defense_${d}_expert`, actor.system.proficiencies.defenses[d].rank >= 2 || false);
     mapper.field('all', `defense_${d}_master`, actor.system.proficiencies.defenses[d].rank >= 3 || false);
@@ -475,7 +475,7 @@ mapper.getAttacks(actor, 'melee-attack-roll');
 mapper.getAttacks(actor, 'ranged-attack-roll');
 
 /* Weapon Proficiencies */
-Object.keys(actor.system.proficiencies.attacks).forEach((a) => {
+Object.keys(actor.system.proficiencies?.attacks || []).forEach((a) => {
     mapper.field('all', `attack_${a}_trained`, actor.system.proficiencies.attacks[a].rank >= 1 || false);
     mapper.field('all', `attack_${a}_expert`, actor.system.proficiencies.attacks[a].rank >= 2 || false);
     mapper.field('all', `attack_${a}_master`, actor.system.proficiencies.attacks[a].rank >= 3 || false);
@@ -493,17 +493,17 @@ mapper.field('all', 'attack_other_notes', '');
 mapper.field('all', 'critical_specializations', '');
 
 /* Class DC Section */
-mapper.field('all', 'class_dc', actor.classDC.mod + 10);
-mapper.field('all', 'class_dc_attribute_modifier', actor.classDC.attributeModifier.value);
+mapper.field('all', 'class_dc', actor.classDC?.mod || 0 + 10);
+mapper.field('all', 'class_dc_attribute_modifier', actor.classDC?.attributeModifier.value || 0);
 mapper.field(
     'all',
     'class_dc_proficiency_modifier',
-    actor.classDC.modifiers.filter((i) => i.type === 'proficiency').map((i) => i.modifier)[0] || 0
+    (actor.classDC?.modifiers || []).filter((i) => i.type === 'proficiency').map((i) => i.modifier)[0] || 0
 );
 mapper.field(
     'all',
     'class_dc_item_modifier',
-    actor.classDC.modifiers.filter((i) => i.type === 'item').map((i) => i.modifier)[0] || 0
+    (actor.classDC?.modifiers || []).filter((i) => i.type === 'item').map((i) => i.modifier)[0] || 0
 );
 
 /* Ancestry and General Feats Section*/
@@ -524,7 +524,7 @@ mapper.field(
 mapper.field(
     'all',
     '1_background_skill_feat',
-    Object.keys(actor.background.system.items).length > 0
+    Object.keys(actor.background?.system.items || []).length > 0
         ? actor.background.system.items[Object.keys(actor.background.system.items)[0]].name
         : ''
 );
@@ -548,7 +548,9 @@ mapper.field(
     '5_ancestry_feat',
     actor.items.filter((i) => i.type === 'feat' && i.system.location === 'ancestry-5').map((i) => i.name)[0] || ''
 );
-mapper.field('all', '5_boosts', PF2eHelper.formatAttributeBoosts(actor.system.build.attributes.boosts[5]));
+if (actor.system.build !== undefined) {
+    mapper.field('all', '5_boosts', PF2eHelper.formatAttributeBoosts(actor.system.build.attributes.boosts[5]));
+}
 mapper.field(
     'all',
     '6_skill_feat',
@@ -574,7 +576,7 @@ mapper.field(
     '10_skill_feat',
     actor.items.filter((i) => i.type === 'feat' && i.system.location === 'skill-10').map((i) => i.name)[0] || ''
 );
-mapper.field('all', '10_boosts', PF2eHelper.formatAttributeBoosts(actor.system.build.attributes.boosts[10]));
+mapper.field('all', '10_boosts', PF2eHelper.formatAttributeBoosts(actor.system.build?.attributes.boosts[10]));
 mapper.field(
     'all',
     '11_general_feat',
@@ -600,7 +602,7 @@ mapper.field(
     '15_general_feat',
     actor.items.filter((i) => i.type === 'feat' && i.system.location === 'general-15').map((i) => i.name)[0] || ''
 );
-mapper.field('all', '15_boosts', PF2eHelper.formatAttributeBoosts(actor.system.build.attributes.boosts[15]));
+mapper.field('all', '15_boosts', PF2eHelper.formatAttributeBoosts(actor.system.build?.attributes.boosts[15]));
 mapper.field(
     'all',
     '16_skill_feat',
@@ -626,7 +628,7 @@ mapper.field(
     '20_skill_feat',
     actor.items.filter((i) => i.type === 'feat' && i.system.location === 'skill-20').map((i) => i.name)[0] || ''
 );
-mapper.field('all', '20_boosts', PF2eHelper.formatAttributeBoosts(actor.system.build.attributes.boosts[20]));
+mapper.field('all', '20_boosts', PF2eHelper.formatAttributeBoosts(actor.system.build?.attributes.boosts[20]));
 
 /* Class Abilities Section */
 mapper.field(
@@ -861,40 +863,40 @@ mapper.field('all', 'gold', actor.inventory.coins.gp || 0);
 mapper.field('all', 'platinum', actor.inventory.coins.pp || 0);
 
 /* Origin and Appearance Section */
-mapper.field('all', 'ethnicity', actor.system.details.ethnicity.value || '');
-mapper.field('all', 'nationality', actor.system.details.nationality.value || '');
-mapper.field('all', 'birthplace', actor.system.details.biography.birthPlace || '');
-mapper.field('all', 'age', actor.system.details.age.value || '');
-mapper.field('all', 'gender_pronouns', actor.system.details.gender.value || '');
-mapper.field('all', 'height', actor.system.details.height.value || '');
-mapper.field('all', 'weight', actor.system.details.weight.value || '');
+mapper.field('all', 'ethnicity', actor.system.details.ethnicity?.value || '');
+mapper.field('all', 'nationality', actor.system.details.nationality?.value || '');
+mapper.field('all', 'birthplace', actor.system.details.biography?.birthPlace || '');
+mapper.field('all', 'age', actor.system.details.age?.value || '');
+mapper.field('all', 'gender_pronouns', actor.system.details.gender?.value || '');
+mapper.field('all', 'height', actor.system.details.height?.value || '');
+mapper.field('all', 'weight', actor.system.details.weight?.value || '');
 mapper.field(
     'all',
     'Appearance',
-    actor.system.details.biography.appearance.replace('<p>', '').replace('</p>', '') || ''
+    actor.system.details.biography?.appearance.replace('<p>', '').replace('</p>', '') || ''
 );
 
 /* Personality Section */
-mapper.field('all', 'attitude', actor.system.details.biography.attitude || '');
+mapper.field('all', 'attitude', actor.system.details.biography?.attitude || '');
 mapper.field('all', 'deity_philosophy', actor.deity?.name || '');
-mapper.field('all', 'edicts', actor.system.details.biography.edicts || '');
-mapper.field('all', 'anathema', actor.system.details.biography.anathema || '');
-mapper.field('all', 'likes', actor.system.details.biography.likes || '');
-mapper.field('all', 'dislikes', actor.system.details.biography.dislikes || '');
-mapper.field('all', 'catchphrases', actor.system.details.biography.catchphrases || '');
+mapper.field('all', 'edicts', actor.system.details.biography?.edicts || '');
+mapper.field('all', 'anathema', actor.system.details.biography?.anathema || '');
+mapper.field('all', 'likes', actor.system.details.biography?.likes || '');
+mapper.field('all', 'dislikes', actor.system.details.biography?.dislikes || '');
+mapper.field('all', 'catchphrases', actor.system.details.biography?.catchphrases || '');
 
 /* Campaign notes Section */
 mapper.field(
     'all',
     'campaign_notes',
-    actor.system.details.biography.campaignNotes.replace('<p>', '').replace('</p>', '') || ''
+    actor.system.details.biography?.campaignNotes.replace('<p>', '').replace('</p>', '') || ''
 );
-mapper.field('all', 'allies', actor.system.details.biography.allies.replace('<p>', '').replace('</p>', '') || '');
-mapper.field('all', 'enemies', actor.system.details.biography.enemies.replace('<p>', '').replace('</p>', '') || '');
+mapper.field('all', 'allies', actor.system.details.biography?.allies.replace('<p>', '').replace('</p>', '') || '');
+mapper.field('all', 'enemies', actor.system.details.biography?.enemies.replace('<p>', '').replace('</p>', '') || '');
 mapper.field(
     'all',
     'organizations',
-    actor.system.details.biography.organaizations?.replace('<p>', '').replace('</p>', '') || ''
+    actor.system.details.biography?.organaizations?.replace('<p>', '').replace('</p>', '') || ''
 );
 
 /* Actions and Activities */
@@ -1252,7 +1254,7 @@ actor.items
     });
 
 /* Formulas */
-actor.system.crafting.formulas
+(actor.system.crafting?.formulas || [])
     .map((a) => fromUuidSync(a.uuid))
     .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
     .reverse()

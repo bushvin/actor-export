@@ -195,6 +195,9 @@ export class PF2eHelper extends GenericHelper {
         /* is there a partial boost for the given attribute */
         let count = 0;
         attribute = attribute.toLowerCase();
+        if (actor.system.build === undefined) {
+            return false;
+        }
         Object.values(actor.system.build.attributes.boosts).forEach((el) => {
             if (typeof el === 'string' && el.toLowerCase() === attribute) {
                 count = count + 1;
