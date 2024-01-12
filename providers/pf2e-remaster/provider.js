@@ -1294,8 +1294,8 @@ actor.items
     .sort((a, b) => (a.system.level < b.system.level ? -1 : a.system.level > b.system.level ? 1 : 0))
     .reverse()
     .forEach((item, index) => {
-        mapper.field('all', `item_formula${index}_name`, item.name);
-        mapper.field('all', `item_formula${index}_rank`, item.system.level.value);
+        mapper.field('all', `formula${index}_name`, item.name);
+        mapper.field('all', `formula${index}_rank`, item.system.level.value);
     });
 
 export { mapper };
