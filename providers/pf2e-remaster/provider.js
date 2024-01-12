@@ -290,29 +290,28 @@ mapper.field('all', 'defense_notes', ' '.repeat(25) + defense_notes.join(', '));
 Object.values(actor.skills)
     .filter((i) => !i.lore)
     .forEach((skill) => {
-        mapper.field('all', `${skill.slug}`, PF2eHelper.quantifyNumber(skill.mod));
+        const skillStatusModifier = skill.modifiers
+            .filter((i) => i.type == 'status')
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        const skillProficiencyModifier = skill.modifiers
+            .filter((i) => i.type == 'proficiency')
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        const itemExcludes = ['armor-check-penalty', 'no-crowbar'];
+        const skillItemModifier = skill.modifiers
+            .filter((i) => i.type === 'item' && i.enabled && !itemExcludes.includes(i.slug))
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        const skillArmorModifier = skill.modifiers
+            .filter((i) => i.slug === 'armor-check-penalty')
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        mapper.field('all', `${skill.slug}`, PF2eHelper.quantifyNumber(skill.mod - skillStatusModifier));
         mapper.field('all', `${skill.slug}_attribute_modifier`, skill.attributeModifier.modifier || '0');
-        mapper.field(
-            'all',
-            `${skill.slug}_proficiency_modifier`,
-            skill.modifiers.filter((i) => i.type == 'proficiency').map((i) => i.modifier)[0] || '0'
-        );
-        mapper.field(
-            'all',
-            `${skill.slug}_item_modifier`,
-            skill.modifiers
-                .filter((i) => i.type === 'item' && i.enabled && i.slug !== 'armor-check-penalty')
-                .map((i) =>
-                    [i.modifier].reduce((partialSum, a) => partialSum + a, 0) < 0
-                        ? [i.modifier].reduce((partialSum, a) => partialSum + a, 0)
-                        : '+' + [i.modifier].reduce((partialSum, a) => partialSum + a, 0)
-                )[0] || '0'
-        );
-        mapper.field(
-            'all',
-            `${skill.slug}_armor_modifier`,
-            skill.modifiers.filter((i) => i.slug === 'armor-check-penalty').map((i) => i.modifier)[0] || '0'
-        );
+        mapper.field('all', `${skill.slug}_proficiency_modifier`, skillProficiencyModifier);
+        mapper.field('all', `${skill.slug}_item_modifier`, skillItemModifier);
+        mapper.field('all', `${skill.slug}_armor_modifier`, skillArmorModifier);
         mapper.field('all', `${skill.slug}_trained`, skill.rank >= 1 || false);
         mapper.field('all', `${skill.slug}_expert`, skill.rank >= 2 || false);
         mapper.field('all', `${skill.slug}_master`, skill.rank >= 3 || false);
@@ -323,30 +322,29 @@ Object.values(actor.skills)
 Object.values(actor.skills)
     .filter((i) => i.lore)
     .forEach((skill, index) => {
-        mapper.field('all', `lore${index + 1}`, PF2eHelper.quantifyNumber(skill.mod));
+        const skillStatusModifier = skill.modifiers
+            .filter((i) => i.type == 'status')
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        const skillProficiencyModifier = skill.modifiers
+            .filter((i) => i.type == 'proficiency')
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        const itemExcludes = ['armor-check-penalty', 'no-crowbar'];
+        const skillItemModifier = skill.modifiers
+            .filter((i) => i.type === 'item' && i.enabled && !itemExcludes.includes(i.slug))
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        const skillArmorModifier = skill.modifiers
+            .filter((i) => i.slug === 'armor-check-penalty')
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        mapper.field('all', `lore${index + 1}`, PF2eHelper.quantifyNumber(skill.mod - skillStatusModifier));
         mapper.field('all', `lore${index + 1}_subcategory`, skill.label);
         mapper.field('all', `lore${index + 1}_attribute_modifier`, skill.attributeModifier.modifier || '0');
-        mapper.field(
-            'all',
-            `lore${index + 1}_proficiency_modifier`,
-            skill.modifiers.filter((i) => i.type == 'proficiency').map((i) => i.modifier)[0] || '0'
-        );
-        mapper.field(
-            'all',
-            `lore${index + 1}_item_modifier`,
-            skill.modifiers
-                .filter((i) => i.type === 'item' && i.enabled && i.slug !== 'armor-check-penalty')
-                .map((i) =>
-                    [i.modifier].reduce((partialSum, a) => partialSum + a, 0) < 0
-                        ? [i.modifier].reduce((partialSum, a) => partialSum + a, 0)
-                        : '+' + [i.modifier].reduce((partialSum, a) => partialSum + a, 0)
-                )[0] || '0'
-        );
-        mapper.field(
-            'all',
-            `lore${index + 1}_armor_modifier`,
-            skill.modifiers.filter((i) => i.slug === 'armor-check-penalty').map((i) => i.modifier)[0] || '0'
-        );
+        mapper.field('all', `lore${index + 1}_proficiency_modifier`, skillProficiencyModifier);
+        mapper.field('all', `lore${index + 1}_item_modifier`, skillItemModifier);
+        mapper.field('all', `lore${index + 1}_armor_modifier`, skillArmorModifier);
         mapper.field('all', `lore${index + 1}_trained`, skill.rank >= 1 || false);
         mapper.field('all', `lore${index + 1}_expert`, skill.rank >= 2 || false);
         mapper.field('all', `lore${index + 1}_master`, skill.rank >= 3 || false);
