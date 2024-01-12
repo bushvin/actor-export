@@ -49,6 +49,14 @@ body:
       placeholder: ex 5.12.0
     validations:
       required: true
+  - type: input
+    id: module_version
+    attributes:
+      label: actor-export module version
+      description: Please enter the version of the module
+      placeholder: ex 0.0.1
+    validations:
+      required: true
   - type: dropdown
     id: browsers
     attributes:
