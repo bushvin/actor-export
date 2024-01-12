@@ -934,7 +934,11 @@ actor.items
             mapper.field(
                 'all',
                 `activity${index + 1}_action_count`,
-                PF2eHelper.actionsToSymbols(action.system.actions.value)
+                PF2eHelper.formatActivity(
+                    action.system.actionType.value,
+                    action.system.actions.value,
+                    PF2eHelper.pdfActivityGlyphs
+                )
             );
             mapper.field(
                 'all',
@@ -1195,7 +1199,10 @@ spellCastingEntries
             }
             rankSpells.forEach((s) => {
                 let spell_name = s.name;
-                let spell_actions = PF2eHelper.actionsToSymbols(s.system.time.value);
+                let spell_actions = PF2eHelper.formatSpellCastingTime(
+                    s.system.time.value,
+                    PF2eHelper.pdfActivityGlyphs
+                );
                 let spell_rank = r;
                 let spell_prep = Object.values(sce.system.slots[`slot${r}`].prepared).filter(
                     (i) => i.id === s._id
