@@ -1,0 +1,26 @@
+{
+    "id": "pf2e-scribe",
+    "name": "PF2e Scribe Generator",
+    "description": "A set of templates to generate scribe.pf2.tools markdown",
+    "icon": "fas fa fa-file-code-o",
+    "type": "scribe.pf2.tools",
+    "authors": [
+        {
+            "name": "bushvin",
+            "url": "https://github.com/bushvin"
+        }
+    ],
+    "requirements": [
+        {
+            "system": "pf2e",
+            "system_version": "5.9.0"
+        }
+    ],
+    "files": [
+        {
+            "uri": "actor-creature",
+            "name": "Export NPC as Creature",
+            "description": "Generate a creature entry."
+        }
+    ]
+}

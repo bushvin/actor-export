@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2024-01-13
+
+### Added
+
+- new provider: pf2e-scribe which exports in scribe.pf2.tools format
+
 ## [0.2.0] - 2024-01-12
 
 ### Added
@@ -47,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pf2e-remaster provider: fix defaults bug causing the +10 to be dropped.
 - module: fix wrong handling of providers and files to download.
 
-## [0.0.12] - 2024-01-11
+## [.0.12] - 2024-01-11
 
 ### Fixed
 
