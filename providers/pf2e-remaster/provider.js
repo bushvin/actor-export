@@ -1113,13 +1113,21 @@ spellCastingEntries
         let hasInnateTitle = false;
         let hasFocusTitle = false;
         let hasSpellTitle = false;
-        spell_proficiency_modifier.push(
-            sce.statistic.modifiers.filter((i) => i.type === 'proficiency').map((i) => i.modifier)[0] || 0
-        );
-        spell_attribute_modifier.push(
-            sce.statistic.modifiers.filter((i) => i.type === 'ability').map((i) => i.modifier)[0] || 0
-        );
-        spell_proficiency.push(sce.system?.proficiency?.value || 0);
+        const sceProficiencyModifier = sce.statistic.modifiers
+            .filter((i) => i.type === 'proficiency')
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        const sceAbilityModifier = sce.statistic.modifiers
+            .filter((i) => i.type === 'ability')
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        const sceStatusModifier = sce.statistic.modifiers
+            .filter((i) => i.type === 'status')
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        spell_proficiency_modifier.push(sceProficiencyModifier);
+        spell_attribute_modifier.push(sceAbilityModifier);
+        spell_proficiency.push((sce.system?.proficiency?.value || 0) - sceStatusModifier);
         for (let r = 1; r <= actor_spell_rank; r++) {
             const rankSpells = sce.spells
                 .filter(
