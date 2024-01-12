@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2024-01-12
+
+### Added
+
+- pf2e-remaster provider: add formulas to extra sheet
+- module: new PF2eHelper function and glyph variables to format actions (PF2eHelper.formatActivity)
+- module: new PF2eHelper function to resolve sizes (PF2eHelper.resolveSize)
+- module: new PF2eHelper function to format spellcasting times (PF2eHelper.formatSpellCastingTime)
+
+### Changed
+
+- pf2e-remaster provider: replace PF2eHelper.actionsToSymbols with PF2eHelper.formatActivity and PF2eHelper.formatSpellCastingTime
+
+### Fixed
+
+- pf2e-remaster provider: worn item fields were wrong
+- module: update PF2eHelper.formatTraits to detect alignment traits when separate
+
+### Removed
+
+- module: PF2eHelper.actionsToSymbols, which is replaced by PF2eHelper.formatActivity and PF2eHelper.formatSpellCastingTime
+
 ## [0.1.0] - 2024-01-12
 
 ### Changed
