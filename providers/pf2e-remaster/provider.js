@@ -41,16 +41,23 @@ class pf2ePDFProvider extends pdfProvider {
                     cur_attack = attack.altUsages.filter((i) => i.domains.includes(domain))[0];
                 }
                 let label = cur_attack.label;
-                let total_modifier = parseInt(cur_attack.totalModifier);
-                let attribute_modifier =
-                    parseInt(cur_attack.modifiers.filter((i) => i.type === 'ability').map((i) => i.modifier)[0]) || 0;
-                let proficiency_modifier =
-                    parseInt(cur_attack.modifiers.filter((i) => i.type === 'proficiency').map((i) => i.modifier)[0]) ||
-                    0;
-                let item_modifier =
-                    parseInt(
-                        cur_attack.modifiers.filter((i) => i.type === 'item' && i.enabled).map((i) => i.modifier)[0]
-                    ) || 0;
+                let attribute_modifier = cur_attack.modifiers
+                    .filter((i) => i.type === 'ability')
+                    .map((i) => i.modifier)
+                    .reduce((a, b) => a + b, 0);
+                let proficiency_modifier = cur_attack.modifiers
+                    .filter((i) => i.type === 'proficiency')
+                    .map((i) => i.modifier)
+                    .reduce((a, b) => a + b, 0);
+                let item_modifier = cur_attack.modifiers
+                    .filter((i) => i.type === 'item' && i.enabled)
+                    .map((i) => i.modifier)
+                    .reduce((a, b) => a + b, 0);
+                let status_modifier = cur_attack.modifiers
+                    .filter((i) => i.type === 'status' && i.enabled)
+                    .map((i) => i.modifier)
+                    .reduce((a, b) => a + b, 0);
+                let total_modifier = cur_attack.totalModifier - status_modifier;
                 let damage = `${cur_attack.item.system.damage.dice}${cur_attack.item.system.damage.die}` || '-';
                 let bludgeoning_damage =
                     cur_attack.item.system.damage.damageType === 'bludgeoning' ||
@@ -150,22 +157,27 @@ Object.keys(actor.abilities).forEach((a) => {
 /* Defenses Section*/
 
 /* Armor Class */
-mapper.field('all', 'ac', actor.armorClass.value);
-mapper.field(
-    'all',
-    'ac_attribute_modifier',
-    actor.armorClass.modifiers.filter((i) => i.type === 'ability').map((i) => i.modifier)[0] || 0
-);
-mapper.field(
-    'all',
-    'ac_proficiency_modifier',
-    actor.armorClass.modifiers.filter((i) => i.type === 'proficiency').map((i) => i.modifier)[0] || 0
-);
-mapper.field(
-    'all',
-    'ac_item_modifier',
-    actor.armorClass.modifiers.filter((i) => i.type === 'item').map((i) => i.modifier)[0] || 0
-);
+const acAttributeModifier = actor.armorClass.modifiers
+    .filter((i) => i.type === 'ability')
+    .map((i) => i.modifier)
+    .reduce((a, b) => a + b, 0);
+const acProficiencyModifier = actor.armorClass.modifiers
+    .filter((i) => i.type === 'proficiency')
+    .map((i) => i.modifier)
+    .reduce((a, b) => a + b, 0);
+const acItemModifier = actor.armorClass.modifiers
+    .filter((i) => i.type === 'item')
+    .map((i) => i.modifier)
+    .reduce((a, b) => a + b, 0);
+const acStatusModifier = actor.armorClass.modifiers
+    .filter((i) => i.type === 'status')
+    .map((i) => i.modifier)
+    .reduce((a, b) => a + b, 0);
+
+mapper.field('all', 'ac', actor.armorClass.value - acStatusModifier);
+mapper.field('all', 'ac_attribute_modifier', acAttributeModifier);
+mapper.field('all', 'ac_proficiency_modifier', acProficiencyModifier);
+mapper.field('all', 'ac_item_modifier', acItemModifier);
 
 /* Shield */
 mapper.field(
