@@ -216,26 +216,26 @@ Object.keys(actor.system.proficiencies?.defenses || []).forEach((d) => {
 
 /* Saving Throws */
 Object.keys(actor.saves).forEach((s) => {
-    mapper.field('all', `${s}`, actor.saves[s].mod);
-    mapper.field(
-        'all',
-        `${s}_attribute_modifier`,
-        actor.saves[s].modifiers.filter((i) => i.type === 'ability' && i.enabled).map((i) => i.modifier)[0] || 0
-    );
-    mapper.field(
-        'all',
-        `${s}_proficiency_modifier`,
-        actor.saves[s].modifiers.filter((i) => i.type === 'proficiency' && i.enabled).map((i) => i.modifier)[0] || 0
-    );
-    mapper.field(
-        'all',
-        `${s}_item_modifier`,
-        actor.saves[s].modifiers
-            .filter((i) => i.type === 'item' && i.enabled)
-            .map((i) => i.modifier)
-            .sort()
-            .reverse()[0] || 0
-    );
+    const saveAttributeModifier = actor.saves[s].modifiers
+        .filter((i) => i.type === 'ability' && i.enabled)
+        .map((i) => i.modifier)
+        .reduce((a, b) => a + b, 0);
+    const saveProficiencyModifier = actor.saves[s].modifiers
+        .filter((i) => i.type === 'proficiency' && i.enabled)
+        .map((i) => i.modifier)
+        .reduce((a, b) => a + b, 0);
+    const saveItemModifier = actor.saves[s].modifiers
+        .filter((i) => i.type === 'item' && i.enabled)
+        .map((i) => i.modifier)
+        .reduce((a, b) => a + b, 0);
+    const saveStatusModifier = actor.saves[s].modifiers
+        .filter((i) => i.type === 'item' && i.enabled)
+        .map((i) => i.modifier)
+        .reduce((a, b) => a + b, 0);
+    mapper.field('all', `${s}`, actor.saves[s].mod - saveStatusModifier);
+    mapper.field('all', `${s}_attribute_modifier`, saveAttributeModifier);
+    mapper.field('all', `${s}_proficiency_modifier`, saveProficiencyModifier);
+    mapper.field('all', `${s}_item_modifier`, saveItemModifier);
     mapper.field('all', `${s}_trained`, actor.saves[s].rank >= 1 || false);
     mapper.field('all', `${s}_expert`, actor.saves[s].rank >= 2 || false);
     mapper.field('all', `${s}_master`, actor.saves[s].rank >= 3 || false);
