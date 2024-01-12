@@ -5,6 +5,38 @@ import { GenericHelper } from './GenericHelper.js';
  */
 export class PF2eHelper extends GenericHelper {
     /**
+     * Activity Glyphs for the action icons font
+     */
+    static pdfActivityGlyphs = {
+        0: '',
+        1: 'á',
+        2: 'â',
+        3: 'ã',
+        '1 - 2': 'á - â',
+        '1 to 2': 'á - â',
+        '1 - 3': 'á - ã',
+        '1 to 3': 'á - ã',
+        reaction: 'ä',
+        free: 'à',
+    };
+
+    /**
+     * Activity Glyphs for scribe.pf2.tools
+     */
+    static scribeActivityGlyphs = {
+        0: '',
+        1: ':a:',
+        2: ':aa:',
+        3: ':aaa:',
+        '1 - 2': ':a: - :aa:',
+        '1 to 2': ':a: - :aa:',
+        '1 - 3': ':a: - :aaa:',
+        '1 to 3': ':a: - :aaa:',
+        reaction: ':r:',
+        free: ':f:',
+    };
+
+    /**
      * Abbreviate the names of the sources a resource is from
      * @param {string} value - Source name
      * @returns {string}
@@ -87,6 +119,32 @@ export class PF2eHelper extends GenericHelper {
     }
 
     /**
+     * Format the activity according to actionType and activity
+     * @param {string} actionType - action type: action, free, or reaction
+     * @param {string} activity - the activity
+     * @param {Object} symbols - the symbol set to use
+     * @returns
+     */
+    static formatActivity(actionType, activity, symbols) {
+        actionType = actionType.toLowerCase();
+        activity = String(activity);
+        let ret = '';
+        if (symbols === undefined) {
+            symbols = this.pdfActivityGlyphs;
+        }
+        if (actionType === 'action') {
+            ret = symbols[activity];
+        } else if (actionType === 'free') {
+            ret = symbols.free;
+        } else if (actionType === 'reaction') {
+            ret = symbols.reaction;
+        }
+        ret = ret.replace(/ minutes/g, 'm');
+        ret = ret.replace(/ minute/g, 'm');
+        return ret;
+    }
+
+    /**
      * Format and sort attribute boosts according to their order
      * @param {array} attributes - list of attributes
      * @returns {string}
@@ -147,6 +205,45 @@ export class PF2eHelper extends GenericHelper {
                 traitList.splice(traitList.indexOf(el), 1);
             }
         });
+        const alignment = [];
+        ['chaotic', 'lawful', 'good', 'neutral', 'evil'].forEach((el) => {
+            if (traitList.includes(el)) {
+                alignment.push(el);
+                traitList.splice(traitList.indexOf(el), 1);
+            }
+        });
+        switch (alignment.join('-')) {
+            case 'chaotic-evil':
+                traitList.push('ce');
+                break;
+            case 'chaotic':
+            case 'chaotic-neutral':
+                traitList.push('cn');
+                break;
+            case 'chaotic-good':
+                traitList.push('cg');
+                break;
+            case 'neutral-evil':
+                traitList.push('ne');
+                break;
+            case 'neutral':
+            case 'neutral-neutral':
+                traitList.push('n');
+                break;
+            case 'neutral-good':
+                traitList.push('ng');
+                break;
+            case 'lawful-evil':
+                traitList.push('le');
+                break;
+            case 'lawful':
+            case 'lawful-neutral':
+                traitList.push('ln');
+                break;
+            case 'lawful-good':
+                traitList.push('lg');
+                break;
+        }
         ['lg', 'ln', 'le', 'ng', 'n', 'ne', 'cg', 'cn', 'ce'].forEach((el) => {
             if (traitList.includes(el)) {
                 tl.push(el.toLocaleUpperCase());
@@ -216,5 +313,29 @@ export class PF2eHelper extends GenericHelper {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Return full size name
+     * @param {string} size - the abbreviated size entry
+     * @returns {string}
+     */
+    static resolveSize(size) {
+        switch (size) {
+            case 'tiny':
+                return 'Tiny';
+            case 'sm':
+                return 'Small';
+            case 'med':
+                return 'Medium';
+            case 'lg':
+                return 'Large';
+            case 'huge':
+                return 'Huge';
+            case 'grg':
+                return 'Gargantuan';
+            default:
+                return size;
+        }
     }
 }
