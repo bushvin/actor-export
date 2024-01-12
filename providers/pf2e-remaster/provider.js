@@ -494,18 +494,22 @@ mapper.field('all', 'attack_other_notes', '');
 mapper.field('all', 'critical_specializations', '');
 
 /* Class DC Section */
-mapper.field('all', 'class_dc', (actor.classDC?.mod || 0) + 10);
+const classDcStatusModifier = (actor.classDC?.modifiers || [])
+    .filter((i) => i.type === 'status')
+    .map((i) => i.modifier)
+    .reduce((a, b) => a + b, 0);
+const classDcProficiencyModifier = (actor.classDC?.modifiers || [])
+    .filter((i) => i.type === 'proficiency')
+    .map((i) => i.modifier)
+    .reduce((a, b) => a + b, 0);
+const classDcItemModifier = (actor.classDC?.modifiers || [])
+    .filter((i) => i.type === 'item')
+    .map((i) => i.modifier)
+    .reduce((a, b) => a + b, 0);
+mapper.field('all', 'class_dc', (actor.classDC?.mod || 0) + 10 - classDcStatusModifier);
 mapper.field('all', 'class_dc_attribute_modifier', actor.classDC?.attributeModifier.value || 0);
-mapper.field(
-    'all',
-    'class_dc_proficiency_modifier',
-    (actor.classDC?.modifiers || []).filter((i) => i.type === 'proficiency').map((i) => i.modifier)[0] || 0
-);
-mapper.field(
-    'all',
-    'class_dc_item_modifier',
-    (actor.classDC?.modifiers || []).filter((i) => i.type === 'item').map((i) => i.modifier)[0] || 0
-);
+mapper.field('all', 'class_dc_proficiency_modifier', classDcProficiencyModifier);
+mapper.field('all', 'class_dc_item_modifier', classDcItemModifier);
 
 /* Ancestry and General Feats Section*/
 mapper.field(
