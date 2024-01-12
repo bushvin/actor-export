@@ -390,22 +390,26 @@ if (semVer.gte(game.system.version, '5.12.0')) {
 }
 
 /* Perception Section  */
-mapper.field('all', 'perception', PF2eHelper.quantifyNumber(actor.perception.mod));
-mapper.field(
-    'all',
-    'perception_attribute_modifier',
-    actor.perception.modifiers.filter((i) => i.type === 'ability' && i.enabled).map((i) => i.modifier)[0] || 0
-);
-mapper.field(
-    'all',
-    'perception_proficiency_modifier',
-    actor.perception.modifiers.filter((i) => i.type === 'proficiency' && i.enabled).map((i) => i.modifier)[0] || 0
-);
-mapper.field(
-    'all',
-    'perception_item_modifier',
-    actor.perception.modifiers.filter((i) => i.type === 'item' && i.enabled).map((i) => i.modifier)[0] || 0
-);
+const perceptionStatusModifier = actor.perception.modifiers
+    .filter((i) => i.type === 'status' && i.enabled)
+    .map((i) => i.modifier)
+    .reduce((a, b) => a + b, 0);
+const perceptionAbilityModifier = actor.perception.modifiers
+    .filter((i) => i.type === 'ability' && i.enabled)
+    .map((i) => i.modifier)
+    .reduce((a, b) => a + b, 0);
+const perceptionProficiencyModifier = actor.perception.modifiers
+    .filter((i) => i.type === 'proficiency' && i.enabled)
+    .map((i) => i.modifier)
+    .reduce((a, b) => a + b, 0);
+const perceptionItemModifier = actor.perception.modifiers
+    .filter((i) => i.type === 'proficiency' && i.enabled)
+    .map((i) => i.modifier)
+    .reduce((a, b) => a + b, 0);
+mapper.field('all', 'perception', PF2eHelper.quantifyNumber(actor.perception.mod - perceptionStatusModifier));
+mapper.field('all', 'perception_attribute_modifier', perceptionAbilityModifier);
+mapper.field('all', 'perception_proficiency_modifier', perceptionProficiencyModifier);
+mapper.field('all', 'perception_item_modifier', perceptionItemModifier);
 mapper.field('all', 'perception_trained', actor.perception.rank >= 1 || '');
 mapper.field('all', 'perception_expert', actor.perception.rank >= 2 || '');
 mapper.field('all', 'perception_master', actor.perception.rank >= 3 || '');
