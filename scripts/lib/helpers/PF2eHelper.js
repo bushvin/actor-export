@@ -36,6 +36,9 @@ export class PF2eHelper extends GenericHelper {
         free: ':f:',
     };
 
+    static isRequiredArg(argName, functionName) {
+        throw new Error(`\`${argName}\` is a required argument for PF2eHelper.${functionName}!`);
+    }
     /**
      * Abbreviate the names of the sources a resource is from
      * @param {string} value - Source name
@@ -78,62 +81,20 @@ export class PF2eHelper extends GenericHelper {
     }
 
     /**
-     * Generate PDF action symbols
-     * @param {string} action - the action to be converted
-     * @returns {string}
-     */
-    static actionsToSymbols(action, symbols) {
-        action = String(action);
-        if (symbols === undefined) {
-            symbols = {
-                0: '',
-                1: 'á',
-                2: 'â',
-                3: 'ã',
-                reaction: 'ä',
-                free: 'à',
-            };
-        }
-        if (action === '0') {
-            action = symbols[0];
-        } else if (action === '1') {
-            action = symbols[1];
-        } else if (action === '2') {
-            action = symbols[2];
-        } else if (action === '3') {
-            action = symbols[3];
-        } else if (action === '1 to 2') {
-            action = `${symbols[1]} - ${symbols[2]}`;
-        } else if (action === '1 to 3') {
-            action = `${symbols[1]} - ${symbols[3]}`;
-        } else if (action === 'reaction') {
-            action = symbols.reaction;
-        } else if (action === 'free') {
-            action = symbols.free;
-        }
-        action = action.replace(/ minutes/g, 'm');
-        action = action.replace(/ minute/g, 'm');
-        /* FIXME: do the same for free actions */
-
-        return action;
-    }
-
-    /**
      * Format the activity according to actionType and activity
      * @param {string} actionType - action type: action, free, or reaction
      * @param {string} activity - the activity
      * @param {Object} symbols - the symbol set to use
-     * @returns
+     * @returns {string}
      */
-    static formatActivity(actionType, activity, symbols) {
-        actionType = actionType.toLowerCase();
-        activity = String(activity);
-        let ret = '';
-        if (symbols === undefined) {
-            symbols = this.pdfActivityGlyphs;
-        }
+    static formatActivity(actionType, activity, symbols = this.isRequiredArg('symbols', 'formatActivity')) {
+        actionType = String(actionType).toLowerCase().trim();
+        activity = String(activity).trim();
+        let ret = activity;
         if (actionType === 'action') {
-            ret = symbols[activity];
+            if (Object.keys(symbols).includes(activity)) {
+                ret = symbols[activity];
+            }
         } else if (actionType === 'free') {
             ret = symbols.free;
         } else if (actionType === 'reaction') {
@@ -142,6 +103,22 @@ export class PF2eHelper extends GenericHelper {
         ret = ret.replace(/ minutes/g, 'm');
         ret = ret.replace(/ minute/g, 'm');
         return ret;
+    }
+
+    /**
+     * Format Spell Casting Times
+     * @param {string} activity - the activity
+     * @param {Object} symbols - the symbol set to use
+     * @returns {string}
+     */
+    static formatSpellCastingTime(activity, symbols = this.isRequiredArg('symbols', 'formatSpellCastingTime')) {
+        if (activity === 'free') {
+            return this.formatActivity('free', activity, symbols);
+        } else if (activity === 'reaction') {
+            return this.formatActivity('reaction', activity, symbols);
+        } else {
+            return this.formatActivity('action', activity, symbols);
+        }
     }
 
     /**
