@@ -8,7 +8,7 @@
 
 A system agnostic Foundry VTT module which allows exporting your actors in a variety of formats through the use of (custom) providers.
 
-Feel free to join [#actor-export](https://discord.gg/XNsDbFRv) on Discord for help.
+Feel free to join [#actor-export](https://discord.gg/6U89NQrtyS) on Discord for help.
 
 ## Installation
 
