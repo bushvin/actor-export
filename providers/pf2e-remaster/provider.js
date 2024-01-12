@@ -1021,43 +1021,43 @@ mapper.field(
 );
 
 /* Spell Statistics Section */
-mapper.field(
-    'all',
-    'spell_attack',
-    PF2eHelper.quantifyNumber(
-        actor.spellcasting
-            .filter(
-                (i) =>
-                    spellcasting_traditions.includes(i.system?.tradition?.value) &&
-                    spellcasting_types.includes(i.system?.prepared?.value)
-            )
-            .sort((a, b) =>
-                a.statistic.check.mod < b.statistic.check.mod
-                    ? -1
-                    : a.statistic.check.mod > b.statistic.check.mod
-                    ? 1
-                    : 0
-            )
-            .reverse()
-            .map((i) => i.statistic.mod)[0]
-    ) || ''
-);
+// mapper.field(
+//     'all',
+//     'spell_attack',
+//     PF2eHelper.quantifyNumber(
+//         actor.spellcasting
+//             .filter(
+//                 (i) =>
+//                     spellcasting_traditions.includes(i.system?.tradition?.value) &&
+//                     spellcasting_types.includes(i.system?.prepared?.value)
+//             )
+//             .sort((a, b) =>
+//                 a.statistic.check.mod < b.statistic.check.mod
+//                     ? -1
+//                     : a.statistic.check.mod > b.statistic.check.mod
+//                     ? 1
+//                     : 0
+//             )
+//             .reverse()
+//             .map((i) => i.statistic.mod)[0]
+//     ) || ''
+// );
 
-mapper.field(
-    'all',
-    'spell_dc',
-    actor.spellcasting
-        .filter(
-            (i) =>
-                spellcasting_traditions.includes(i.system?.tradition?.value) &&
-                spellcasting_types.includes(i.system?.prepared?.value)
-        )
-        .sort((a, b) =>
-            a.statistic.check.mod < b.statistic.check.mod ? -1 : a.statistic.check.mod > b.statistic.check.mod ? 1 : 0
-        )
-        .reverse()
-        .map((i) => i.statistic.check.mod)[0] + 10 || ''
-);
+// mapper.field(
+//     'all',
+//     'spell_dc',
+//     actor.spellcasting
+//         .filter(
+//             (i) =>
+//                 spellcasting_traditions.includes(i.system?.tradition?.value) &&
+//                 spellcasting_types.includes(i.system?.prepared?.value)
+//         )
+//         .sort((a, b) =>
+//             a.statistic.check.mod < b.statistic.check.mod ? -1 : a.statistic.check.mod > b.statistic.check.mod ? 1 : 0
+//         )
+//         .reverse()
+//         .map((i) => i.statistic.check.mod)[0] + 10 || ''
+// );
 
 mapper.field(
     'all',
@@ -1099,6 +1099,8 @@ mapper.field(
 let spell_proficiency = [];
 let spell_proficiency_modifier = [];
 let spell_attribute_modifier = [];
+let spell_dc = [];
+let spell_attack = [];
 const spellCastingEntries = actor.spellcasting.filter((i) => i.type === 'spellcastingEntry');
 let spell_slots = {};
 let cantrip_count = 0;
@@ -1129,7 +1131,7 @@ spellCastingEntries
             .filter((i) => i.type === 'proficiency')
             .map((i) => i.modifier)
             .reduce((a, b) => a + b, 0);
-        const sceAbilityModifier = sce.statistic.modifiers
+        const sceAttributeModifier = sce.statistic.modifiers
             .filter((i) => i.type === 'ability')
             .map((i) => i.modifier)
             .reduce((a, b) => a + b, 0);
@@ -1138,8 +1140,10 @@ spellCastingEntries
             .map((i) => i.modifier)
             .reduce((a, b) => a + b, 0);
         spell_proficiency_modifier.push(sceProficiencyModifier);
-        spell_attribute_modifier.push(sceAbilityModifier);
-        spell_proficiency.push((sce.system?.proficiency?.value || 0) - sceStatusModifier);
+        spell_attribute_modifier.push(sceAttributeModifier);
+        spell_dc.push(10 + sce.statistic.mod - sceStatusModifier);
+        spell_attack.push(sce.statistic.mod - sceStatusModifier);
+        spell_proficiency.push(sce.system?.proficiency?.value || 0);
         for (let r = 1; r <= actor_spell_rank; r++) {
             const rankSpells = sce.spells
                 .filter(
@@ -1267,6 +1271,8 @@ mapper.field('all', 'spell_dc_trained', spell_proficiency[0] >= 1);
 mapper.field('all', 'spell_dc_expert', spell_proficiency[0] >= 2);
 mapper.field('all', 'spell_dc_master', spell_proficiency[0] >= 3);
 mapper.field('all', 'spell_dc_legendary', spell_proficiency[0] >= 4);
+mapper.field('all', 'spell_attack', PF2eHelper.quantifyNumber(spell_attack[0]) || '');
+mapper.field('all', 'spell_dc', spell_dc[0] || '');
 
 /* Rituals */
 const ritualList = actor.items.filter((i) => i.system.ritual !== undefined);
