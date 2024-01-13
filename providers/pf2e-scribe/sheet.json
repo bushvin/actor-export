@@ -2,7 +2,7 @@
     "id": "pf2e-scribe",
     "name": "PF2e Scribe Generator",
     "description": "A set of templates to generate scribe.pf2.tools markdown",
-    "icon": "fas fa fa-file-code-o",
+    "icon": "fas fa-file-code",
     "type": "scribe.pf2.tools",
     "authors": [
         {
