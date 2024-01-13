@@ -140,20 +140,6 @@ export class pdfProvider extends baseProvider {
     }
 
     /**
-     * An asynchronous function to fetch an image and return an image object
-     * @param {string} src - The URL to the image to be used
-     * @returns {Object}
-     */
-    loadImage(src) {
-        return new Promise((resolve, reject) => {
-            let img = new Image();
-            img.onload = () => resolve(img);
-            img.onerror = reject;
-            img.src = src;
-        });
-    }
-
-    /**
      * Embed an image to the given PDF Object
      * @param {PDFDocument} pdf - The PDFDocument to add the image to
      * @param {Object} imageData - an Object containing path, (x,y) coordinates, scaling information, etc...
@@ -161,8 +147,8 @@ export class pdfProvider extends baseProvider {
      */
     async embedImage(pdf, imageData) {
         const htmlImage = await this.loadImage(imageData.path);
+        const imageBitmap = await createImageBitmap(htmlImage);
         const imageHeaders = await fetch(imageData.path).then((res) => res.headers);
-        const buffer = await fetch(imageData.path).then((res) => res.arrayBuffer());
         let contentType = undefined;
         imageHeaders.forEach((value, key) => {
             if (key === 'content-type') {
@@ -201,14 +187,12 @@ export class pdfProvider extends baseProvider {
                 break;
             case 'image/webp':
             case 'webp':
-                const canvas = new OffscreenCanvas(1, 1);
-                canvas.width = htmlImage.width;
-                canvas.height = htmlImage.height;
-                const context = canvas.getContext('2d');
-                context.drawImage(htmlImage, 0, 0, htmlImage.width, htmlImage.height);
-                const blob = await canvas.convertToBlob({ type: 'image/png' });
-                const webpBuffer = await new Response(blob).arrayBuffer();
-                embeddedImage = await pdf.embedPng(webpBuffer);
+                const canvas = new OffscreenCanvas(htmlImage.width, htmlImage.height);
+                const context = await canvas.getContext('2d');
+                context.drawImage(imageBitmap, 0, 0, htmlImage.width, htmlImage.height);
+                const blob = await context.canvas.convertToBlob({ type: 'image/png' });
+                const buffer = await blob.arrayBuffer();
+                embeddedImage = await pdf.embedPng(buffer);
                 break;
             default:
                 this.notify('warn', `${contentType || fileExtension} files are not (yet) supported.`);
