@@ -47,6 +47,7 @@ class scribeBase {
         value = value.replace(/@damage\[([^\[]+)\[([^\]]+)\]\]{([^}]+)}/gi, '$1 $2 ($3)');
         value = value.replace(/@damage\[([^\[]+)\[([^\]]+)\]\]/gi, '$1 $2');
         value = value.replace(/@Template\[[^\]]+\]{([^}]+)}/gi, '$1');
+        value = value.replace(/@Compendium\[[^\]]+\]{([^}]+)}/g, '*$1*');
 
         /* remove anything not needed */
         value = value.replace(/\[\[\/r[^}]+}/g, '');
@@ -189,7 +190,7 @@ class scribeAncestry extends scribeBase {
         this._heritage.forEach((i) => {
             traits = traits.concat(i.system.traits.value.concat([i.system.traits.rarity]));
         });
-        traits = this._format_traits(traits);
+        traits = PF2eHelper.formatTraits(traits);
         ret = ret + `# Ancestry: ${this._ancestry_title} ${this._label(this._ancestry_title, this._label_level)}\n`;
         ret = ret + `-\n`;
         if (traits !== '') {
@@ -219,7 +220,7 @@ class scribeClass extends scribeBase {
         super(item);
         this._class_name = this._item.name;
         this._class_label = this._item.name;
-        this._class_description = this._item.system.description?.value;
+        this._class_description = this._item.system.description?.value || '';
         this._label_level = label_level;
     }
 
@@ -545,7 +546,7 @@ class scribeSpell extends scribeItem {
         super(item, label_level);
         let actions = '';
         let cast = '';
-        actions = this._format_action(this._item.system.time.value);
+        actions = PF2eHelper.formatSpellCastingTime(this._item.system.time.value, PF2eHelper.scribeActivityGlyphs);
         if (actions === this._item.system.time.value) {
             cast = `**Cast** ${actions}\n`;
             actions = '';
