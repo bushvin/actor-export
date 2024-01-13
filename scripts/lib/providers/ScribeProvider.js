@@ -127,7 +127,7 @@ class scribeBase {
     };
 }
 
-class scribeItem extends scribeBase {
+class scribeItemEntry extends scribeBase {
     constructor(item, label_level = 0) {
         super(item);
         this._item_title = this._item.name;
@@ -207,7 +207,7 @@ class scribeAncestry extends scribeBase {
     }
 }
 
-class scribeBackground extends scribeItem {
+class scribeBackground extends scribeItemEntry {
     constructor(item) {
         super(item);
         this._item_rank = '';
@@ -249,7 +249,7 @@ class scribeClass extends scribeBase {
     }
 }
 
-class scribeFeat extends scribeItem {
+class scribeFeat extends scribeItemEntry {
     constructor(item, label_level = 0) {
         super(item, label_level);
         // FIXME: use formatActionSomething
@@ -267,7 +267,7 @@ class scribeFeat extends scribeItem {
     }
 }
 
-class scribeFeature extends scribeItem {
+class scribeFeature extends scribeItemEntry {
     constructor(item, label_level = 0) {
         super(item, label_level);
         this._item_type = '';
@@ -280,7 +280,7 @@ class scribeFeature extends scribeItem {
     }
 }
 
-class scribeFormula extends scribeItem {
+class scribeFormula extends scribeItemEntry {
     constructor(item, label_level = 0) {
         super(item, label_level);
         this._formula_cost_table = [
@@ -313,7 +313,7 @@ class scribeFormula extends scribeItem {
     }
 }
 
-class scribeCreature extends scribeItem {
+class scribeCreature extends scribeItemEntry {
     constructor(item) {
         super(item);
         if (this._item.type !== 'character') {
@@ -541,7 +541,7 @@ class scribeCreature extends scribeItem {
     }
 }
 
-class scribeSpell extends scribeItem {
+class scribeSpell extends scribeItemEntry {
     constructor(item, label_level = 0) {
         super(item, label_level);
         let actions = '';
@@ -632,7 +632,7 @@ export class scribeProvider extends baseProvider {
         scribeBackground: scribeBackground,
         scribeClass: scribeClass,
         scribeCreature: scribeCreature,
-        scribeItem: scribeItem,
+        scribeItemEntry: scribeItemEntry,
         scribeFeat: scribeFeat,
         scribeFeature: scribeFeature,
         scribeFormula: scribeFormula,
