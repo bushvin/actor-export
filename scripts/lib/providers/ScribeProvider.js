@@ -47,6 +47,7 @@ class scribeBase {
         value = value.replace(/@damage\[([^\[]+)\[([^\]]+)\]\]{([^}]+)}/gi, '$1 $2 ($3)');
         value = value.replace(/@damage\[([^\[]+)\[([^\]]+)\]\]/gi, '$1 $2');
         value = value.replace(/@Template\[[^\]]+\]{([^}]+)}/gi, '$1');
+        value = value.replace(/@Template\[[^\:]+:([^\|]+)\|[^:]+:([^\]]+)\]/gi, '$1 $2 feet');
         value = value.replace(/@Compendium\[[^\]]+\]{([^}]+)}/g, '*$1*');
 
         /* remove anything not needed */
