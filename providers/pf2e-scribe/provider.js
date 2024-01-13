@@ -89,8 +89,7 @@ if (spells.length > 0) {
 }
 
 // Formulas
-actor.system.crafting.formulas;
-if (actor.system.crafting.formulas.length > 0) {
+if ((actor.system.crafting?.formulas || []).length > 0) {
     mapper.scribe('actor-abc', '# Formulas ((Formulas))');
     actor.system.crafting.formulas
         .map((i) => fromUuidSync(i.uuid))
