@@ -7,13 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
-### Removed
+### Added
 
-- unused template
+- add extra formatter
 
 ### Changed
 
 - module: rename scribeItem class to scribeItemEntry to avoid confusion with PF2e Items
+- pf2e-scribe: change provider icon
+
+### Removed
+
+- unused template
 
 ## [0.4.1] - 2024-01-13
 
