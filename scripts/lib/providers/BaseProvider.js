@@ -12,6 +12,21 @@ export class baseProvider {
     }
 
     /**
+     * A function to fetch an image and return an image object promis
+     * @param {string} src - The URL to the image to be used
+     * @returns {Object}
+     */
+    loadImage(src) {
+        return new Promise((resolve, reject) => {
+            let img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+        });
+    }
+
+    /**
      * Notifier to display messages while parsing data. Will use the Foundry VTT notifier by default
      * But falls back on `console` if ui.notifications is not (yet) available
      * @param {string} severity - the severity of the message debug, error, warning or info
