@@ -416,10 +416,6 @@ export class scribeProvider extends baseProvider {
     }
 
     scribe(scribeOption, scribeData) {
-        if (this.scribeData.filter((i) => i.option === scribeOption).length > 0) {
-            this.notify('warn', `data is already declared for ${scribeOption}. Discarding the new value`);
-            return;
-        }
         let data = {
             option: scribeOption,
             data: scribeData,
@@ -428,24 +424,18 @@ export class scribeProvider extends baseProvider {
     }
 
     getScribeData(scribeOption) {
-        if (this.scribeData.filter((i) => i.option === scribeOption).length > 0) {
-            return this.scribeData.filter((i) => i.option === scribeOption)[0].data;
-        } else {
-            return undefined;
-        }
+        return this.scribeData
+            .filter((i) => i.option === scribeOption)
+            .map((i) => i.data)
+            .join('\n');
     }
+
     download(sourceFileURI, destinationFileName) {
         super.download(sourceFileURI, destinationFileName);
         const scribeOption = sourceFileURI.split('/').pop();
         const ret = this.getScribeData(scribeOption);
-        if (ret === undefined) {
-            this.notify('error', `scribeProvider could not find data associated with ${scribeOption}`);
-            return;
+        if (ret !== undefined && ret != '') {
+            saveDataToFile(ret, 'text/plain', destinationFileName);
         }
-        if (!scribeBase.prototype.isPrototypeOf(ret) || typeof ret.scribify !== 'function') {
-            this.notify('error', `The data associated with ${scribeOption} is invalid.`);
-            return;
-        }
-        saveDataToFile(ret.scribify(), 'text/plain', destinationFileName);
     }
 }
