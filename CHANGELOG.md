@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+
+### Added
+
+- module: provide the calculation of the short ordinal of a number
+- module: use createImageBitmap to render image in pdfProvider
+
+### Changed
+
+- module: scribeProvider offers the `scribe*`` classes as static classes now.
+- pf2e-scribe provider: use static scribeProvider classes
+- module: move PDFProvider.loadImage to baseProvider.loadImage
+- module: use createImageBitmap to render image
+
+### Fixed
+
+- module: fix webp image embedding
+
 ## [0.3.2] - 2024-01-13
 
 ### Changed
