@@ -27,4 +27,26 @@ export class GenericHelper {
             return parseInt(value) < 0 ? `${value}` : `+${value}`;
         }
     }
+
+    /**
+     * Return the short ordinal of the provided number
+     * @param {number} number - a number
+     * @returns {string}
+     */
+    static shortOrdinal(number) {
+        if (isNaN(parseInt(number))) {
+            return number;
+        }
+        number = parseInt(number);
+        switch (number) {
+            case 1:
+                return '1st';
+            case 2:
+                return '2nd';
+            case 3:
+                return '3rd';
+            default:
+                return `${number}th`;
+        }
+    }
 }
