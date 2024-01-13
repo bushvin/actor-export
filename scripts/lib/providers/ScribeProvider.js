@@ -1,7 +1,7 @@
 import { baseProvider } from './BaseProvider.js';
 import { PF2eHelper } from '../helpers/PF2eHelper.js';
 
-export class scribeBase {
+class scribeBase {
     constructor(item) {
         this._item = item;
     }
@@ -126,7 +126,7 @@ export class scribeBase {
     };
 }
 
-export class scribeItem extends scribeBase {
+class scribeItem extends scribeBase {
     constructor(item, label_level = 0) {
         super(item);
         this._item_title = this._item.name;
@@ -164,7 +164,109 @@ export class scribeItem extends scribeBase {
     }
 }
 
-export class scribeFeature extends scribeItem {
+class scribeAncestry extends scribeBase {
+    constructor(item, label_level = 0) {
+        super(item);
+        this._ancestry_title = '';
+        this._ancestry_type = 'ancestry';
+        this._heritage = [];
+        this._ancestry_traits = [];
+        this._ancestry_description = [];
+        this._ancestry_title = this._item.name;
+        this._ancestry_traits = this._item.system.traits?.value.concat([this._item.system.traits?.rarity]) || [];
+        this._ancestry_description.push(this._parse_description(this._item.system.description?.value || ''));
+        this._item_label = this._item.name;
+        this._label_level = label_level;
+    }
+
+    heritage = function (heritage) {
+        this._heritage.push(heritage);
+    };
+
+    scribify() {
+        let ret = '';
+        let traits = this._ancestry_traits;
+        this._heritage.forEach((i) => {
+            traits = traits.concat(i.system.traits.value.concat([i.system.traits.rarity]));
+        });
+        traits = this._format_traits(traits);
+        ret = ret + `# Ancestry: ${this._ancestry_title} ${this._label(this._ancestry_title, this._label_level)}\n`;
+        ret = ret + `-\n`;
+        if (traits !== '') {
+            ret = ret + `; ${traits}\n`;
+        }
+        ret = ret + `${this._ancestry_description.join('\n')}`;
+        if (this._heritage.length > 0) {
+            this._heritage.forEach((i) => {
+                ret = ret + `## Heritage: ${i.name}  ${this._label(i.name, this._label_level + 1)}\n`;
+                ret = ret + `${i.system.description.value}\n`;
+            });
+        }
+        return this._cleanup(ret);
+    }
+}
+
+class scribeBackground extends scribeItem {
+    constructor(item) {
+        super(item);
+        this._item_rank = '';
+        this._item_description.push(this._parse_description(this._item.system.description?.value || ''));
+    }
+}
+
+class scribeClass extends scribeBase {
+    constructor(item, label_level = 0) {
+        super(item);
+        this._class_name = this._item.name;
+        this._class_label = this._item.name;
+        this._class_description = this._item.system.description?.value;
+        this._label_level = label_level;
+    }
+
+    scribify() {
+        let ret = [];
+        ret.push(`# Class: ${this._class_name} ${this._label(this._class_label, this._label_level)}`);
+
+        let pre = new RegExp(`<span[^>]+style="float:right"[^>]*>`, 'i');
+        let post = new RegExp(`</span>`, 'i');
+        while (true) {
+            let ovalue = this._class_description;
+            this._class_description = this._class_description.replace(pre, ' (');
+            if (ovalue === this._class_description) {
+                break;
+            }
+            this._class_description = this._class_description.replace(post, ')');
+            if (ovalue === this._class_description) {
+                break;
+            }
+        }
+
+        ret.push(this._parse_description(this._class_description, 1));
+
+        /* ret.push(this._class_description, 1); */
+        return this._cleanup(ret.join('\n'));
+    }
+}
+
+class scribeFeat extends scribeItem {
+    constructor(item, label_level = 0) {
+        super(item, label_level);
+        // FIXME: use formatActionSomething
+        if (this._item.system.actionType.value === 'reaction') {
+            this._item_title = `${this._item_title} :r:`;
+        }
+        let prerequisites = [];
+        this._item.system.prerequisites.value.forEach((i) => {
+            prerequisites.push(i.value);
+        });
+        if (prerequisites.length > 0) {
+            this._item_description.push(`**Prerequisites** ${prerequisites.join(', ')}`);
+        }
+        this._item_description.push(this._parse_description(this._item.system.description?.value || ''));
+    }
+}
+
+class scribeFeature extends scribeItem {
     constructor(item, label_level = 0) {
         super(item, label_level);
         this._item_type = '';
@@ -177,7 +279,40 @@ export class scribeFeature extends scribeItem {
     }
 }
 
-export class scribeCreature extends scribeItem {
+class scribeFormula extends scribeItem {
+    constructor(item, label_level = 0) {
+        super(item, label_level);
+        this._formula_cost_table = [
+            '5 sp',
+            '1 gp',
+            '2 gp',
+            '3 gp',
+            '5 gp',
+            '8 gp',
+            '13 gp',
+            '18 gp',
+            '25 gp',
+            '35 gp',
+            '50 gp',
+            '70 gp',
+            '100 gp',
+            '150 gp',
+            '225 gp',
+            '325 gp',
+            '500 gp',
+            '750 gp',
+            '1,200 gp',
+            '2,000 gp',
+            '3,500 gp',
+        ];
+        this._item_rank = this._item.level;
+        this._item_type = 'formula';
+        this._item_description.push(`**Cost** ${this._formula_cost_table[this._item.level]}`);
+        this._item_description.push(this._parse_description(this._item.description));
+    }
+}
+
+class scribeCreature extends scribeItem {
     constructor(item) {
         super(item);
         if (this._item.type !== 'character') {
@@ -224,14 +359,14 @@ export class scribeCreature extends scribeItem {
                 sce.spells
                     .filter((i) => true)
                     .forEach((s) => {
-                        spells[s.rank] = (spells[s.rank] || []).concat([s.name]);
+                        spells[s.rank] = (spells[s.rank] || []).concat([`*${s.name}*`]);
                     });
                 let item = `**${name}** DC ${save_dc}`;
                 Object.keys(spells)
                     .sort()
                     .reverse()
                     .forEach((rank) => {
-                        item = `${item}; **${PF2eHelper.resolveSize(rank)}** ${spells[rank].sort()}`;
+                        item = `${item}; **${PF2eHelper.shortOrdinal(rank)}** ${spells[rank].sort()}`;
                     });
                 push_to.push(item);
             });
@@ -405,15 +540,103 @@ export class scribeCreature extends scribeItem {
     }
 }
 
+class scribeSpell extends scribeItem {
+    constructor(item, label_level = 0) {
+        super(item, label_level);
+        let actions = '';
+        let cast = '';
+        actions = this._format_action(this._item.system.time.value);
+        if (actions === this._item.system.time.value) {
+            cast = `**Cast** ${actions}\n`;
+            actions = '';
+        }
+        this._item_title = `${this._item.name} ${actions}`;
+
+        if (this._item.isCantrip) {
+            this._item_type = 'cantrip';
+        } else if (this._item.isFocusSpell) {
+            this._item_type = 'focus';
+        } else {
+            this._item_type = 'spell';
+        }
+
+        let first = [];
+        if (this._item.system.traits.traditions.length > 0) {
+            first.push(`**Tradition** ${this._item.system.traits.traditions.join(', ')}\n`);
+        }
+        if (cast !== '') {
+            first.push(cast);
+        }
+
+        /* Range, Area, Targets */
+        let rat = [];
+        if (!(typeof this._item.system.range === 'object' && !this._item.system.range)) {
+            if (this._item.system.range.value !== '') {
+                rat.push(`**Range** ${this._item.system.range.value}`);
+            }
+        }
+        if (!(typeof this._item.system.area === 'object' && !this._item.system.area)) {
+            if (this._item.system.area.value !== '') {
+                rat.push(`**Area** ${this._item.system.area.value}ft ${this._item.system.area.type}`);
+            }
+        }
+        if (
+            !(typeof this._item.system.target === 'object' && !this._item.system.target) &&
+            this._item.system.target != ''
+        ) {
+            if (this._item.system.target.value !== '') {
+                rat.push(`**Targets** ${this._item.system.target.value}`);
+            }
+        }
+        if (rat.length > 0) {
+            first.push(rat.join('; ') + '\n');
+        }
+
+        /* Defense, Duration */
+        let dd = [];
+        if (!(typeof this._item.system.defense === 'object' && !this._item.system.defense)) {
+            if (typeof this._item.system.defense.passive === 'object' && !this._item.system.defense.passive) {
+                if (this._item.system.defense.passive.statistic !== '') {
+                    dd.push(`**Defense** ${this._item.system.defense.passive.statistic}`);
+                }
+            }
+        }
+        if (!(typeof this._item.system.duration === 'object' && !this._item.system.duration)) {
+            if (this._item.system.duration.value != '') {
+                let duration = `**Duration** ${this._item.system.duration.value}`;
+                if (this._item.system.duration.sustained) {
+                    duration = `${duration} (Sustained)`;
+                }
+                dd.push(duration);
+            }
+        }
+        if (dd.length > 0) {
+            first.push(dd.join('; ') + '\n');
+        }
+
+        this._item_description.push(first.join('\n'));
+
+        this._item_description.push(this._parse_description(this._item.system.description.value));
+    }
+}
+
 export class scribeProvider extends baseProvider {
     constructor(actor) {
         super(actor);
-        this.class = {};
-        this.class.scribeItem = scribeItem;
-        this.class.scribeFeature = scribeFeature;
-        this.class.scribeCreature = scribeCreature;
         this.scribeData = [];
     }
+
+    static class = {
+        scribeAncestry: scribeAncestry,
+        scribeBackground: scribeBackground,
+        scribeClass: scribeClass,
+        scribeCreature: scribeCreature,
+        scribeItem: scribeItem,
+        scribeFeat: scribeFeat,
+        scribeFeature: scribeFeature,
+        scribeFormula: scribeFormula,
+        scribeSpell: scribeSpell,
+    };
 
     scribe(scribeOption, scribeData) {
         let data = {
