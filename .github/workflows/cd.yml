@@ -45,13 +45,14 @@ jobs:
       id: create_version_release
       uses: ncipollo/release-action@v1.13.0
       with:
-        name: ${{ env.systemVersion }}
         allowUpdates: false
-        draft: false
-        prerelease: false
         artifacts: "module.json,${{ env.fvtt_module_id }}.zip"
-        token: ${{ secrets.GITHUB_TOKEN }}
+        draft: false
+        generateReleaseNotes: true
+        name: ${{ env.systemVersion }}
+        prerelease: false
         tag: ${{ env.systemVersion }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 
   notify_discord:
     needs:
