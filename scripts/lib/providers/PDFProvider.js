@@ -174,16 +174,19 @@ export class pdfProvider extends baseProvider {
             return;
         }
         let embeddedImage = null;
+        let imageBuffer = null;
         const fileExtension = imageData.path.split('.').pop().toLowerCase();
         switch (contentType || fileExtension) {
             case 'image/jpeg':
             case 'jpg':
             case 'jpeg':
-                embeddedImage = await pdf.embedJpg(buffer);
+                imageBuffer = await fetch(imageData.path).then((res) => res.arrayBuffer());
+                embeddedImage = await pdf.embedJpg(imageBuffer);
                 break;
             case 'image/png':
             case 'png':
-                embeddedImage = await pdf.embedPng(buffer);
+                imageBuffer = await fetch(imageData.path).then((res) => res.arrayBuffer());
+                embeddedImage = await pdf.embedPng(imageBuffer);
                 break;
             case 'image/webp':
             case 'webp':
@@ -191,8 +194,8 @@ export class pdfProvider extends baseProvider {
                 const context = await canvas.getContext('2d');
                 context.drawImage(imageBitmap, 0, 0, htmlImage.width, htmlImage.height);
                 const blob = await context.canvas.convertToBlob({ type: 'image/png' });
-                const buffer = await blob.arrayBuffer();
-                embeddedImage = await pdf.embedPng(buffer);
+                imageBuffer = await blob.arrayBuffer();
+                embeddedImage = await pdf.embedPng(imageBuffer);
                 break;
             default:
                 this.notify('warn', `${contentType || fileExtension} files are not (yet) supported.`);
