@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - unused template
 
+### Changed
+
+- module: rename scribeItem class to scribeItemEntry to avoid confusion with PF2e Items
+
 ## [0.4.1] - 2024-01-13
 
 ### Fixed
