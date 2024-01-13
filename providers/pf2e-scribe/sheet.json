@@ -21,6 +21,11 @@
             "uri": "actor-creature",
             "name": "Export NPC as Creature",
             "description": "Generate a creature entry."
+        },
+        {
+            "uri": "actor-abc",
+            "name": "Export a character's ABC",
+            "description": "Export a character's ancestry -, background -, class features, spells and formulas"
         }
     ]
 }
