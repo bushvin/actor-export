@@ -103,7 +103,70 @@ if ((actor.system.crafting?.formulas || []).length > 0) {
 /**
  * actor-actions
  */
+const meleeActions = [];
+const rangedActions = [];
+const strikeActions = actor.system.actions.filter((i) => i.type === 'strike');
+if (strikeActions.length > 0) {
+    strikeActions.forEach((el) => {
+        const strike = new scribeProvider.class.scribeStrike(el);
+        if (strike.isMelee) {
+            meleeActions.push(strike.scribify());
+        } else if (strike.isRanged) {
+            rangedActions.push(strike.scribify());
+        }
+        el.altUsages.forEach((alt) => {
+            const altStrike = new scribeProvider.class.scribeStrike(alt);
+            if (altStrike.isMelee) {
+                meleeActions.push(altStrike.scribify());
+            } else if (altStrike.isRanged) {
+                rangedActions.push(altStrike.scribify());
+            }
+        });
+    });
+}
+if (meleeActions.length > 0 || rangedActions > 0) {
+    mapper.scribe('actor-actions', '# Attacks ((Attacks))');
+    mapper.scribe('actor-actions', meleeActions.concat(rangedActions).join('\n\n'));
+    mapper.scribe('actor-actions', ' ');
+}
 
+const activityTypes = ['action', 'reaction', 'free'];
+const freeActions = [];
+const reActions = [];
+const regularActions = [];
+actor.items
+    .filter((i) => activityTypes.includes(i.system.actionType?.value))
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+    .forEach((a) => {
+        const action = new scribeProvider.class.scribeAction(a);
+        if (action.isAction) {
+            regularActions.push(action.scribify());
+        } else if (action.isReaction) {
+            reActions.push(action.scribify());
+        } else if (action.isFreeAction) {
+            freeActions.push(action.scribify());
+        }
+    });
+
+if (regularActions.length > 0 || reActions.length > 0 || freeActions.length > 0) {
+    mapper.scribe('actor-actions', '# Actions ((Actions))');
+    if (regularActions.length > 0) {
+        mapper.scribe('actor-actions', '## Actions ((+Actions))');
+        mapper.scribe('actor-actions', regularActions.join('\n\n'));
+    }
+    if (reActions.length > 0) {
+        mapper.scribe('actor-actions', '## Reactions ((+Reactions))');
+        mapper.scribe('actor-actions', reActions.join('\n\n'));
+    }
+    if (freeActions.length > 0) {
+        mapper.scribe('actor-actions', '## Free Actions ((+Free Actions))');
+        mapper.scribe('actor-actions', freeActions.join('\n\n'));
+    }
+    mapper.scribe('actor-actions', ' ');
+}
+const spell_dc = Math.max(
+    ...actor.spellcasting.filter((i) => i.type === 'spellcastingEntry').map((i) => i.statistic.mod)
+);
 if (spells.length > 0) {
     const headerCells = ['Spell', 'actions', 'Defense', 'rank', 'range', 'AofE'];
     const spellTable = new scribeProvider.class.scribeTableEntry('Spell List', headerCells);
@@ -111,11 +174,13 @@ if (spells.length > 0) {
         const activity = PF2eHelper.formatSpellCastingTime(el.system.time.value, PF2eHelper.scribeActivityGlyphs);
         let defense = '';
         if (el.system.defense?.passive !== undefined) {
-            defense = el.system.defense.passive.statistic;
+            defense = `${el.system.defense.passive.statistic} ${10 + spell_dc}`;
         } else if (el.system.defense?.save !== undefined) {
             defense =
                 (el.system.defense.save.basic ? 'Basic ' : '') +
-                PF2eHelper.capitalize(el.system.defense.save.statistic);
+                PF2eHelper.capitalize(el.system.defense.save.statistic) +
+                ' ' +
+                PF2eHelper.quantifyNumber(spell_dc);
         }
         const spellType = el.isCantrip ? 'Cantrip' : el.isFocusSpell ? 'Focus' : 'Spell';
         const rank = `${spellType} ${el.rank}`;
@@ -131,5 +196,6 @@ if (spells.length > 0) {
 
     mapper.scribe('actor-actions', '# Spells ((Spells))');
     mapper.scribe('actor-actions', spellTable.scribify());
+    mapper.scribe('actor-actions', ' ');
 }
 export { mapper };
