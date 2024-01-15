@@ -964,8 +964,8 @@ actor.items
         a.system.actionType.value < b.system.actionType.value
             ? -1
             : a.system.actionType.value > b.system.actionType.value
-            ? 1
-            : 0
+              ? 1
+              : 0
     )
     .reverse()
     .forEach((action, index) => {
@@ -1116,15 +1116,15 @@ spellCastingEntries
         return a.system.prepared.value < b.system.prepared.value
             ? -1
             : a.system.prepared.value > b.system.prepared.value
-            ? 1
-            : 0;
+              ? 1
+              : 0;
     })
     .sort((a, b) => {
         return a.system.tradition.value < b.system.tradition.value
             ? -1
             : a.system.tradition.value > b.system.tradition.value
-            ? 1
-            : 0;
+              ? 1
+              : 0;
     })
     .forEach((sce) => {
         let hasCantripTitle = false;
