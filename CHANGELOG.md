@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2024-01-15
+
+### Added
+
+- pf2e-scribe/actor-actions: add actions, reactions and free actions
+- PF2eHelper: format individual traits
+- ScribeProvider: improve description formatting
+- ScribeProvider: add footer to scribeTableEntry
+- ScribeProvider: add scribeStrike class to format melee and ranged strikes
+- ScribeProvider: add scribeAction class to format actions, reactions and free actions
+
+### Fixed
+
+- ScribeProvider/scribeSpell: improve spell defense
+
 ## [0.5.0] - 2024-01-15
 
 ### Added
@@ -18,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - module: rename scribeItem class to scribeItemEntry to avoid confusion with PF2e Items
 - pf2e-scribe: change provider icon
 - module: allow overriding sourceFileURI  and destinationFileName from a provider definition
--
+
 ### Removed
 
 - unused template
