@@ -22,5 +22,5 @@ jobs:
         uses: creyD/prettier_action@v4.3
         with:
           dry: True
-          github_token: ${{ secrets.PRETTIER_GITHUB_TOKEN }}
-          file_pattern: *.js
+          github_token: '${{ secrets.PRETTIER_GITHUB_TOKEN }}'
+          file_pattern: '*.js'
