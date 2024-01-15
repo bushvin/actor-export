@@ -1,4 +1,5 @@
 import { scribeProvider } from '../../scripts/lib/providers/ScribeProvider.js';
+import { PF2eHelper } from '../../scripts/lib/helpers/PF2eHelper.js';
 
 const mapper = new scribeProvider(actor);
 
@@ -77,15 +78,15 @@ if (feats.length > 0) {
         });
 }
 // Spells
-const spells = actor.items.filter((i) => i.type === 'spell');
+const spells = actor.items
+    .filter((i) => i.type === 'spell')
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+
 if (spells.length > 0) {
     mapper.scribe('actor-abc', '# Spells ((Spells))');
-    actor.items
-        .filter((i) => i.type === 'spell')
-        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .forEach((el) => {
-            mapper.scribe('actor-abc', new scribeProvider.class.scribeSpell(el, 1).scribify());
-        });
+    spells.forEach((el) => {
+        mapper.scribe('actor-abc', new scribeProvider.class.scribeSpell(el, 1).scribify());
+    });
 }
 
 // Formulas
@@ -94,8 +95,41 @@ if ((actor.system.crafting?.formulas || []).length > 0) {
     actor.system.crafting.formulas
         .map((i) => fromUuidSync(i.uuid))
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .forEach((f) => {
+        .forEach((el) => {
             mapper.scribe('actor-abc', new scribeProvider.class.scribeFormula(el, 1).scribify());
         });
+}
+
+/**
+ * actor-actions
+ */
+
+if (spells.length > 0) {
+    const headerCells = ['Spell', 'actions', 'Defense', 'rank', 'range', 'AofE'];
+    const spellTable = new scribeProvider.class.scribeTableEntry('Spell List', headerCells);
+    spells.forEach((el) => {
+        const activity = PF2eHelper.formatSpellCastingTime(el.system.time.value, PF2eHelper.scribeActivityGlyphs);
+        let defense = '';
+        if (el.system.defense?.passive !== undefined) {
+            defense = el.system.defense.passive.statistic;
+        } else if (el.system.defense?.save !== undefined) {
+            defense =
+                (el.system.defense.save.basic ? 'Basic ' : '') +
+                PF2eHelper.capitalize(el.system.defense.save.statistic);
+        }
+        const spellType = el.isCantrip ? 'Cantrip' : el.isFocusSpell ? 'Focus' : 'Spell';
+        const rank = `${spellType} ${el.rank}`;
+        const range = el.system.range?.value || '';
+        let AofE = '';
+        if (el.system.area !== null) {
+            AofE = `${el.system.area.value}ft ${el.system.area.type}`;
+        } else {
+            AofE = el.system.target?.value || '';
+        }
+        spellTable.addContentRow([el.name, activity, defense, rank, range, AofE]);
+    });
+
+    mapper.scribe('actor-actions', '# Spells ((Spells))');
+    mapper.scribe('actor-actions', spellTable.scribify());
 }
 export { mapper };

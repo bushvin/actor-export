@@ -24,8 +24,13 @@
         },
         {
             "uri": "actor-abc",
-            "name": "Export a character's ABC",
+            "name": "List a character's ABC",
             "description": "Export a character's ancestry -, background -, class features, spells and formulas"
+        },
+        {
+            "uri": "actor-actions",
+            "name": "List possible actions",
+            "description": "Export a character's actions"
         }
     ]
 }
