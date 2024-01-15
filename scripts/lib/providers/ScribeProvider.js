@@ -52,6 +52,11 @@ class scribeBase {
 
         /* remove anything not needed */
         value = value.replace(/\[\[\/r[^}]+}/g, '');
+        value = value.replace(
+            /@check\[type:([^\|]+)\|[^\]]+classOrSpellDC[^\]]+\|basic:true[^\]]*\]/gi,
+            'basic $1 save'
+        );
+        value = value.replace(/@check\[type:([^\|]+)\|[^\]]+classOrSpellDC[^\]]+\]/gi, '$1 save');
         value = value.replace(/@check\[[^\]]+\]/gi, '');
 
         value = this._strip_html_element('br', value, '\n');
@@ -193,11 +198,12 @@ class scribeTableEntry extends scribeBase {
             entry.push(Object.values(row).join(' | '));
         });
         if (this._footer != '') {
-            // do something
+            entry.push(`.${this._footer}`);
         }
         return entry.join('\n');
     }
 }
+
 class scribeAncestry extends scribeBase {
     constructor(item, label_level = 0) {
         super(item);
@@ -628,11 +634,17 @@ class scribeSpell extends scribeItemEntry {
 
         /* Defense, Duration */
         let dd = [];
-        if (!(typeof this._item.system.defense === 'object' && !this._item.system.defense)) {
-            if (typeof this._item.system.defense.passive === 'object' && !this._item.system.defense.passive) {
-                if (this._item.system.defense.passive.statistic !== '') {
-                    dd.push(`**Defense** ${this._item.system.defense.passive.statistic}`);
-                }
+        if (this._item.system.defense?.passive !== undefined) {
+            if (this._item.system.defense.passive.statistic !== '') {
+                dd.push(`**Defense** ${this._item.system.defense.passive.statistic}`);
+            }
+        } else if (this._item.system.defense?.save !== undefined) {
+            if (this._item.system.defense.save.statistic !== '') {
+                dd.push(
+                    '**Defense** ' +
+                        (this._item.system.defense.save.basic ? 'Basic ' : '') +
+                        this._item.system.defense.save.statistic
+                );
             }
         }
         if (!(typeof this._item.system.duration === 'object' && !this._item.system.duration)) {
@@ -654,6 +666,77 @@ class scribeSpell extends scribeItemEntry {
     }
 }
 
+class scribeStrike extends scribeBase {
+    constructor(strike) {
+        super();
+        this._strike = strike;
+        this._isMelee = strike.domains.includes('melee-attack-roll');
+        this._isRanged = strike.domains.includes('ranged-attack-roll');
+    }
+
+    get isMelee() {
+        return this._strike.domains.includes('melee-attack-roll');
+    }
+    get isRanged() {
+        return this._strike.domains.includes('ranged-attack-roll');
+    }
+    scribify() {
+        const ret = [];
+        if (this.isMelee) {
+            ret.push('**Melee**');
+        } else if (this.isRanged) {
+            ret.push('**Ranged**');
+        }
+        ret.push(this._strike.label);
+        ret.push(PF2eHelper.quantifyNumber(this._strike.totalModifier));
+        if (this._strike.item.system.traits.value.length > 0) {
+            ret.push('(' + PF2eHelper.formatTraits(this._strike.item.system.traits.value) + ')');
+        }
+        ret.push('**Damage**');
+        let damage = `${this._strike.item.system.damage.dice}${this._strike.item.system.damage.die}`;
+        const attribute_modifier = this._strike.modifiers
+            .filter((i) => i.type === 'ability')
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        if (this.isMelee && attribute_modifier != 0) {
+            damage = damage + PF2eHelper.quantifyNumber(attribute_modifier);
+        }
+        ret.push(damage);
+        ret.push(this._strike.item.system.damage.damageType);
+        return 'item(\n' + ret.join(' ') + '\n)';
+    }
+}
+
+class scribeAction extends scribeBase {
+    constructor(action) {
+        super();
+        this._action = action;
+    }
+
+    get isAction() {
+        return this._action.system.actionType?.value === 'action';
+    }
+    get isReaction() {
+        return this._action.system.actionType?.value === 'reaction';
+    }
+    get isFreeAction() {
+        return this._action.system.actionType?.value === 'free';
+    }
+
+    scribify() {
+        const ret = [];
+        ret.push(`**${this._action.name}**`);
+        ret.push(
+            PF2eHelper.formatActivity(
+                this._action.system.actionType?.value,
+                this._action.system.actions?.value,
+                PF2eHelper.scribeActivityGlyphs
+            )
+        );
+        ret.push(this._parse_description(this._action.description));
+        return 'item(\n' + ret.join(' ') + '\n)';
+    }
+}
 export class scribeProvider extends baseProvider {
     constructor(actor) {
         super(actor);
@@ -661,6 +744,7 @@ export class scribeProvider extends baseProvider {
     }
 
     static class = {
+        scribeAction: scribeAction,
         scribeAncestry: scribeAncestry,
         scribeBackground: scribeBackground,
         scribeClass: scribeClass,
@@ -671,6 +755,7 @@ export class scribeProvider extends baseProvider {
         scribeFeature: scribeFeature,
         scribeFormula: scribeFormula,
         scribeSpell: scribeSpell,
+        scribeStrike: scribeStrike,
     };
 
     scribe(scribeOption, scribeData) {
@@ -691,7 +776,6 @@ export class scribeProvider extends baseProvider {
     download(sourceFileURI, destinationFileName) {
         super.download(this.sourceFileURI || sourceFileURI, this.destinationFileName || destinationFileName);
         const scribeOption = (this.sourceFileURI || sourceFileURI).split('/').pop();
-        console.log('scribeOption:', scribeOption);
         const ret = this.getScribeData(scribeOption);
         if (ret !== undefined && ret != '') {
             saveDataToFile(ret, 'text/plain', this.destinationFileName || destinationFileName);
