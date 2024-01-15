@@ -2,3 +2,6 @@
 scripts/lib/FileSaver.js
 scripts/lib/providers/pdf-lib.esm.js
 scripts/lib/providers/pdf-lib.esm.js.map
+
+# ignore handlebars
+**/*.hbs
