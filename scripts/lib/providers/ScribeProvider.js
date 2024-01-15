@@ -166,6 +166,38 @@ class scribeItemEntry extends scribeBase {
     }
 }
 
+class scribeTableEntry extends scribeBase {
+    constructor(name, headerRow = [], contentRows = [], footer = '') {
+        super();
+        this._name = name;
+        this.setHeaderRow(headerRow);
+        this._contentRows = contentRows;
+        this._footer = footer;
+    }
+
+    setHeaderRow(row) {
+        const parsed = row.map((i) => i.replace(/\(/, '\\(').replace(/\)/, '\\)'));
+        this._headerRow = parsed;
+    }
+    addContentRow(row) {
+        const parsed = row.map((i) => i.replace(/\(/, '\\(').replace(/\)/, '\\)'));
+        this._contentRows.push(parsed);
+    }
+    scribify() {
+        let entry = [];
+        if (this._headerRow.length > 0) {
+        }
+        entry.push(this._headerRow.join(' | '));
+        entry.push(this._headerRow.map((i) => '---').join(' | '));
+        this._contentRows.forEach((row) => {
+            entry.push(Object.values(row).join(' | '));
+        });
+        if (this._footer != '') {
+            // do something
+        }
+        return entry.join('\n');
+    }
+}
 class scribeAncestry extends scribeBase {
     constructor(item, label_level = 0) {
         super(item);
@@ -634,6 +666,7 @@ export class scribeProvider extends baseProvider {
         scribeClass: scribeClass,
         scribeCreature: scribeCreature,
         scribeItemEntry: scribeItemEntry,
+        scribeTableEntry: scribeTableEntry,
         scribeFeat: scribeFeat,
         scribeFeature: scribeFeature,
         scribeFormula: scribeFormula,
@@ -656,11 +689,12 @@ export class scribeProvider extends baseProvider {
     }
 
     download(sourceFileURI, destinationFileName) {
-        super.download(sourceFileURI, destinationFileName);
-        const scribeOption = sourceFileURI.split('/').pop();
+        super.download(this.sourceFileURI || sourceFileURI, this.destinationFileName || destinationFileName);
+        const scribeOption = (this.sourceFileURI || sourceFileURI).split('/').pop();
+        console.log('scribeOption:', scribeOption);
         const ret = this.getScribeData(scribeOption);
         if (ret !== undefined && ret != '') {
-            saveDataToFile(ret, 'text/plain', destinationFileName);
+            saveDataToFile(ret, 'text/plain', this.destinationFileName || destinationFileName);
         }
     }
 }
