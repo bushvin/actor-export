@@ -39,7 +39,8 @@ jobs:
       run: |
         rm -f ./${{ env.fvtt_module_id }}.zip;
         set -eu;
-        7z a -tzip ./${{ env.fvtt_module_id }}.zip . '-x!*.git*' '-x!assets' '-x!src'
+        7z a -tzip ./${{ env.fvtt_module_id }}.zip . \
+          '-x!*.git*' '-x!assets' '-x!src' '-x!package*.json' '-x!.vscode' '-x!ansible' '-x!node_modules' '-x!tmp' '-x!.prettier*'
 
     - name: Create Version Release
       id: create_version_release
