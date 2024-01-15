@@ -233,14 +233,31 @@ export class PF2eHelper extends GenericHelper {
                 traitList.splice(traitList.indexOf(el), 1);
             }
         });
-        tl = tl.concat(traitList.map((i) => this.capitalize(i)).sort());
+        tl = tl.concat(traitList.map((i) => this.formatTrait(i)).sort());
         return tl.join(', ');
+    }
+
+    /** Format an individual trait according to certain rules
+     * @param {string} trait
+     * @returns {string}
+     */
+    static formatTrait(trait) {
+        const tTrait = trait.toLowerCase();
+        if (tTrait.startsWith('two-hand-')) {
+            return 'Two-Hand ' + tTrait.split('-').pop();
+        } else if (tTrait.startsWith('thrown-')) {
+            return 'Thrown ' + tTrait.split('-').pop();
+        } else if (tTrait.startsWith('versatile-')) {
+            return 'Versatile ' + tTrait.split('-').pop().toUpperCase();
+        } else {
+            return this.capitalize(trait);
+        }
     }
 
     /**
      * Resolve pf2e system frequency to human
      * @param {string} frequency
-     * @returns
+     * @returns {string}
      */
     static frequencyToHuman(frequency) {
         const frequencyTable = {
