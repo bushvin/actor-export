@@ -285,7 +285,7 @@ export class pdfProvider extends baseProvider {
      * Function to generate the PDF and download it
      */
     download(sourceFileURI, destinationFileName) {
-        super.download(sourceFileURI, destinationFileName);
+        super.download(this.sourceFileURI || sourceFileURI, this.destinationFileName || destinationFileName);
         let ret = undefined;
         fetch(this.sourceFileURI || sourceFileURI).then((data) => {
             this.parseFile(
