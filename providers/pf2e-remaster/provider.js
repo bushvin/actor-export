@@ -1025,44 +1025,6 @@ mapper.field(
 );
 
 /* Spell Statistics Section */
-// mapper.field(
-//     'all',
-//     'spell_attack',
-//     PF2eHelper.quantifyNumber(
-//         actor.spellcasting
-//             .filter(
-//                 (i) =>
-//                     spellcasting_traditions.includes(i.system?.tradition?.value) &&
-//                     spellcasting_types.includes(i.system?.prepared?.value)
-//             )
-//             .sort((a, b) =>
-//                 a.statistic.check.mod < b.statistic.check.mod
-//                     ? -1
-//                     : a.statistic.check.mod > b.statistic.check.mod
-//                     ? 1
-//                     : 0
-//             )
-//             .reverse()
-//             .map((i) => i.statistic.mod)[0]
-//     ) || ''
-// );
-
-// mapper.field(
-//     'all',
-//     'spell_dc',
-//     actor.spellcasting
-//         .filter(
-//             (i) =>
-//                 spellcasting_traditions.includes(i.system?.tradition?.value) &&
-//                 spellcasting_types.includes(i.system?.prepared?.value)
-//         )
-//         .sort((a, b) =>
-//             a.statistic.check.mod < b.statistic.check.mod ? -1 : a.statistic.check.mod > b.statistic.check.mod ? 1 : 0
-//         )
-//         .reverse()
-//         .map((i) => i.statistic.check.mod)[0] + 10 || ''
-// );
-
 mapper.field(
     'all',
     'cantrip_slots',
