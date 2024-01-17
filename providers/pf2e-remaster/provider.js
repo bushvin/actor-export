@@ -20,7 +20,7 @@ class pf2ePDFProvider extends pdfProvider {
         } else if (domain === 'melee-attack-roll') {
             field_prefix = 'melee';
         } else {
-            this.notify('error', `getAttacks: an invalid domain was specified: ${domain}`);
+            this.notify('error', `getAttacks: an invalid domain was specified: ${domain}`, { permanent: true });
             return false;
         }
 
