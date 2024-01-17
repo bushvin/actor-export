@@ -7,6 +7,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Check out repository
+      uses: actions/checkout
+
     - name: Retrieve current version
       run: |
         echo "current_tag=$(git tag | sort |tail -n)" >> $GITHUB_ENV
