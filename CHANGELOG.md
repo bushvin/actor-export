@@ -5,12 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+
+### Changed
+
+- optimized all modules/classes/functions for jsdoc and jsdoc2md for the wiki
+
 ## [0.6.0] - 2024-01-15
 
 ### Added
 
 - pf2e-scribe/actor-actions: add actions, reactions and free actions
-- PF2eHelper: format individual traits
+- pf2eHelper: format individual traits
 - ScribeProvider: improve description formatting
 - ScribeProvider: add footer to scribeTableEntry
 - ScribeProvider: add scribeStrike class to format melee and ranged strikes
@@ -54,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- module: cleanup ScribeProvider by replacing old functions with PF2eHelper functions
+- module: cleanup ScribeProvider by replacing old functions with pf2eHelper functions
 
 ## [0.3.3] - 2024-01-13
 
@@ -97,22 +103,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - pf2e-remaster provider: add formulas to extra sheet
-- module: new PF2eHelper function and glyph variables to format actions (PF2eHelper.formatActivity)
-- module: new PF2eHelper function to resolve sizes (PF2eHelper.resolveSize)
-- module: new PF2eHelper function to format spellcasting times (PF2eHelper.formatSpellCastingTime)
+- module: new pf2eHelper function and glyph variables to format actions (pf2eHelper.formatActivity)
+- module: new pf2eHelper function to resolve sizes (pf2eHelper.resolveSize)
+- module: new pf2eHelper function to format spellcasting times (pf2eHelper.formatSpellCastingTime)
 
 ### Changed
 
-- pf2e-remaster provider: replace PF2eHelper.actionsToSymbols with PF2eHelper.formatActivity and PF2eHelper.formatSpellCastingTime
+- pf2e-remaster provider: replace pf2eHelper.actionsToSymbols with pf2eHelper.formatActivity and pf2eHelper.formatSpellCastingTime
 
 ### Fixed
 
 - pf2e-remaster provider: worn item fields were wrong
-- module: update PF2eHelper.formatTraits to detect alignment traits when separate
+- module: update pf2eHelper.formatTraits to detect alignment traits when separate
 
 ### Removed
 
-- module: PF2eHelper.actionsToSymbols, which is replaced by PF2eHelper.formatActivity and PF2eHelper.formatSpellCastingTime
+- module: pf2eHelper.actionsToSymbols, which is replaced by pf2eHelper.formatActivity and pf2eHelper.formatSpellCastingTime
 
 ## [0.1.0] - 2024-01-12
 
