@@ -8,11 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
-      uses: actions/checkout
+      uses: actions/checkout@v3
 
     - name: Retrieve current version
       run: |
-        echo "current_tag=$(git tag | sort |tail -n)" >> $GITHUB_ENV
+        echo "current_tag=$(git tag | sort |tail -n1)" >> $GITHUB_ENV
 
     - name: Retrieve previous version
       run: |
