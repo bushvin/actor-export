@@ -12,11 +12,21 @@ jobs:
 
     - name: Retrieve current version
       run: |
-        echo "current_tag=$(git tag | sort |tail -n1)" >> $GITHUB_ENV
+        echo "current_tag=$(git tag | sort |tail -n1)" >> "$GITHUB_ENV"
+
+    - name: Print current version
+      run: |
+        echo "1. $current_tag ."
+        echo "2. ${{ env.current_tag }} ."
 
     - name: Retrieve previous version
       run: |
-        echo "previous_tag=$(git tag | sort |tail -n2|head -n1)" >> $GITHUB_ENV
+        echo "previous_tag=$(git tag | sort |tail -n2|head -n1)" >> "$GITHUB_ENV"
+
+    - name: Print previous version
+      run: |
+        echo "1. $previous_tag ."
+        echo "2. ${{ env.previous_tag }} ."
 
     - name: Show url
       run: |
