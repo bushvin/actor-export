@@ -5,11 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [0.7.0] - 2024-01-17
+
+### Added
+
+- PDFProvider: warn if image cannot be found, and skip gracefully
+- pf2e-remastered: warn the user when the character has 0 levels
 
 ### Changed
 
 - optimized all modules/classes/functions for jsdoc and jsdoc2md for the wiki
+- PDFProvider: throw an error if the PDF form cannot be read
+- pf2e-remastered: enumerate all spell ranks from 1 to 10 instead of up to the caster spell rank
 
 ## [0.6.0] - 2024-01-15
 
