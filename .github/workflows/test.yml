@@ -30,6 +30,9 @@ jobs:
         echo "1. $previous_tag ."
         echo "2. ${{ env.previous_tag }} ."
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
     - name: Show url
       run: |
-        echo "https://github.com/bushvin/actor-export/compare/${{ env.current_tag }}...${{ env.previous_tag }}"
+        echo "https://github.com/bushvin/actor-export/compare/${{ env.previous_tag }}...${{ env.current_tag }}"
