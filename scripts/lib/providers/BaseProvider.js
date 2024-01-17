@@ -1,6 +1,14 @@
 /**
- * The base Provider class with required basic functionality
- * @param {Object} actor - The Foundry VTT actor object.
+ * BaseProvider module
+ * @module BaseProvider
+ * @author William Leemans
+ * @copyright William Leemans 2024
+ */
+
+/**
+ * @class
+ * The base Provider class with required basic functionality for all providers
+ * @param {Object} actor The Foundry VTT actor object.
  */
 export class baseProvider {
     constructor(actor) {
@@ -12,9 +20,17 @@ export class baseProvider {
     }
 
     /**
-     * A function to fetch an image and return an image object promis
-     * @param {string} src - The URL to the image to be used
-     * @returns {Object}
+     * The default function to download whatever provider is used
+     * This is here to not fail when the provider definition doesn't have it.
+     * @param sourceFileURI the URI of the file to use
+     * @param destinationFileName the name of the file to be saved
+     */
+    download(sourceFileURI, destinationFileName) {}
+
+    /**
+     * A function to fetch an image and return an image object promise
+     * @param {string} src The URL to the image to be used
+     * @returns {Promise} the image promise
      */
     loadImage(src) {
         return new Promise((resolve, reject) => {
@@ -29,9 +45,9 @@ export class baseProvider {
     /**
      * Notifier to display messages while parsing data. Will use the Foundry VTT notifier by default
      * But falls back on `console` if ui.notifications is not (yet) available
-     * @param {string} severity - the severity of the message debug, error, warning or info
-     * @param {string} message - what to show
-     * @param {Object} options - additional options for ui.notifications.
+     * @param {string} severity the severity of the message debug, error, warning or info
+     * @param {string} message what to show
+     * @param {Object} options additional options for ui.notifications.
      */
     notify(severity, message, options) {
         if (typeof ui !== 'undefined' && typeof ui.notifications !== undefined) {
@@ -65,10 +81,4 @@ export class baseProvider {
             }
         }
     }
-
-    /**
-     * The default function to download whatever provider is used
-     * This is here to not fail when the provider definition doesn't have it.
-     */
-    download(sourceFileURI, destinationFileName) {}
 }

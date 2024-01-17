@@ -1,5 +1,5 @@
 import { pdfProvider } from '../../scripts/lib/providers/PDFProvider.js';
-import { PF2eHelper } from '../../scripts/lib/helpers/PF2eHelper.js';
+import { pf2eHelper } from '../../scripts/lib/helpers/PF2eHelper.js';
 import { semVer } from '../../scripts/lib/SemVer.js';
 
 // actor is available as a global variable
@@ -72,22 +72,22 @@ class pf2ePDFProvider extends pdfProvider {
                     cur_attack.item.system.traits.value.includes('versatile-s') ||
                     false;
                 let traits_notes = '';
-                let runes = PF2eHelper.formatRunes(cur_attack.item.system.runes);
+                let runes = pf2eHelper.formatRunes(cur_attack.item.system.runes);
                 runes = runes !== '' ? ', ' + runes : '';
                 if (cur_attack.item.system.range != null) {
                     traits_notes =
-                        PF2eHelper.formatTraits(
+                        pf2eHelper.formatTraits(
                             cur_attack.item.system.traits.value.concat([`range-${cur_attack.item.system.range}`])
                         ) + runes;
                 } else {
-                    traits_notes = PF2eHelper.formatTraits(cur_attack.item.system.traits.value) + runes;
+                    traits_notes = pf2eHelper.formatTraits(cur_attack.item.system.traits.value) + runes;
                 }
 
                 if (attribute_modifier != 0) {
-                    damage = damage + PF2eHelper.quantifyNumber(attribute_modifier);
+                    damage = damage + pf2eHelper.quantifyNumber(attribute_modifier);
                 }
                 this.field('all', `${field_prefix}${index + 1}_name`, label);
-                this.field('all', `${field_prefix}${index + 1}_attack`, PF2eHelper.quantifyNumber(total_modifier));
+                this.field('all', `${field_prefix}${index + 1}_attack`, pf2eHelper.quantifyNumber(total_modifier));
                 this.field('all', `${field_prefix}${index + 1}_attribute_modifier`, attribute_modifier);
                 this.field('all', `${field_prefix}${index + 1}_proficiency_modifier`, proficiency_modifier);
                 this.field('all', `${field_prefix}${index + 1}_item_modifier`, item_modifier);
@@ -150,8 +150,8 @@ mapper.field('all', 'class_notes', '');
 
 /* attributes Section */
 Object.keys(actor.abilities).forEach((a) => {
-    mapper.field('all', a, PF2eHelper.quantifyNumber(actor.abilities[a].mod));
-    mapper.field('all', `${a}_partial`, PF2eHelper.isPartialBoost(actor, a));
+    mapper.field('all', a, pf2eHelper.quantifyNumber(actor.abilities[a].mod));
+    mapper.field('all', `${a}_partial`, pf2eHelper.isPartialBoost(actor, a));
 });
 
 /* Defenses Section*/
@@ -285,16 +285,16 @@ fortitude_bonus = fortitude_bonus.filter((i) => !all_bonus_slugs.includes(i.slug
 reflex_bonus = reflex_bonus.filter((i) => !all_bonus_slugs.includes(i.slug));
 will_bonus = will_bonus.filter((i) => !all_bonus_slugs.includes(i.slug));
 all_bonus.forEach((b) => {
-    defense_notes.push(`${b.label} ${PF2eHelper.quantifyNumber(b.modifier)} (saves)`);
+    defense_notes.push(`${b.label} ${pf2eHelper.quantifyNumber(b.modifier)} (saves)`);
 });
 fortitude_bonus.forEach((b) => {
-    defense_notes.push(`${b.label} ${PF2eHelper.quantifyNumber(b.modifier)} (fort)`);
+    defense_notes.push(`${b.label} ${pf2eHelper.quantifyNumber(b.modifier)} (fort)`);
 });
 reflex_bonus.forEach((b) => {
-    defense_notes.push(`${b.label} ${PF2eHelper.quantifyNumber(b.modifier)} (ref)`);
+    defense_notes.push(`${b.label} ${pf2eHelper.quantifyNumber(b.modifier)} (ref)`);
 });
 will_bonus.forEach((b) => {
-    defense_notes.push(`${b.label} ${PF2eHelper.quantifyNumber(b.modifier)} (will)`);
+    defense_notes.push(`${b.label} ${pf2eHelper.quantifyNumber(b.modifier)} (will)`);
 });
 mapper.field('all', 'defense_notes', ' '.repeat(25) + defense_notes.join(', '));
 
@@ -319,7 +319,7 @@ Object.values(actor.skills)
             .filter((i) => i.slug === 'armor-check-penalty')
             .map((i) => i.modifier)
             .reduce((a, b) => a + b, 0);
-        mapper.field('all', `${skill.slug}`, PF2eHelper.quantifyNumber(skill.mod - skillStatusModifier));
+        mapper.field('all', `${skill.slug}`, pf2eHelper.quantifyNumber(skill.mod - skillStatusModifier));
         mapper.field('all', `${skill.slug}_attribute_modifier`, skill.attributeModifier.modifier || '0');
         mapper.field('all', `${skill.slug}_proficiency_modifier`, skillProficiencyModifier);
         mapper.field('all', `${skill.slug}_item_modifier`, skillItemModifier);
@@ -351,7 +351,7 @@ Object.values(actor.skills)
             .filter((i) => i.slug === 'armor-check-penalty')
             .map((i) => i.modifier)
             .reduce((a, b) => a + b, 0);
-        mapper.field('all', `lore${index + 1}`, PF2eHelper.quantifyNumber(skill.mod - skillStatusModifier));
+        mapper.field('all', `lore${index + 1}`, pf2eHelper.quantifyNumber(skill.mod - skillStatusModifier));
         mapper.field('all', `lore${index + 1}_subcategory`, skill.label);
         mapper.field('all', `lore${index + 1}_attribute_modifier`, skill.attributeModifier.modifier || '0');
         mapper.field('all', `lore${index + 1}_proficiency_modifier`, skillProficiencyModifier);
@@ -369,7 +369,7 @@ const assurance = actor.items
     .filter((i) => i.slug === 'assurance')
     .map((i) => i.rules.filter((f) => f.prompt === 'PF2E.SpecificRule.Prompt.Skill').map((m) => m.selection))
     .flat(1)
-    .map((i) => PF2eHelper.capitalize(i));
+    .map((i) => pf2eHelper.capitalize(i));
 if (assurance.length > 0) {
     skill_notes.push('Assurance: ' + assurance.join(', '));
 }
@@ -418,7 +418,7 @@ const perceptionItemModifier = actor.perception.modifiers
     .filter((i) => i.type === 'proficiency' && i.enabled)
     .map((i) => i.modifier)
     .reduce((a, b) => a + b, 0);
-mapper.field('all', 'perception', PF2eHelper.quantifyNumber(actor.perception.mod - perceptionStatusModifier));
+mapper.field('all', 'perception', pf2eHelper.quantifyNumber(actor.perception.mod - perceptionStatusModifier));
 mapper.field('all', 'perception_attribute_modifier', perceptionAbilityModifier);
 mapper.field('all', 'perception_proficiency_modifier', perceptionProficiencyModifier);
 mapper.field('all', 'perception_item_modifier', perceptionItemModifier);
@@ -568,7 +568,7 @@ mapper.field(
     actor.items.filter((i) => i.type === 'feat' && i.system.location === 'ancestry-5').map((i) => i.name)[0] || ''
 );
 if (actor.system.build !== undefined) {
-    mapper.field('all', '5_boosts', PF2eHelper.formatAttributeBoosts(actor.system.build.attributes.boosts[5]));
+    mapper.field('all', '5_boosts', pf2eHelper.formatAttributeBoosts(actor.system.build.attributes.boosts[5]));
 }
 mapper.field(
     'all',
@@ -595,7 +595,7 @@ mapper.field(
     '10_skill_feat',
     actor.items.filter((i) => i.type === 'feat' && i.system.location === 'skill-10').map((i) => i.name)[0] || ''
 );
-mapper.field('all', '10_boosts', PF2eHelper.formatAttributeBoosts(actor.system.build?.attributes.boosts[10]));
+mapper.field('all', '10_boosts', pf2eHelper.formatAttributeBoosts(actor.system.build?.attributes.boosts[10]));
 mapper.field(
     'all',
     '11_general_feat',
@@ -621,7 +621,7 @@ mapper.field(
     '15_general_feat',
     actor.items.filter((i) => i.type === 'feat' && i.system.location === 'general-15').map((i) => i.name)[0] || ''
 );
-mapper.field('all', '15_boosts', PF2eHelper.formatAttributeBoosts(actor.system.build?.attributes.boosts[15]));
+mapper.field('all', '15_boosts', pf2eHelper.formatAttributeBoosts(actor.system.build?.attributes.boosts[15]));
 mapper.field(
     'all',
     '16_skill_feat',
@@ -647,7 +647,7 @@ mapper.field(
     '20_skill_feat',
     actor.items.filter((i) => i.type === 'feat' && i.system.location === 'skill-20').map((i) => i.name)[0] || ''
 );
-mapper.field('all', '20_boosts', PF2eHelper.formatAttributeBoosts(actor.system.build?.attributes.boosts[20]));
+mapper.field('all', '20_boosts', pf2eHelper.formatAttributeBoosts(actor.system.build?.attributes.boosts[20]));
 
 /* Class Abilities Section */
 mapper.field(
@@ -926,7 +926,7 @@ actor.items
     .forEach((action, index) => {
         if (index < 9) {
             let frequency =
-                (action.frequency?.max || '') + '/' + PF2eHelper.frequencyToHuman(action.frequency?.per || '');
+                (action.frequency?.max || '') + '/' + pf2eHelper.frequencyToHuman(action.frequency?.per || '');
             if (typeof action.frequency?.max === 'undefined' && typeof action.frequency?.per === 'undefined') {
                 frequency = '';
             }
@@ -934,22 +934,22 @@ actor.items
             mapper.field(
                 'all',
                 `activity${index + 1}_action_count`,
-                PF2eHelper.formatActivity(
+                pf2eHelper.formatActivity(
                     action.system.actionType.value,
                     action.system.actions.value,
-                    PF2eHelper.pdfActivityGlyphs
+                    pf2eHelper.pdfActionIconsGlyphs
                 )
             );
             mapper.field(
                 'all',
                 `activity${index + 1}_traits`,
-                PF2eHelper.formatTraits([action.system.traits.rarity].concat(action.system.traits.value))
+                pf2eHelper.formatTraits([action.system.traits.rarity].concat(action.system.traits.value))
             );
             mapper.field('all', `activity${index + 1}_frequency`, frequency);
             mapper.field(
                 'all',
                 `activity${index + 1}_reference`,
-                PF2eHelper.abbreviateSource(action.system.publication?.title || action.system.source?.value || '')
+                pf2eHelper.abbreviateSource(action.system.publication?.title || action.system.source?.value || '')
             );
         }
     });
@@ -971,7 +971,7 @@ actor.items
     .forEach((action, index) => {
         if (index < 9) {
             let frequency =
-                (action.frequency?.max || '') + '/' + PF2eHelper.frequencyToHuman(action.frequency?.per || '');
+                (action.frequency?.max || '') + '/' + pf2eHelper.frequencyToHuman(action.frequency?.per || '');
             if (typeof action.frequency?.max === 'undefined' && typeof action.frequency?.per === 'undefined') {
                 frequency = '';
             }
@@ -984,13 +984,13 @@ actor.items
             mapper.field(
                 'all',
                 `activity${index + 9}_traits`,
-                PF2eHelper.formatTraits([action.system.traits.rarity].concat(action.system.traits.value))
+                pf2eHelper.formatTraits([action.system.traits.rarity].concat(action.system.traits.value))
             );
             mapper.field('all', `activity${index + 9}_frequency`, frequency);
             mapper.field(
                 'all',
                 `activity${index + 9}_reference`,
-                PF2eHelper.abbreviateSource(action.system.publication?.title || action.system.source?.value || '')
+                pf2eHelper.abbreviateSource(action.system.publication?.title || action.system.source?.value || '')
             );
         }
     });
@@ -1161,9 +1161,9 @@ spellCastingEntries
             }
             rankSpells.forEach((s) => {
                 let spell_name = s.name;
-                let spell_actions = PF2eHelper.formatSpellCastingTime(
+                let spell_actions = pf2eHelper.formatSpellCastingTime(
                     s.system.time.value,
-                    PF2eHelper.pdfActivityGlyphs
+                    pf2eHelper.pdfActionIconsGlyphs
                 );
                 let spell_rank = r;
                 let spell_prep = Object.values(sce.system.slots[`slot${r}`].prepared).filter(
@@ -1240,7 +1240,7 @@ mapper.field('all', 'spell_dc_trained', spell_proficiency[0] >= 1);
 mapper.field('all', 'spell_dc_expert', spell_proficiency[0] >= 2);
 mapper.field('all', 'spell_dc_master', spell_proficiency[0] >= 3);
 mapper.field('all', 'spell_dc_legendary', spell_proficiency[0] >= 4);
-mapper.field('all', 'spell_attack', PF2eHelper.quantifyNumber(spell_attack[0]) || '');
+mapper.field('all', 'spell_attack', pf2eHelper.quantifyNumber(spell_attack[0]) || '');
 mapper.field('all', 'spell_dc', spell_dc[0] || '');
 
 /* Rituals */

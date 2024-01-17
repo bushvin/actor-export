@@ -1,5 +1,5 @@
 import { scribeProvider } from '../../scripts/lib/providers/ScribeProvider.js';
-import { PF2eHelper } from '../../scripts/lib/helpers/PF2eHelper.js';
+import { pf2eHelper } from '../../scripts/lib/helpers/PF2eHelper.js';
 
 const mapper = new scribeProvider(actor);
 
@@ -171,16 +171,16 @@ if (spells.length > 0) {
     const headerCells = ['Spell', 'actions', 'Defense', 'rank', 'range', 'AofE'];
     const spellTable = new scribeProvider.class.scribeTableEntry('Spell List', headerCells);
     spells.forEach((el) => {
-        const activity = PF2eHelper.formatSpellCastingTime(el.system.time.value, PF2eHelper.scribeActivityGlyphs);
+        const activity = pf2eHelper.formatSpellCastingTime(el.system.time.value, pf2eHelper.scribeActivityGlyphs);
         let defense = '';
         if (el.system.defense?.passive !== undefined) {
             defense = `${el.system.defense.passive.statistic} ${10 + spell_dc}`;
         } else if (el.system.defense?.save !== undefined) {
             defense =
                 (el.system.defense.save.basic ? 'Basic ' : '') +
-                PF2eHelper.capitalize(el.system.defense.save.statistic) +
+                pf2eHelper.capitalize(el.system.defense.save.statistic) +
                 ' ' +
-                PF2eHelper.quantifyNumber(spell_dc);
+                pf2eHelper.quantifyNumber(spell_dc);
         }
         const spellType = el.isCantrip ? 'Cantrip' : el.isFocusSpell ? 'Focus' : 'Spell';
         const rank = `${spellType} ${el.rank}`;

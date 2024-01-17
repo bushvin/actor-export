@@ -1,13 +1,24 @@
-import { GenericHelper } from './GenericHelper.js';
+import { genericHelper } from './GenericHelper.js';
 
 /**
+ * PF2eHelper module
+ * @module PF2eHelper
+ * @author William Leemans
+ * @copyright William Leemans 2024
+ */
+
+/**
+ * @class
+ * @augments genericHelper
  * PF2e Helper class for PF2e centric functions
  */
-export class PF2eHelper extends GenericHelper {
+export class pf2eHelper extends genericHelper {
     /**
-     * Activity Glyphs for the action icons font
+     * Activity Glyph set for the action icons font.
+     * To be used with pf2eHelper.formatActivity
+     * @static
      */
-    static pdfActivityGlyphs = {
+    static pdfActionIconsGlyphs = {
         0: '',
         1: 'á',
         2: 'â',
@@ -21,7 +32,9 @@ export class PF2eHelper extends GenericHelper {
     };
 
     /**
-     * Activity Glyphs for scribe.pf2.tools
+     * Activity Glyph set for scribe.pf2.tools.
+     * To be used with pf2eHelper.formatActivity
+     * @static
      */
     static scribeActivityGlyphs = {
         0: '',
@@ -36,13 +49,11 @@ export class PF2eHelper extends GenericHelper {
         free: ':f:',
     };
 
-    static isRequiredArg(argName, functionName) {
-        throw new Error(`\`${argName}\` is a required argument for PF2eHelper.${functionName}!`);
-    }
     /**
-     * Abbreviate the names of the sources a resource is from
-     * @param {string} value - Source name
-     * @returns {string}
+     * Abbreviate the names of the sourcebooks a resource is from.
+     * @param {string} value Source name
+     * @returns {string} PF2e Source abbreviation
+     * @static
      */
     static abbreviateSource(source) {
         /* return the abbreviation of the given source */
@@ -82,10 +93,11 @@ export class PF2eHelper extends GenericHelper {
 
     /**
      * Format the activity according to actionType and activity
-     * @param {string} actionType - action type: action, free, or reaction
-     * @param {string} activity - the activity
-     * @param {Object} symbols - the symbol set to use
-     * @returns {string}
+     * @param {string} actionType action type: action, free, or reaction
+     * @param {string} activity the activity
+     * @param {Object} symbols the symbol set to use
+     * @returns {string} Activity Glyph
+     * @static
      */
     static formatActivity(actionType, activity, symbols = this.isRequiredArg('symbols', 'formatActivity')) {
         actionType = String(actionType).toLowerCase().trim();
@@ -106,25 +118,10 @@ export class PF2eHelper extends GenericHelper {
     }
 
     /**
-     * Format Spell Casting Times
-     * @param {string} activity - the activity
-     * @param {Object} symbols - the symbol set to use
-     * @returns {string}
-     */
-    static formatSpellCastingTime(activity, symbols = this.isRequiredArg('symbols', 'formatSpellCastingTime')) {
-        if (activity === 'free') {
-            return this.formatActivity('free', activity, symbols);
-        } else if (activity === 'reaction') {
-            return this.formatActivity('reaction', activity, symbols);
-        } else {
-            return this.formatActivity('action', activity, symbols);
-        }
-    }
-
-    /**
      * Format and sort attribute boosts according to their order
-     * @param {array} attributes - list of attributes
-     * @returns {string}
+     * @param {array} attributes list of attributes
+     * @returns {string} Sorted list of attribute boosts
+     * @static
      */
     static formatAttributeBoosts(attributes) {
         if (!Array.isArray(attributes)) {
@@ -141,8 +138,9 @@ export class PF2eHelper extends GenericHelper {
 
     /**
      * Format runes into a string
-     * @param {Object} runes - a rune entry from the PF2e actor
-     * @returns
+     * @param {Object} runes a rune entry from the PF2e actor
+     * @returns {string} list of runes
+     * @static
      */
     static formatRunes(runes) {
         let runeList = [];
@@ -163,10 +161,45 @@ export class PF2eHelper extends GenericHelper {
         return runeList.join(', ');
     }
 
+    /** Format an individual trait according to certain rules
+     * @param {string} trait trait to be formatted
+     * @returns {string} formatted trait
+     * @static
+     */
+    static formatTrait(trait) {
+        const tTrait = trait.toLowerCase();
+        if (tTrait.startsWith('two-hand-')) {
+            return 'Two-Hand ' + tTrait.split('-').pop();
+        } else if (tTrait.startsWith('thrown-')) {
+            return 'Thrown ' + tTrait.split('-').pop();
+        } else if (tTrait.startsWith('versatile-')) {
+            return 'Versatile ' + tTrait.split('-').pop().toUpperCase();
+        } else {
+            return this.capitalize(trait);
+        }
+    }
+
+    /**
+     * Format Spell Casting Times
+     * @param {string} activity the activity
+     * @param {Object} symbols the symbol set to use
+     * @returns {string} Activiy Glyph
+     * @static
+     */
+    static formatSpellCastingTime(activity, symbols = this.isRequiredArg('symbols', 'formatSpellCastingTime')) {
+        if (activity === 'free') {
+            return this.formatActivity('free', activity, symbols);
+        } else if (activity === 'reaction') {
+            return this.formatActivity('reaction', activity, symbols);
+        } else {
+            return this.formatActivity('action', activity, symbols);
+        }
+    }
+
     /**
      * Order and format traits
-     * @param {array} traitList - an array of traits to be formatted
-     * @returns {string}
+     * @param {array} traitList an array of traits to be formatted
+     * @returns {string} sorted list of traits
      */
     static formatTraits(traitList) {
         if (typeof traitList === 'undefined') {
@@ -237,27 +270,11 @@ export class PF2eHelper extends GenericHelper {
         return tl.join(', ');
     }
 
-    /** Format an individual trait according to certain rules
-     * @param {string} trait
-     * @returns {string}
-     */
-    static formatTrait(trait) {
-        const tTrait = trait.toLowerCase();
-        if (tTrait.startsWith('two-hand-')) {
-            return 'Two-Hand ' + tTrait.split('-').pop();
-        } else if (tTrait.startsWith('thrown-')) {
-            return 'Thrown ' + tTrait.split('-').pop();
-        } else if (tTrait.startsWith('versatile-')) {
-            return 'Versatile ' + tTrait.split('-').pop().toUpperCase();
-        } else {
-            return this.capitalize(trait);
-        }
-    }
-
     /**
      * Resolve pf2e system frequency to human
-     * @param {string} frequency
-     * @returns {string}
+     * @param {string} frequency PF2e system frequency
+     * @returns {string} human readable frequency
+     * @static
      */
     static frequencyToHuman(frequency) {
         const frequencyTable = {
@@ -278,9 +295,10 @@ export class PF2eHelper extends GenericHelper {
 
     /**
      * Return whether or not an attribute boost is partial
-     * @param {*} actor - the actor object
-     * @param {*} attribute - the attribute for which to discover if there is a partial boost
-     * @returns {boolean}
+     * @param {*} actor the actor object
+     * @param {*} attribute the attribute for which to discover if there is a partial boost
+     * @returns {boolean} whether the given attribute has a partial boost
+     * @static
      */
     static isPartialBoost(actor, attribute) {
         /* is there a partial boost for the given attribute */
@@ -311,8 +329,9 @@ export class PF2eHelper extends GenericHelper {
 
     /**
      * Return full size name
-     * @param {string} size - the abbreviated size entry
-     * @returns {string}
+     * @param {string} size the abbreviated size entry
+     * @returns {string} Full size name
+     * @static
      */
     static resolveSize(size) {
         switch (size) {

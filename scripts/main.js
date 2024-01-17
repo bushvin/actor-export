@@ -3,6 +3,7 @@ import { baseProvider } from './lib/providers/BaseProvider.js';
 import './lib/FileSaver.js';
 
 /**
+ * @class
  * Class to contain all relevant information and functions for the module
  */
 class actorExport {
@@ -178,7 +179,10 @@ class actorExport {
 }
 
 /**
+ * @class
  * A form class for the Actor Export Dialog
+ * @param {Object} actor the Foundry VTT actor object
+ * @extends FormApplication
  */
 class actorExportDialog extends FormApplication {
     constructor(actor) {
@@ -361,6 +365,11 @@ class actorExportDialog extends FormApplication {
     }
 }
 
+/**
+ * @class
+ * A form class for the Actor Export Custom Dialog
+ * @extends FormApplication
+ */
 class actorExportCustomProvider extends FormApplication {
     static get defaultOptions() {
         const defaults = super.defaultOptions;
@@ -416,7 +425,9 @@ class actorExportCustomProvider extends FormApplication {
 }
 
 /**
+ * @class
  * A form class for the providers settings dialog
+ * @extends FormApplication
  */
 class actorExportProvidersDialog extends FormApplication {
     static get defaultOptions() {
