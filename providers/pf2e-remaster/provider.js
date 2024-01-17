@@ -7,12 +7,6 @@ import { semVer } from '../../scripts/lib/SemVer.js';
 
 // helper functions
 class pf2ePDFProvider extends pdfProvider {
-    // field(file, fieldName, value, options) {
-    //     console.log('fieldName:', fieldName);
-    //     console.log('value:', value);
-    //     super.field(file, fieldName, value, options);
-    // }
-
     getAttacks(actor, domain) {
         let field_prefix = '';
         if (domain === 'ranged-attack-roll') {
@@ -83,7 +77,7 @@ class pf2ePDFProvider extends pdfProvider {
                     traits_notes = pf2eHelper.formatTraits(cur_attack.item.system.traits.value) + runes;
                 }
 
-                if (attribute_modifier != 0) {
+                if (attribute_modifier != 0 && domain === 'melee-attack-roll') {
                     damage = damage + pf2eHelper.quantifyNumber(attribute_modifier);
                 }
                 this.field('all', `${field_prefix}${index + 1}_name`, label);
