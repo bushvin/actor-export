@@ -51,10 +51,13 @@ export class pdfProvider extends baseProvider {
      * @param {Object} imageData an Object containing path, (x,y) coordinates, scaling information, etc...
      */
     async embedImage(pdf, imageData) {
+        let htmlImage = null;
         try {
-            const htmlImage = await this.loadImage(imageData.path);
+            htmlImage = await this.loadImage(imageData.path);
         } catch (error) {
-            this.notify('warn', `Could not load image \`${imageData.path}\`. Please make sure it exists!`);
+            this.notify('warn', `Could not load image \`${imageData.path}\`. Please make sure it exists!`, {
+                permanent: true,
+            });
             return;
         }
         const imageBitmap = await createImageBitmap(htmlImage);
@@ -336,8 +339,7 @@ export class pdfProvider extends baseProvider {
             this.notify('error', `An error ocurred loading the pdf form for ${sourceFileURI}: ${error.message}`, {
                 permanent: true,
             });
-            // FIXME: throw an error?
-            return;
+            throw Error(error);
         }
         console.debug(`actor-export | PDF | ${pdfFormFields.length} fields found.`);
         for (let i = 0; i < pdfFormFields.length; i++) {
