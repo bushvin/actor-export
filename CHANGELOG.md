@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - optimized all modules/classes/functions for jsdoc and jsdoc2md for the wiki
 - PDFProvider: throw an error if the PDF form cannot be read
 - pf2e-remastered: enumerate all spell ranks from 1 to 10 instead of up to the caster spell rank
+- pf2e-remastered: only add ability modifiers to melee attacks
 
 ## [0.6.0] - 2024-01-15
 
