@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "jsdoc-to-markdown": "^8.0.0",
     "prettier": "^3.2.2"
   }
 }
