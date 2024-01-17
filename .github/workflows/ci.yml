@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: actor-export CI
 
 on:
   pull_request:
