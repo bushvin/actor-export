@@ -104,6 +104,14 @@ const actor_spell_rank = Math.ceil((actor?.level ?? 0) / 2);
 
 const mapper = new pf2ePDFProvider(actor);
 
+if (actor.level < 1) {
+    mapper.notify(
+        'warn',
+        'This character has 0 levels. This may cause unexpected results. Please consider adding levels!',
+        { permanent: true }
+    );
+}
+
 // override the download name of the charactersheet
 // mapper.actorName = actor.name;
 
@@ -1104,7 +1112,7 @@ spellCastingEntries
         spell_dc.push(10 + sce.statistic.mod - sceStatusModifier);
         spell_attack.push(sce.statistic.mod - sceStatusModifier);
         spell_proficiency.push(sce.system?.proficiency?.value || 0);
-        for (let r = 1; r <= actor_spell_rank; r++) {
+        for (let r = 1; r <= 10; r++) {
             const rankSpells = sce.spells
                 .filter(
                     (i) =>
