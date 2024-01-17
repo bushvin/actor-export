@@ -1,0 +1,20 @@
+name: "test"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Retrieve current version
+      run: |
+        echo "current_tag=$(git tag | sort |tail -n)" >> $GITHUB_ENV
+
+    - name: Retrieve previous version
+      run: |
+        echo "previous_tag=$(git tag | sort |tail -n2|head -n1)" >> $GITHUB_ENV
+
+    - name: Show url
+      run: |
+        echo "https://github.com/bushvin/actor-export/compare/${{ env.current_tag }}...${{ env.previous_tag }}"
