@@ -1,4 +1,4 @@
-name: "Foundry VTT Pf2e module"
+name: "actor-export CD"
 
 on:
   push:
@@ -23,6 +23,10 @@ jobs:
     - name: Print module version
       run: |
         echo "github.ref_name: ${{ github.ref_name }}"
+
+    - name: Retrieve previous version
+      run: |
+        echo "previous_tag=$(git tag | sort |tail -n2|head -n1)" >> $GITHUB_ENV
 
     - name: Substitute Manifest and Download Links For Versioned Ones
       id: sub_manifest_link_version
@@ -60,14 +64,25 @@ jobs:
     - build
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Retrieve previous version
+        run: |
+          echo "previous_tag=$(git tag | sort |tail -n2|head -n1)" >> "$GITHUB_ENV"
+
       - name: Discord notification
         uses: appleboy/discord-action@master
         with:
           webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
           webhook_id: ${{ secrets.WEBHOOK_ID }}
-          message: "A new release of ${{ env.fvtt_module_id }} is published: `${{ github.ref_name }}`. Go get it!"
+          message: >-
+            A new release of ${{ env.fvtt_module_id }} is published: `${{ github.ref_name }}`.
+            [Changelog](https://github.com/bushvin/actor-export/compare/${{ env.previous_tag }}...${{ github.ref_name })
 
-  publish:
+  publish_foundry:
     needs:
     - build
     runs-on: ubuntu-latest
