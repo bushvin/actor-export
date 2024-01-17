@@ -51,7 +51,12 @@ export class pdfProvider extends baseProvider {
      * @param {Object} imageData an Object containing path, (x,y) coordinates, scaling information, etc...
      */
     async embedImage(pdf, imageData) {
-        const htmlImage = await this.loadImage(imageData.path);
+        try {
+            const htmlImage = await this.loadImage(imageData.path);
+        } catch (error) {
+            this.notify('warn', `Could not load image \`${imageData.path}\`. Please make sure it exists!`);
+            return;
+        }
         const imageBitmap = await createImageBitmap(htmlImage);
         const imageHeaders = await fetch(imageData.path).then((res) => res.headers);
         let contentType = undefined;
