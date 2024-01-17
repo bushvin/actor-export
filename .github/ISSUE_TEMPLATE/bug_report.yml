@@ -74,6 +74,7 @@ body:
       multiple: true
       options:
         - PF2e Remaster Character sheet
+        - PF2e Scribe Generator
   - type: textarea
     id: what-happened
     attributes:
