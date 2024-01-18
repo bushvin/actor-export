@@ -13,13 +13,14 @@ Faulty pieline
 
 ### Changed
 
-- pf2e-remaster: added archetype feats
+- pf2e-remaster: added archetype feats to level progression table
 - pf2e-remaster: calculation of background feats
 - pf2e-remaster: show all ancestry, general, skill, feats gained by level instead of just one
 - pf2e-remaster: increase size of lore skill fields
 - pf2e-remaster: support finesse and apply ability where needed
 - pf2e-remaster: move items which are in a container to the `extra` sheet
 - pf2e-remaster: Weapon Specialization bonus to melee attacks
+- pf2e-remaster: revert spell enumeration to the maximum rank of spells a character can cast
 
 ## [0.7.1] - 2024-01-17
 
