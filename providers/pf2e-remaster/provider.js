@@ -35,10 +35,21 @@ class pf2ePDFProvider extends pdfProvider {
                     cur_attack = attack.altUsages.filter((i) => i.domains.includes(domain))[0];
                 }
                 let label = cur_attack.label;
-                let attribute_modifier = cur_attack.modifiers
-                    .filter((i) => i.type === 'ability')
-                    .map((i) => i.modifier)
-                    .reduce((a, b) => a + b, 0);
+                let attribute_modifier = 0;
+                let attribute_name = 'Str';
+                if (cur_attack.item.system.traits.value.includes('finesse')) {
+                    attribute_name = 'Dex';
+                    attribute_modifier = cur_attack.modifiers
+                        .filter((i) => i.type === 'ability' && i.ability === 'dex')
+                        .map((i) => i.modifier)
+                        .reduce((a, b) => a + b, 0);
+                } else {
+                    attribute_name = 'Str';
+                    attribute_modifier = cur_attack.modifiers
+                        .filter((i) => i.type === 'ability' && i.ability === 'str')
+                        .map((i) => i.modifier)
+                        .reduce((a, b) => a + b, 0);
+                }
                 let proficiency_modifier = cur_attack.modifiers
                     .filter((i) => i.type === 'proficiency')
                     .map((i) => i.modifier)
@@ -82,6 +93,7 @@ class pf2ePDFProvider extends pdfProvider {
                 }
                 this.field('all', `${field_prefix}${index + 1}_name`, label);
                 this.field('all', `${field_prefix}${index + 1}_attack`, pf2eHelper.quantifyNumber(total_modifier));
+                this.field('all', `${field_prefix}${index + 1}_attribute`, attribute_name);
                 this.field('all', `${field_prefix}${index + 1}_attribute_modifier`, attribute_modifier);
                 this.field('all', `${field_prefix}${index + 1}_proficiency_modifier`, proficiency_modifier);
                 this.field('all', `${field_prefix}${index + 1}_item_modifier`, item_modifier);
