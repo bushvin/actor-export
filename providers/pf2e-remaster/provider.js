@@ -17,7 +17,15 @@ class pf2ePDFProvider extends pdfProvider {
             this.notify('error', `getAttacks: an invalid domain was specified: ${domain}`, { permanent: true });
             return false;
         }
-
+        const hasWeaponSpecialization =
+            actor.items.filter(
+                (i) =>
+                    i.type === 'feat' &&
+                    i.type === 'feat' &&
+                    i.system.category === 'classfeature' &&
+                    i.system.slug === 'weapon-specialization'
+            ).length > 0;
+        console.log(hasWeaponSpecialization);
         actor.system.actions
             .filter(
                 (i) =>
@@ -37,6 +45,21 @@ class pf2ePDFProvider extends pdfProvider {
                 let label = cur_attack.label;
                 let attribute_modifier = 0;
                 let attribute_name = 'Str';
+                let damage_modifier = 0;
+                const proficiency = attack.modifiers
+                    .filter((i) => i.type === 'proficiency')
+                    .map((i) => i.label.toLowerCase());
+                switch (`${domain}.${proficiency}`) {
+                    case 'melee-attack-roll.expert':
+                        damage_modifier = damage_modifier + 2;
+                        break;
+                    case 'melee-attack-roll.master':
+                        damage_modifier = damage_modifier + 3;
+                        break;
+                    case 'melee-attack-roll.master':
+                        damage_modifier = damage_modifier + 4;
+                        break;
+                }
                 if (cur_attack.item.system.traits.value.includes('finesse')) {
                     attribute_name = 'Dex';
                     attribute_modifier = cur_attack.modifiers
@@ -49,6 +72,7 @@ class pf2ePDFProvider extends pdfProvider {
                         .filter((i) => i.type === 'ability' && i.ability === 'str')
                         .map((i) => i.modifier)
                         .reduce((a, b) => a + b, 0);
+                    damage_modifier = damage_modifier + attribute_modifier;
                 }
                 let proficiency_modifier = cur_attack.modifiers
                     .filter((i) => i.type === 'proficiency')
@@ -87,9 +111,8 @@ class pf2ePDFProvider extends pdfProvider {
                 } else {
                     traits_notes = pf2eHelper.formatTraits(cur_attack.item.system.traits.value) + runes;
                 }
-
-                if (attribute_modifier != 0 && domain === 'melee-attack-roll') {
-                    damage = damage + pf2eHelper.quantifyNumber(attribute_modifier);
+                if (damage_modifier > 0) {
+                    damage = damage + pf2eHelper.quantifyNumber(damage_modifier);
                 }
                 this.field('all', `${field_prefix}${index + 1}_name`, label);
                 this.field('all', `${field_prefix}${index + 1}_attack`, pf2eHelper.quantifyNumber(total_modifier));
@@ -903,9 +926,15 @@ let held_index = 0;
 let consumable_index = 0;
 let worn_index = 0;
 let treasure_index = 0;
+let container_index = 0;
 actor.inventory.contents
+    .filter((i) => i.system.containerId === null)
     .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
     .forEach((item) => {
+        const contained_items = actor.inventory.contents
+            .filter((i) => i.system.containerId === item._id)
+            .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+        const comtainer_label = contained_items.length > 0 ? ' [+]' : '';
         if (item.type === 'consumable') {
             /* Consumables */
             mapper.field(
@@ -913,9 +942,21 @@ actor.inventory.contents
                 `consumable${consumable_index}_name`,
                 (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
                     item.name +
+                    comtainer_label +
                     (item.isMagical ? ' ‡ ' : ' ')
             );
             mapper.field('all', `consumable${consumable_index}_bulk`, item.system.bulk.value);
+            if (contained_items.length > 0) {
+                mapper.field(
+                    'all',
+                    `container_item${container_index}_name`,
+                    (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
+                        item.name +
+                        (item.isMagical ? ' ‡ ' : ' ')
+                );
+                mapper.field('all', `container_item${container_index}_bulk`, item.system.bulk.value);
+                container_index++;
+            }
             consumable_index++;
         } else if (item.system.usage.type === 'held') {
             /* Held items */
@@ -924,10 +965,22 @@ actor.inventory.contents
                 `held_item${held_index}_name`,
                 (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
                     item.name +
+                    comtainer_label +
                     (item.isMagical ? ' ‡ ' : ' ')
             );
             mapper.field('all', `held_item${held_index}_bulk`, item.system.bulk.value);
             held_index++;
+            if (contained_items.length > 0) {
+                mapper.field(
+                    'all',
+                    `container_item${consumable_index}_name`,
+                    (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
+                        item.name +
+                        (item.isMagical ? ' ‡ ' : ' ')
+                );
+                mapper.field('all', `container_item${consumable_index}_bulk`, item.system.bulk.value);
+                consumable_index++;
+            }
         } else if (item.system.usage.type === 'worn') {
             /* Worn items */
             mapper.field(
@@ -935,11 +988,24 @@ actor.inventory.contents
                 `worn_item${worn_index}_name`,
                 (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
                     item.name +
+                    comtainer_label +
                     (item.isMagical ? ' ‡ ' : ' ')
             );
             mapper.field('all', `worn_item${worn_index}_invested`, item.isInvested);
             mapper.field('all', `worn_item${worn_index}_bulk`, item.system.bulk.value);
             worn_index++;
+            if (contained_items.length > 0) {
+                mapper.field(
+                    'all',
+                    `container_item${consumable_index}_name`,
+                    (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
+                        item.name +
+                        (item.isMagical ? ' ‡ ' : ' ')
+                );
+                mapper.field('all', `container_item${consumable_index}_invested`, item.isInvested);
+                mapper.field('all', `container_item${consumable_index}_bulk`, item.system.bulk.value);
+                consumable_index++;
+            }
         } else if (item.type === 'treasure' && item.system.usage.type === 'carried') {
             /* Gems and artwork */
             let price = [];
@@ -951,11 +1017,41 @@ actor.inventory.contents
             mapper.field(
                 'all',
                 `gems_artwork${treasure_index}_name`,
-                (item.system.quantity > 1 ? item.system.quantity + ' ' : '') + item.name + (item.isMagical ? ' ‡ ' : '')
+                (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
+                    item.name +
+                    comtainer_label +
+                    (item.isMagical ? ' ‡ ' : '')
             );
             mapper.field('all', `gems_artwork${treasure_index}_price`, price.join(', '));
             mapper.field('all', `gems_artwork${treasure_index}_bulk`, item.system.bulk.value);
             treasure_index++;
+            if (contained_items.length > 0) {
+                mapper.field(
+                    'all',
+                    `container_item${consumable_index}_name`,
+                    (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
+                        item.name +
+                        (item.isMagical ? ' ‡ ' : '')
+                );
+                mapper.field('all', `container_item${consumable_index}_bulk`, item.system.bulk.value);
+                consumable_index++;
+            }
+        }
+        contained_items.forEach((containedItem) => {
+            mapper.field(
+                'all',
+                `container_item${consumable_index}_name`,
+                '    ' +
+                    (containedItem.system.quantity > 1 ? containedItem.system.quantity + ' ' : '') +
+                    containedItem.name +
+                    (containedItem.isMagical ? ' ‡ ' : ' ')
+            );
+            mapper.field('all', `container_item${consumable_index}_invested`, containedItem.isInvested);
+            mapper.field('all', `container_item${consumable_index}_bulk`, containedItem.system.bulk.value);
+            consumable_index++;
+        });
+        if (contained_items.length > 0) {
+            consumable_index++;
         }
     });
 
@@ -1158,20 +1254,7 @@ let innate_spell_count = 0;
 let spell_count = 0;
 let focus_spell_count = 0;
 spellCastingEntries
-    .sort((a, b) => {
-        return a.system.prepared.value < b.system.prepared.value
-            ? -1
-            : a.system.prepared.value > b.system.prepared.value
-              ? 1
-              : 0;
-    })
-    .sort((a, b) => {
-        return a.system.tradition.value < b.system.tradition.value
-            ? -1
-            : a.system.tradition.value > b.system.tradition.value
-              ? 1
-              : 0;
-    })
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
     .forEach((sce) => {
         let hasCantripTitle = false;
         let hasInnateTitle = false;
@@ -1194,7 +1277,7 @@ spellCastingEntries
         spell_dc.push(10 + sce.statistic.mod - sceStatusModifier);
         spell_attack.push(sce.statistic.mod - sceStatusModifier);
         spell_proficiency.push(sce.system?.proficiency?.value || 0);
-        for (let r = 1; r <= 10; r++) {
+        for (let r = 1; r <= actor_spell_rank; r++) {
             const rankSpells = sce.spells
                 .filter(
                     (i) =>
@@ -1234,14 +1317,6 @@ spellCastingEntries
             ) {
                 mapper.field('all', `spell_entry${spell_count++}_name`, sce.name);
                 hasSpellTitle = true;
-            } else if (
-                !hasFocusTitle &&
-                spellCastingEntries.length > 0 &&
-                rankSpells.filter((i) => !i.isCantrip).length > 0 &&
-                sce.system.prepared.value === 'focus'
-            ) {
-                mapper.field('all', `focus_spell_entry${focus_spell_count++}_name`, sce.name);
-                hasFocusTitle = true;
             }
             rankSpells.forEach((s) => {
                 let spell_name = s.name;
