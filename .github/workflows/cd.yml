@@ -78,9 +78,8 @@ jobs:
         with:
           webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
           webhook_id: ${{ secrets.WEBHOOK_ID }}
-          message: >-
+          message: |
             A new release of ${{ env.fvtt_module_id }} is published: `${{ github.ref_name }}`.
-            [Changelog](https://github.com/bushvin/actor-export/compare/${{ env.previous_tag }}...${{ github.ref_name })
 
   publish_foundry:
     needs:
