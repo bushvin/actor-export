@@ -21,11 +21,16 @@ class pf2ePDFProvider extends pdfProvider {
             actor.items.filter(
                 (i) =>
                     i.type === 'feat' &&
-                    i.type === 'feat' &&
                     i.system.category === 'classfeature' &&
                     i.system.slug === 'weapon-specialization'
             ).length > 0;
-        console.log(hasWeaponSpecialization);
+        const hasGreaterWeaponSpecialization =
+            actor.items.filter(
+                (i) =>
+                    i.type === 'feat' &&
+                    i.system.category === 'classfeature' &&
+                    i.system.slug === 'greater-weapon-specialization'
+            ).length > 0;
         actor.system.actions
             .filter(
                 (i) =>
@@ -46,19 +51,21 @@ class pf2ePDFProvider extends pdfProvider {
                 let attribute_modifier = 0;
                 let attribute_name = 'Str';
                 let damage_modifier = 0;
-                const proficiency = attack.modifiers
-                    .filter((i) => i.type === 'proficiency')
-                    .map((i) => i.label.toLowerCase());
-                switch (`${domain}.${proficiency}`) {
-                    case 'melee-attack-roll.expert':
-                        damage_modifier = damage_modifier + 2;
-                        break;
-                    case 'melee-attack-roll.master':
-                        damage_modifier = damage_modifier + 3;
-                        break;
-                    case 'melee-attack-roll.master':
-                        damage_modifier = damage_modifier + 4;
-                        break;
+                if (hasWeaponSpecialization) {
+                    const proficiency = attack.modifiers
+                        .filter((i) => i.type === 'proficiency')
+                        .map((i) => i.label.toLowerCase());
+                    switch (`${proficiency}`) {
+                        case 'expert':
+                            damage_modifier = damage_modifier + (hasGreaterWeaponSpecialization ? 4 : 2);
+                            break;
+                        case 'master':
+                            damage_modifier = damage_modifier + (hasGreaterWeaponSpecialization ? 6 : 3);
+                            break;
+                        case 'master':
+                            damage_modifier = damage_modifier + (hasGreaterWeaponSpecialization ? 8 : 4);
+                            break;
+                    }
                 }
                 if (cur_attack.item.system.traits.value.includes('finesse')) {
                     attribute_name = 'Dex';
