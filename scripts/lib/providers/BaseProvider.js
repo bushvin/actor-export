@@ -24,8 +24,9 @@ export class baseProvider {
      * This is here to not fail when the provider definition doesn't have it.
      * @param sourceFileURI the URI of the file to use
      * @param destinationFileName the name of the file to be saved
+     * @param execPost the function to be executed after execution
      */
-    download(sourceFileURI, destinationFileName) {}
+    download(sourceFileURI, destinationFileName, execPost = function () {}) {}
 
     /**
      * A function to fetch an image and return an image object promise

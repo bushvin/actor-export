@@ -1012,12 +1012,15 @@ export class scribeProvider extends baseProvider {
      * @param sourceFileURI the URI of the file to use
      * @param destinationFileName the name of the file to be saved
      */
-    download(sourceFileURI, destinationFileName) {
+    download(sourceFileURI, destinationFileName, execPost = function () {}) {
         super.download(this.sourceFileURI || sourceFileURI, this.destinationFileName || destinationFileName);
         const scribeOption = (this.sourceFileURI || sourceFileURI).split('/').pop();
         const ret = this.getScribeData(scribeOption);
         if (ret !== undefined && ret != '') {
             saveDataToFile(ret, 'text/plain', this.destinationFileName || destinationFileName);
+        }
+        if (typeof execPost === 'function') {
+            execPost();
         }
     }
 

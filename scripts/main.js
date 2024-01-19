@@ -176,6 +176,25 @@ class actorExport {
         /* FIXME: check if the URI is complete before building it */
         return `/modules/${this.ID}/providers/${provider}/${filePath}`;
     }
+
+    static providerFileProgress(html) {
+        const isDisabled = $(html).find('input').prop('disabled');
+        if (!isDisabled) {
+            html.classList.add('working');
+        } else {
+            html.classList.remove('working');
+            document.getElementById('download_counter').value =
+                parseInt(document.getElementById('download_counter').value) - 1;
+        }
+        $(html).find('input').prop('disabled', !isDisabled);
+        if (parseInt(document.getElementById('download_counter').value) > 0) {
+            document.getElementById('actor-export-download').disabled = true;
+            document.getElementById('actor-export-spinner-canvas').style.display = 'flex';
+        } else {
+            document.getElementById('actor-export-download').disabled = false;
+            document.getElementById('actor-export-spinner-canvas').style.display = 'none';
+        }
+    }
 }
 
 /**
@@ -289,6 +308,9 @@ class actorExportDialog extends FormApplication {
             .querySelectorAll('input[type=checkbox]')
             .forEach((input) => {
                 if (input.checked) {
+                    document.getElementById('download_counter').value =
+                        parseInt(document.getElementById('download_counter').value) + 1;
+                    actorExport.providerFileProgress(document.getElementById(`field.${input.id}`));
                     if (!Object.keys(selectedFiles).includes(input.getAttribute('data-provider'))) {
                         selectedFiles[input.getAttribute('data-provider')] = [];
                     }
@@ -317,7 +339,9 @@ class actorExportDialog extends FormApplication {
                                 { permanent: true }
                             );
                         } else {
-                            module.mapper.download();
+                            module.mapper.download(undefined, undefined, function () {
+                                actorExport.providerFileProgress(document.getElementById('field._custom_._custom'));
+                            });
                         }
                     })
                     .catch((error) => {
@@ -356,7 +380,11 @@ class actorExportDialog extends FormApplication {
                             const destinationFileName = `${module.mapper.actorName} - ${sourceFileURI
                                 .split('/')
                                 .pop()}`;
-                            module.mapper.download(sourceFileURI, destinationFileName);
+                            module.mapper.download(sourceFileURI, destinationFileName, function () {
+                                actorExport.providerFileProgress(
+                                    document.getElementById(`field.${providerId}.${selectedFiles[providerId][f]}`)
+                                );
+                            });
                         }
                     }
                 });

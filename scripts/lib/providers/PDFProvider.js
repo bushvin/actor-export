@@ -29,15 +29,17 @@ export class pdfProvider extends baseProvider {
      * Generate the PDF and download it
      * @param sourceFileURI the URI of the file to use
      * @param destinationFileName the name of the file to be saved
+     * @param execPost the function to be executed after execution
      */
-    download(sourceFileURI, destinationFileName) {
+    download(sourceFileURI, destinationFileName, execPost = function () {}) {
         super.download(this.sourceFileURI || sourceFileURI, this.destinationFileName || destinationFileName);
         let ret = undefined;
         fetch(this.sourceFileURI || sourceFileURI).then((data) => {
             this.parseFile(
                 data,
                 this.sourceFileURI || sourceFileURI,
-                this.destinationFileName || destinationFileName
+                this.destinationFileName || destinationFileName,
+                execPost
             ).then((res) => {
                 ret = res;
             });
@@ -311,7 +313,7 @@ export class pdfProvider extends baseProvider {
      * @param sourceFileURI the URI of the file to use
      * @param destinationFileName the name of the file to be saved
      */
-    async parseFile(data, sourceFileURI, destinationFileName) {
+    async parseFile(data, sourceFileURI, destinationFileName, execPost) {
         const buffer = await data.arrayBuffer();
         const pdf = await PDFDocument.load(buffer);
 
@@ -367,5 +369,8 @@ export class pdfProvider extends baseProvider {
         }
         const blob = new Blob([await pdf.save()], { type: 'application/pdf' });
         await saveAs(blob, destinationFileName);
+        if (typeof execPost === 'function') {
+            execPost();
+        }
     }
 }
