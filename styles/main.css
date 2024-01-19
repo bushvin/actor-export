@@ -35,3 +35,37 @@
     font-family: monospace;
     padding: 10px;
 }
+
+#actor-export-spinner-canvas {
+    position: absolute;
+    display: flex;
+    top: 0;
+    left: 0;
+    width: calc(100% + 16px);
+    height: calc(100% + 16px);
+    margin: -8px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+#actor-export-spinner {
+    border: 16px solid var(--bg);
+    border-radius: 50%;
+    border-top: 16px solid var(--primary);
+    width: 150px;
+    height: 150px;
+    -webkit-animation: spin 3s linear infinite;
+    animation: spin 3s linear infinite;
+    margin: auto;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
