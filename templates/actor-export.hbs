@@ -1,41 +1,46 @@
 <form id="actor-export-form">
+    <div id="actor-export-dialog" style="position: relative;">
 {{#each allowedProviders}}
-<h2 class="category-title">{{ name }} <i class="{{ icon }}"></i> </h2>
-<p class="notes">{{ description }}</p>
+        <h2 class="category-title">{{ name }} <i class="{{ icon }}"></i> </h2>
+        <p class="notes">{{ description }}</p>
 {{#each files}}
-<div class="form-group">
-    <label for="{{../id}}.{{ uri }}">{{ name }}</label>
-    <div class="form-fields">
-        <input type="checkbox" data-provider="{{../id}}" data-file="{{uri}}" name="{{ uri }}" id="{{../id}}.{{ uri }}" data-dtype="Boolean" {{checked isSelected}} />
-    </div>
-    <p class="notes">{{ description }}</p>
-</div>
+        <div class="form-group" id="field.{{../id}}.{{ uri }}">
+            <label for="{{../id}}.{{ uri }}">{{ name }}</label>
+            <div class="form-fields">
+                <input type="checkbox" data-provider="{{../id}}" data-file="{{uri}}" name="{{ uri }}" id="{{../id}}.{{ uri }}" data-dtype="Boolean" {{checked isSelected}} />
+            </div>
+            <p class="notes">{{ description }}</p>
+        </div>
 {{/each}}
-<hr />
+        <hr />
 {{/each}}
 {{#if customProvider}}
-<h2 class="category-title">Custom Provider <i class="fa fa-question-circle" aria-hidden="true"></i></h2>
-<div class="form-group">
-    <label for="_custom_._custom_">Custom Provider</label>
-    <div class="form-fields">
-        <input type="checkbox" data-provider="_custom_" data-file="_custom_" name="_custom_" id="_custom_._custom_" data-dtype="Boolean" />
-    </div>
-    <p class="notes">The Javascript code provided in the config section by the Gamemaster. This provider must be checked every time to use it.</p>
-</div>
+        <h2 class="category-title">Custom Provider <i class="fa fa-question-circle" aria-hidden="true"></i></h2>
+        <div class="form-group">
+            <label for="_custom_._custom_">Custom Provider</label>
+            <div class="form-fields">
+                <input type="checkbox" data-provider="_custom_" data-file="_custom_" name="_custom_" id="_custom_._custom_" data-dtype="Boolean" />
+            </div>
+            <p class="notes">The Javascript code provided in the config section by the Gamemaster. This provider must be checked every time to use it.</p>
+        </div>
 {{/if}}
-<div class="form-group buttons">
+        <div class="form-group buttons">
 {{#if downloadEnabled}}
-<button type="button" id="actor-export-download" class="actor-export-download" file-action="download">
-    <i class="fa fa-download"></i>
-    Download
-</button>
+            <button type="button" id="actor-export-download" class="actor-export-download" file-action="download">
+                <i class="fa fa-download"></i>
+                Download
+            </button>
 {{/if}}
 {{#if previewEnabled}}
-<button type="button" id="actor-export-preview" class="actor-export-preview">
-    <i class="fa fa-search"></i>
-    Preview
-</button>
+            <button type="button" id="actor-export-preview" class="actor-export-preview">
+                <i class="fa fa-search"></i>
+                Preview
+            </button>
 {{/if}}
-</div>
-<div id="actor-export-spinner" style="display: none">Please wait while preparing your download...</div>
+        </div>
+        <input type="number" id="download_counter" min="0" style="display: none" value="0"/>
+        <div id="actor-export-spinner-canvas" style="display: none; position: absolute; top: 0; left: 0;">
+            <div id="actor-export-spinner"></div>
+        </div>
+    </div>
 </form>
