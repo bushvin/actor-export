@@ -89,30 +89,16 @@ export class pdfProvider extends baseProvider {
         let embeddedImage = null;
         let imageBuffer = null;
         const fileExtension = imageData.path.split('.').pop().toLowerCase();
-        switch (contentType || fileExtension) {
-            case 'image/jpeg':
-            case 'jpg':
-            case 'jpeg':
-                imageBuffer = await fetch(imageData.path).then((res) => res.arrayBuffer());
-                embeddedImage = await pdf.embedJpg(imageBuffer);
-                break;
-            case 'image/png':
-            case 'png':
-                imageBuffer = await fetch(imageData.path).then((res) => res.arrayBuffer());
-                embeddedImage = await pdf.embedPng(imageBuffer);
-                break;
-            case 'image/webp':
-            case 'webp':
-                const canvas = new OffscreenCanvas(htmlImage.width, htmlImage.height);
-                const context = await canvas.getContext('2d');
-                context.drawImage(imageBitmap, 0, 0, htmlImage.width, htmlImage.height);
-                const blob = await context.canvas.convertToBlob({ type: 'image/png' });
-                imageBuffer = await blob.arrayBuffer();
-                embeddedImage = await pdf.embedPng(imageBuffer);
-                break;
-            default:
-                this.notify('warn', `${contentType || fileExtension} files are not (yet) supported.`);
-                return;
+        try {
+            const canvas = new OffscreenCanvas(htmlImage.width, htmlImage.height);
+            const context = await canvas.getContext('2d');
+            context.drawImage(imageBitmap, 0, 0, htmlImage.width, htmlImage.height);
+            const blob = await context.canvas.convertToBlob({ type: 'image/png' });
+            imageBuffer = await blob.arrayBuffer();
+            embeddedImage = await pdf.embedPng(imageBuffer);
+        } catch (error) {
+            this.notify('warn', `${contentType || fileExtension} files are not (yet) supported. Please raise a bug.`);
+            return;
         }
         if (!(typeof embeddedImage === 'object' && !embeddedImage)) {
             const imageDimensions = embeddedImage.scale(scale);
