@@ -92,6 +92,98 @@ export class pf2eHelper extends genericHelper {
     }
 
     /**
+     * simple function to generate the damage of a strike
+     * @param {Object} strike the strike object as found in actor.system.actions
+     * @param {Object} actor the actor object to check for additional feats like weapon specialization
+     * @returns {string}
+     */
+    static strikeDamage(strike, actor) {
+        let strikeDamage = '';
+        if (strike.damageFormula !== undefined) {
+            const temp = strike.damageFormula.trim().split(' ');
+            temp.pop();
+            return temp.join(' ');
+        }
+
+        let hasWeaponSpecialization = false;
+        let hasGreaterWeaponSpecialization = false;
+        if (actor !== undefined) {
+            hasWeaponSpecialization =
+                actor.items.filter(
+                    (i) =>
+                        i.type === 'feat' &&
+                        i.system.category === 'classfeature' &&
+                        i.system.slug === 'weapon-specialization'
+                ).length > 0;
+            hasGreaterWeaponSpecialization =
+                actor.items.filter(
+                    (i) =>
+                        i.type === 'feat' &&
+                        i.system.category === 'classfeature' &&
+                        i.system.slug === 'greater-weapon-specialization'
+                ).length > 0;
+        }
+
+        const damageDice = `${strike.item.system.damage.dice}${strike.item.system.damage.die}`;
+        let damageModifier = 0;
+
+        if (hasWeaponSpecialization) {
+            let proficiencyRank = strike.modifiers
+                .filter((i) => i.type === 'proficiency')
+                .map((i) => i.label.toLowerCase());
+            switch (`${proficiencyRank}`) {
+                case 'expert':
+                    damageModifier = damageModifier + (hasGreaterWeaponSpecialization ? 4 : 2);
+                    break;
+                case 'master':
+                    damageModifier = damageModifier + (hasGreaterWeaponSpecialization ? 6 : 3);
+                    break;
+                case 'master':
+                    damageModifier = damageModifier + (hasGreaterWeaponSpecialization ? 8 : 4);
+                    break;
+            }
+        }
+
+        if (strike.options.includes('melee')) {
+            if (strike.item.system.traits.value.includes('finesse')) {
+                damageModifier =
+                    damageModifier +
+                    strike.modifiers
+                        .filter((i) => i.type === 'ability' && i.slug === 'dex')
+                        .map((i) => i.modifier)
+                        .reduce((a, b) => a + b, 0);
+            } else {
+                damageModifier =
+                    damageModifier +
+                    strike.modifiers
+                        .filter((i) => i.type === 'ability' && i.slug === 'str')
+                        .map((i) => i.modifier)
+                        .reduce((a, b) => a + b, 0);
+            }
+        }
+        if (damageModifier !== 0) {
+            strikeDamage = damageDice + pf2eHelper.quantifyNumber(damageModifier);
+        } else {
+            strikeDamage = damageDice;
+        }
+        return strikeDamage;
+    }
+
+    /**
+     * simple function to generate the damage formula of a strike
+     * @param {Object} strike the strike object as found in actor.system.actions
+     * @param {Object} actor the actor object to check for additional feats like weapon specialization
+     * @returns {string}
+     */
+    static damageFormula(strike, actor) {
+        if (strike.damageFormula !== undefined) {
+            return strike.damageFormula;
+        } else {
+            return pf2eHelper.strikeDamage(strike, actor) + ' ' + strike.item.system.damage.damageType;
+        }
+    }
+
+    /**
      * Format the activity according to actionType and activity
      * @param {string} actionType action type: action, free, or reaction
      * @param {string} activity the activity
@@ -174,6 +266,12 @@ export class pf2eHelper extends genericHelper {
             return 'Thrown ' + tTrait.split('-').pop();
         } else if (tTrait.startsWith('versatile-')) {
             return 'Versatile ' + tTrait.split('-').pop().toUpperCase();
+        } else if (tTrait.startsWith('range-')) {
+            return 'Range ' + tTrait.split('-').pop();
+        } else if (tTrait.startsWith('deadly-')) {
+            return 'Deadly ' + tTrait.split('-').pop();
+        } else if (tTrait.startsWith('volley-')) {
+            return 'Volley ' + tTrait.split('-').pop();
         } else {
             return this.capitalize(trait);
         }
