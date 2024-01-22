@@ -17,20 +17,6 @@ class pf2ePDFProvider extends pdfProvider {
             this.notify('error', `getAttacks: an invalid domain was specified: ${domain}`, { permanent: true });
             return false;
         }
-        const hasWeaponSpecialization =
-            actor.items.filter(
-                (i) =>
-                    i.type === 'feat' &&
-                    i.system.category === 'classfeature' &&
-                    i.system.slug === 'weapon-specialization'
-            ).length > 0;
-        const hasGreaterWeaponSpecialization =
-            actor.items.filter(
-                (i) =>
-                    i.type === 'feat' &&
-                    i.system.category === 'classfeature' &&
-                    i.system.slug === 'greater-weapon-specialization'
-            ).length > 0;
         actor.system.actions
             .filter(
                 (i) =>
@@ -50,36 +36,10 @@ class pf2ePDFProvider extends pdfProvider {
                 let label = cur_attack.label;
                 let attribute_modifier = 0;
                 let attribute_name = 'Str';
-                let damage_modifier = 0;
-                if (hasWeaponSpecialization) {
-                    const proficiency = attack.modifiers
-                        .filter((i) => i.type === 'proficiency')
-                        .map((i) => i.label.toLowerCase());
-                    switch (`${proficiency}`) {
-                        case 'expert':
-                            damage_modifier = damage_modifier + (hasGreaterWeaponSpecialization ? 4 : 2);
-                            break;
-                        case 'master':
-                            damage_modifier = damage_modifier + (hasGreaterWeaponSpecialization ? 6 : 3);
-                            break;
-                        case 'master':
-                            damage_modifier = damage_modifier + (hasGreaterWeaponSpecialization ? 8 : 4);
-                            break;
-                    }
-                }
                 if (cur_attack.item.system.traits.value.includes('finesse')) {
                     attribute_name = 'Dex';
-                    attribute_modifier = cur_attack.modifiers
-                        .filter((i) => i.type === 'ability' && i.ability === 'dex')
-                        .map((i) => i.modifier)
-                        .reduce((a, b) => a + b, 0);
                 } else {
                     attribute_name = 'Str';
-                    attribute_modifier = cur_attack.modifiers
-                        .filter((i) => i.type === 'ability' && i.ability === 'str')
-                        .map((i) => i.modifier)
-                        .reduce((a, b) => a + b, 0);
-                    damage_modifier = damage_modifier + attribute_modifier;
                 }
                 let proficiency_modifier = cur_attack.modifiers
                     .filter((i) => i.type === 'proficiency')
@@ -94,7 +54,6 @@ class pf2ePDFProvider extends pdfProvider {
                     .map((i) => i.modifier)
                     .reduce((a, b) => a + b, 0);
                 let total_modifier = cur_attack.totalModifier - status_modifier;
-                let damage = `${cur_attack.item.system.damage.dice}${cur_attack.item.system.damage.die}` || '-';
                 let bludgeoning_damage =
                     cur_attack.item.system.damage.damageType === 'bludgeoning' ||
                     cur_attack.item.system.traits.value.includes('versatile-b') ||
@@ -118,16 +77,13 @@ class pf2ePDFProvider extends pdfProvider {
                 } else {
                     traits_notes = pf2eHelper.formatTraits(cur_attack.item.system.traits.value) + runes;
                 }
-                if (damage_modifier > 0) {
-                    damage = damage + pf2eHelper.quantifyNumber(damage_modifier);
-                }
                 this.field('all', `${field_prefix}${index + 1}_name`, label);
                 this.field('all', `${field_prefix}${index + 1}_attack`, pf2eHelper.quantifyNumber(total_modifier));
                 this.field('all', `${field_prefix}${index + 1}_attribute`, attribute_name);
                 this.field('all', `${field_prefix}${index + 1}_attribute_modifier`, attribute_modifier);
                 this.field('all', `${field_prefix}${index + 1}_proficiency_modifier`, proficiency_modifier);
                 this.field('all', `${field_prefix}${index + 1}_item_modifier`, item_modifier);
-                this.field('all', `${field_prefix}${index + 1}_damage`, damage);
+                this.field('all', `${field_prefix}${index + 1}_damage`, pf2eHelper.strikeDamage(cur_attack, actor));
                 this.field('all', `${field_prefix}${index + 1}_bludgeoning_damage`, bludgeoning_damage);
                 this.field('all', `${field_prefix}${index + 1}_piercing_damage`, piercing_damage);
                 this.field('all', `${field_prefix}${index + 1}_slashing_damage`, slashing_damage);
