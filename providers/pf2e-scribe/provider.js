@@ -108,23 +108,23 @@ const rangedActions = [];
 const strikeActions = actor.system.actions.filter((i) => i.type === 'strike');
 if (strikeActions.length > 0) {
     strikeActions.forEach((el) => {
-        const strike = new scribeProvider.class.scribeStrike(el);
+        const strike = new scribeProvider.class.scribeStrike(el, actor);
         if (strike.isMelee) {
-            meleeActions.push(strike.scribify());
+            meleeActions.push('item(' + strike.scribify() + ')');
         } else if (strike.isRanged) {
-            rangedActions.push(strike.scribify());
+            rangedActions.push('item(' + strike.scribify() + ')');
         }
-        el.altUsages.forEach((alt) => {
-            const altStrike = new scribeProvider.class.scribeStrike(alt);
+        (el.altUsages || []).forEach((alt) => {
+            const altStrike = new scribeProvider.class.scribeStrike(alt, actor);
             if (altStrike.isMelee) {
-                meleeActions.push(altStrike.scribify());
+                meleeActions.push('item(' + altStrike.scribify() + ')');
             } else if (altStrike.isRanged) {
-                rangedActions.push(altStrike.scribify());
+                rangedActions.push('item(' + altStrike.scribify() + ')');
             }
         });
     });
 }
-if (meleeActions.length > 0 || rangedActions > 0) {
+if (meleeActions.length > 0 || rangedActions.length > 0) {
     mapper.scribe('actor-actions', '# Attacks ((Attacks))');
     mapper.scribe('actor-actions', meleeActions.concat(rangedActions).join('\n\n'));
     mapper.scribe('actor-actions', ' ');

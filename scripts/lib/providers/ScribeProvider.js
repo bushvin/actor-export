@@ -603,16 +603,12 @@ class scribeCreature extends scribeItemEntry {
      * @param {array} push_to the array to push to
      */
     pushMeleeAttacks(push_to) {
-        const melee = this._item.system.actions
-            .filter((i) => i.type === 'strike' && i.attackRollType === 'PF2E.NPCAttackMelee')
-            .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0));
-        melee.forEach((a) => {
-            push_to.push(
-                `**Melee** ${pf2eHelper.formatActivity('action', a.glyph, pf2eHelper.scribeActivityGlyphs)} ${
-                    a.label
-                } ${pf2eHelper.quantifyNumber(a.totalModifier)}, **Damage** ${a.damageFormula}`
-            );
-        });
+        this._item.system.actions
+            .filter((i) => i.type === 'strike' && i.options.includes('melee'))
+            .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
+            .forEach((strike) => {
+                push_to.push(new scribeStrike(strike, this._item).scribify());
+            });
     }
 
     /**
@@ -666,16 +662,12 @@ class scribeCreature extends scribeItemEntry {
      * @param {array} push_to the array to push to
      */
     pushRangedAttacks(push_to) {
-        const melee = this._item.system.actions
-            .filter((i) => i.type === 'strike' && i.attackRollType === 'PF2E.NPCAttackRanged')
-            .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0));
-        melee.forEach((a) => {
-            push_to.push(
-                `**Ranged** ${pf2eHelper.formatActivity('action', a.glyph, pf2eHelper.scribeActivityGlyphs)} ${
-                    a.label
-                } ${pf2eHelper.quantifyNumber(a.totalModifier)}, **Damage** ${a.damageFormula}`
-            );
-        });
+        this._item.system.actions
+            .filter((i) => i.type === 'strike' && i.options.includes('ranged'))
+            .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
+            .forEach((strike) => {
+                push_to.push(new scribeStrike(strike, this._item).scribify());
+            });
     }
 
     /**
@@ -732,7 +724,7 @@ class scribeCreature extends scribeItemEntry {
                     .sort()
                     .reverse()
                     .forEach((rank) => {
-                        item = `${item}; **${pf2eHelper.shortOrdinal(rank)}** ${spells[rank].sort()}`;
+                        item = `${item}; **${pf2eHelper.shortOrdinal(rank)}** ${spells[rank].sort().join(', ')}`;
                     });
                 push_to.push(item);
             });
@@ -923,11 +915,10 @@ class scribeSpell extends scribeItemEntry {
  * @extends scribeBase
  */
 class scribeStrike extends scribeBase {
-    constructor(strike) {
+    constructor(strike, actor) {
         super();
         this._strike = strike;
-        this._isMelee = strike.domains.includes('melee-attack-roll');
-        this._isRanged = strike.domains.includes('ranged-attack-roll');
+        this._actor = actor;
     }
 
     /**
@@ -935,7 +926,7 @@ class scribeStrike extends scribeBase {
      * @returns {boolean} whether the strike is a melee strike
      */
     get isMelee() {
-        return this._strike.domains.includes('melee-attack-roll');
+        return this._strike.options.includes('melee');
     }
 
     /**
@@ -943,7 +934,7 @@ class scribeStrike extends scribeBase {
      * @returns {boolean} whether the strike is a ranged strike
      */
     get isRanged() {
-        return this._strike.domains.includes('ranged-attack-roll');
+        return this._strike.options.includes('ranged');
     }
 
     /**
@@ -963,17 +954,9 @@ class scribeStrike extends scribeBase {
             ret.push('(' + pf2eHelper.formatTraits(this._strike.item.system.traits.value) + ')');
         }
         ret.push('**Damage**');
-        let damage = `${this._strike.item.system.damage.dice}${this._strike.item.system.damage.die}`;
-        const attribute_modifier = this._strike.modifiers
-            .filter((i) => i.type === 'ability')
-            .map((i) => i.modifier)
-            .reduce((a, b) => a + b, 0);
-        if (this.isMelee && attribute_modifier != 0) {
-            damage = damage + pf2eHelper.quantifyNumber(attribute_modifier);
-        }
-        ret.push(damage);
-        ret.push(this._strike.item.system.damage.damageType);
-        return 'item(\n' + ret.join(' ') + '\n)';
+        ret.push(pf2eHelper.damageFormula(this._strike, this._actor));
+
+        return ret.join(' ');
     }
 }
 
