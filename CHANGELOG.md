@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+
+### Added
+
+- PF2eHelper: universal helper to calculate a strike's damage
+- PF2eHelper: universal helper to calculate a strike's damage formula
+
+### Changed
+
+- PF2eHelper.formatTrait: improve trait detection and generation
+- ScribeProvider: use damage formula helper
+- ScribeProvider: detect melee and ranged strikes for NPCs and PCs properly
+- ScribeProvider: standardize strike output
+- pf2e-remaster: use new helper functions
+
+### Fixed
+
+- ScribeProvider: properly separate spells for spellcasters
+- pf2e-scribe provider: fix rangedActions detection
+- pf2e-scribe provider: updated class usage
+
 ## [1.0.0] - 2024-01-19
 
 ### Added
