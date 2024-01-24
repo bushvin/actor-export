@@ -36,7 +36,10 @@ class pf2ePDFProvider extends pdfProvider {
                 let label = cur_attack.label;
                 let attribute_modifier = 0;
                 let attribute_name = 'Str';
-                if (cur_attack.item.system.traits.value.includes('finesse')) {
+                if (
+                    cur_attack.item.system.traits.value.includes('finesse') &&
+                    actor.system.abilities.dex.mod >= actor.system.abilities.str.mod
+                ) {
                     attribute_name = 'Dex';
                     attribute_modifier = actor.system.abilities.dex.mod;
                 } else {
