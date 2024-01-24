@@ -107,6 +107,9 @@ export class pf2eHelper extends genericHelper {
 
         let hasWeaponSpecialization = false;
         let hasGreaterWeaponSpecialization = false;
+        let isThief = false;
+        let strModifier = 0;
+        let dexModifier = 0;
         if (actor !== undefined) {
             hasWeaponSpecialization =
                 actor.items.filter(
@@ -122,10 +125,17 @@ export class pf2eHelper extends genericHelper {
                         i.system.category === 'classfeature' &&
                         i.system.slug === 'greater-weapon-specialization'
                 ).length > 0;
+            isThief =
+                actor.items.filter(
+                    (i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.slug === 'thief'
+                ).length > 0;
+            strModifier = actor.system.abilities.str.mod;
+            dexModifier = actor.system.abilities.dex.mod;
         }
 
         const damageDice = `${strike.item.system.damage.dice}${strike.item.system.damage.die}`;
         let damageModifier = 0;
+        let attributeDamageModifier = 0;
 
         if (hasWeaponSpecialization) {
             let proficiencyRank = strike.modifiers
@@ -145,8 +155,12 @@ export class pf2eHelper extends genericHelper {
         }
 
         if (strike.options.includes('melee') || strike.options.includes('thrown')) {
-            damageModifier = actor.system.abilities.str.mod;
+            attributeDamageModifier = strModifier;
         }
+        if (isThief && dexModifier > strModifier) {
+            attributeDamageModifier = dexModifier;
+        }
+        damageModifier = damageModifier + attributeDamageModifier;
         if (damageModifier !== 0) {
             strikeDamage = damageDice + pf2eHelper.quantifyNumber(damageModifier);
         } else {
