@@ -144,22 +144,8 @@ export class pf2eHelper extends genericHelper {
             }
         }
 
-        if (strike.options.includes('melee')) {
-            if (strike.item.system.traits.value.includes('finesse')) {
-                damageModifier =
-                    damageModifier +
-                    strike.modifiers
-                        .filter((i) => i.type === 'ability' && i.slug === 'dex')
-                        .map((i) => i.modifier)
-                        .reduce((a, b) => a + b, 0);
-            } else {
-                damageModifier =
-                    damageModifier +
-                    strike.modifiers
-                        .filter((i) => i.type === 'ability' && i.slug === 'str')
-                        .map((i) => i.modifier)
-                        .reduce((a, b) => a + b, 0);
-            }
+        if (strike.options.includes('melee') || strike.options.includes('thrown')) {
+            damageModifier = actor.system.abilities.str.mod;
         }
         if (damageModifier !== 0) {
             strikeDamage = damageDice + pf2eHelper.quantifyNumber(damageModifier);
