@@ -38,8 +38,10 @@ class pf2ePDFProvider extends pdfProvider {
                 let attribute_name = 'Str';
                 if (cur_attack.item.system.traits.value.includes('finesse')) {
                     attribute_name = 'Dex';
+                    attribute_modifier = actor.system.abilities.dex.mod;
                 } else {
                     attribute_name = 'Str';
+                    attribute_modifier = actor.system.abilities.str.mod;
                 }
                 let proficiency_modifier = cur_attack.modifiers
                     .filter((i) => i.type === 'proficiency')
@@ -142,6 +144,11 @@ mapper.field('all', 'background_notes', '');
 /* Level Section */
 mapper.field('all', 'level', actor.system.details.level.value);
 mapper.field('all', 'xp', actor.system.details.xp?.value || '');
+
+/* Heropoints */
+mapper.field('all', 'hero_point_1', (actor.system.resources.heroPoints.value || 0) >= 1);
+mapper.field('all', 'hero_point_2', (actor.system.resources.heroPoints.value || 0) >= 2);
+mapper.field('all', 'hero_point_3', (actor.system.resources.heroPoints.value || 0) >= 3);
 
 /* Class Section */
 mapper.field('all', 'class', actor.class?.name || '');
