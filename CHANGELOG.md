@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2024-01-25
+
+### Added
+
+- pf2e-remaster: add granted feats to ABC level features (thank you MrOleThaLund)
+
+### Changed
+
+- PF2eHelper: use dex attribute modifier for damage when higher than str attribute modifier and actor is a thief.
+- pf2e-remaster: use options instead of domains to determine strike category
+- pf2e-remaster: simplify ABC level feats and features
+- pf2e-remaster: improve on held and worn items (thank you MrOleThaLund)
+
+### Fixed
+
+- pf2e-remaster: Perception item bonus was taking the proficiency bonus (thank you MrOleThaLund)
+- pf2e-remaster: remove coins from treasure list (thank you MrOleThaLund)
+- PF2eHelper: damage should use dex attribute when character is a thief and the weapon has finesse (thank you MrOleThaLund)
+- pf2e-remaster: Use Dex attribute for ranged weapons (thank you MrOleThaLund)
+- pf2e-remaster: consumables were not displayed correctly (thank you MrOleThaLund)
+- pf2e-remaster: center Perception Proficiency modifier on PDF sheet (thank you MrOleThaLund)
+
 ## [1.1.0] - 2024-01-24
 
 ### Added
