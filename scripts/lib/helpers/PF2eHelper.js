@@ -107,6 +107,7 @@ export class pf2eHelper extends genericHelper {
 
         let hasWeaponSpecialization = false;
         let hasGreaterWeaponSpecialization = false;
+        let itemHasFinesse = strike.item.system.traits.value.includes('finesse');
         let isThief = false;
         let strModifier = 0;
         let dexModifier = 0;
@@ -157,9 +158,10 @@ export class pf2eHelper extends genericHelper {
         if (strike.options.includes('melee') || strike.options.includes('thrown')) {
             attributeDamageModifier = strModifier;
         }
-        if (isThief && dexModifier > strModifier) {
+        if (isThief && itemHasFinesse && dexModifier > strModifier) {
             attributeDamageModifier = dexModifier;
         }
+
         damageModifier = damageModifier + attributeDamageModifier;
         if (damageModifier !== 0) {
             strikeDamage = damageDice + pf2eHelper.quantifyNumber(damageModifier);
