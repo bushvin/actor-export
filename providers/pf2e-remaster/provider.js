@@ -96,6 +96,24 @@ class pf2ePDFProvider extends pdfProvider {
                 this.field('all', `${domain}${index + 1}_traits_notes`, ' '.repeat(26) + traits_notes);
             });
     }
+
+    replaceNotesHtml(notes) {
+        notes = pf2eHelper.stripHTMLtag(notes, 'br');
+        notes = pf2eHelper.stripHTMLtag(notes, 'hr', '---');
+        notes = pf2eHelper.stripHTMLtag(notes, 'p', '', '\n');
+        notes = pf2eHelper.stripHTMLtag(notes, 'strong');
+        notes = pf2eHelper.stripHTMLtag(notes, 'em');
+        notes = pf2eHelper.stripHTMLtag(notes, 'span');
+        notes = pf2eHelper.stripNestedHTMLtag(notes, 'ol', 'li', '- ');
+        notes = pf2eHelper.stripHTMLtag(notes, 'ol');
+        notes = pf2eHelper.stripNestedHTMLtag(notes, 'ul', 'li', '- ');
+        notes = pf2eHelper.stripHTMLtag(notes, 'ul');
+        notes = pf2eHelper.stripHTMLtag(notes, 'h1');
+        notes = pf2eHelper.stripHTMLtag(notes, 'h2');
+        notes = pf2eHelper.stripHTMLtag(notes, 'h3');
+        notes = pf2eHelper.stripHTMLtag(notes, 'h4');
+        return notes;
+    }
 }
 
 const spellcasting_traditions = ['arcane', 'occult', 'primal', 'divine'];
@@ -820,31 +838,27 @@ mapper.field('all', 'height', actor.system.details.height?.value || '');
 mapper.field('all', 'weight', actor.system.details.weight?.value || '');
 mapper.field(
     'all',
-    'Appearance',
-    actor.system.details.biography?.appearance.replace('<p>', '').replace('</p>', '') || ''
+    'appearance',
+    ' '.repeat(25) + mapper.replaceNotesHtml(actor.system.details.biography?.appearance || '')
 );
 
 /* Personality Section */
-mapper.field('all', 'attitude', actor.system.details.biography?.attitude || '');
+mapper.field('all', 'attitude', ' '.repeat(15) + actor.system.details.biography?.attitude || '');
 mapper.field('all', 'deity_philosophy', actor.deity?.name || '');
-mapper.field('all', 'edicts', actor.system.details.biography?.edicts || '');
-mapper.field('all', 'anathema', actor.system.details.biography?.anathema || '');
-mapper.field('all', 'likes', actor.system.details.biography?.likes || '');
-mapper.field('all', 'dislikes', actor.system.details.biography?.dislikes || '');
-mapper.field('all', 'catchphrases', actor.system.details.biography?.catchphrases || '');
+mapper.field('all', 'edicts', ' '.repeat(15) + (actor.system.details.biography?.edicts || []).join(', '));
+mapper.field('all', 'anathema', ' '.repeat(20) + (actor.system.details.biography?.anathema || []).join(', '));
+mapper.field('all', 'likes', ' '.repeat(10) + actor.system.details.biography?.likes || '');
+mapper.field('all', 'dislikes', ' '.repeat(15) + actor.system.details.biography?.dislikes || '');
+mapper.field('all', 'catchphrases', ' '.repeat(25) + actor.system.details.biography?.catchphrases || '');
 
 /* Campaign notes Section */
-mapper.field(
-    'all',
-    'campaign_notes',
-    actor.system.details.biography?.campaignNotes.replace('<p>', '').replace('</p>', '') || ''
-);
-mapper.field('all', 'allies', actor.system.details.biography?.allies.replace('<p>', '').replace('</p>', '') || '');
-mapper.field('all', 'enemies', actor.system.details.biography?.enemies.replace('<p>', '').replace('</p>', '') || '');
+mapper.field('all', 'campaign_notes', mapper.replaceNotesHtml(actor.system.details.biography?.campaignNotes || ''));
+mapper.field('all', 'allies', ' '.repeat(10) + mapper.replaceNotesHtml(actor.system.details.biography?.allies || ''));
+mapper.field('all', 'enemies', ' '.repeat(15) + mapper.replaceNotesHtml(actor.system.details.biography?.enemies || ''));
 mapper.field(
     'all',
     'organizations',
-    actor.system.details.biography?.organaizations?.replace('<p>', '').replace('</p>', '') || ''
+    ' '.repeat(25) + mapper.replaceNotesHtml(actor.system.details.biography?.organizations || '')
 );
 
 /* Actions and Activities */
