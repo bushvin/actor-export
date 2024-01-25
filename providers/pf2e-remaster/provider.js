@@ -626,7 +626,6 @@ actor.items
     .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
     .forEach((f) => {
         const sub = actor.items.filter((i) => i.flags?.pf2e?.grantedBy?.id === f._id).map((i) => i.name);
-        console.log('sub:', sub);
         if (sub.length === 0) {
             class_feats_features_1.push(f.name);
         } else {
