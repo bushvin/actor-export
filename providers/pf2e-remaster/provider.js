@@ -704,55 +704,9 @@ actor.inventory.contents
                 container_index++;
             }
             consumable_index++;
-        } else if (item.system.usage.type === 'held') {
-            /* Held items */
-            mapper.field(
-                'all',
-                `held_item${held_index}_name`,
-                (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
-                    item.name +
-                    comtainer_label +
-                    (item.isMagical ? ' ‡ ' : ' ')
-            );
-            mapper.field('all', `held_item${held_index}_bulk`, item.system.bulk.value);
-            held_index++;
-            if (contained_items.length > 0) {
-                mapper.field(
-                    'all',
-                    `container_item${consumable_index}_name`,
-                    (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
-                        item.name +
-                        (item.isMagical ? ' ‡ ' : ' ')
-                );
-                mapper.field('all', `container_item${consumable_index}_bulk`, item.system.bulk.value);
-                consumable_index++;
-            }
-        } else if (item.system.usage.type === 'worn') {
-            /* Worn items */
-            mapper.field(
-                'all',
-                `worn_item${worn_index}_name`,
-                (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
-                    item.name +
-                    comtainer_label +
-                    (item.isMagical ? ' ‡ ' : ' ')
-            );
-            mapper.field('all', `worn_item${worn_index}_invested`, item.isInvested);
-            mapper.field('all', `worn_item${worn_index}_bulk`, item.system.bulk.value);
-            worn_index++;
-            if (contained_items.length > 0) {
-                mapper.field(
-                    'all',
-                    `container_item${consumable_index}_name`,
-                    (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
-                        item.name +
-                        (item.isMagical ? ' ‡ ' : ' ')
-                );
-                mapper.field('all', `container_item${consumable_index}_invested`, item.isInvested);
-                mapper.field('all', `container_item${consumable_index}_bulk`, item.system.bulk.value);
-                consumable_index++;
-            }
-        } else if (item.type === 'treasure' && item.system.usage.type === 'carried') {
+            // i.system.equipped.carryType
+            // } else if (item.system.usage.type === 'held') {
+        } else if (item.type === 'treasure') {
             /* Gems and artwork */
             let price = [];
             ['pp', 'gp', 'sp', 'cp'].forEach((t) => {
@@ -774,30 +728,79 @@ actor.inventory.contents
             if (contained_items.length > 0) {
                 mapper.field(
                     'all',
-                    `container_item${consumable_index}_name`,
+                    `container_item${container_index}_name`,
                     (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
                         item.name +
                         (item.isMagical ? ' ‡ ' : '')
                 );
-                mapper.field('all', `container_item${consumable_index}_bulk`, item.system.bulk.value);
-                consumable_index++;
+                mapper.field('all', `container_item${container_index}_bulk`, item.system.bulk.value);
+                container_index++;
+            }
+        } else if (item.system.equipped.carryType === 'held') {
+            /* Held items */
+            mapper.field(
+                'all',
+                `held_item${held_index}_name`,
+                (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
+                    item.name +
+                    comtainer_label +
+                    (item.isMagical ? ' ‡ ' : ' ')
+            );
+            mapper.field('all', `held_item${held_index}_bulk`, item.system.bulk.value);
+            held_index++;
+            if (contained_items.length > 0) {
+                mapper.field(
+                    'all',
+                    `container_item${container_index}_name`,
+                    (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
+                        item.name +
+                        (item.isMagical ? ' ‡ ' : ' ')
+                );
+                mapper.field('all', `container_item${container_index}_bulk`, item.system.bulk.value);
+                container_index++;
+            }
+            // } else if (item.system.usage.type === 'worn') {
+        } else if (item.system.equipped.carryType === 'worn') {
+            /* Worn items */
+            mapper.field(
+                'all',
+                `worn_item${worn_index}_name`,
+                (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
+                    item.name +
+                    comtainer_label +
+                    (item.isMagical ? ' ‡ ' : ' ')
+            );
+            mapper.field('all', `worn_item${worn_index}_invested`, item.isInvested);
+            mapper.field('all', `worn_item${worn_index}_bulk`, item.system.bulk.value);
+            worn_index++;
+            if (contained_items.length > 0) {
+                mapper.field(
+                    'all',
+                    `container_item${container_index}_name`,
+                    (item.system.quantity > 1 ? item.system.quantity + ' ' : '') +
+                        item.name +
+                        (item.isMagical ? ' ‡ ' : ' ')
+                );
+                mapper.field('all', `container_item${container_index}_invested`, item.isInvested);
+                mapper.field('all', `container_item${container_index}_bulk`, item.system.bulk.value);
+                container_index++;
             }
         }
         contained_items.forEach((containedItem) => {
             mapper.field(
                 'all',
-                `container_item${consumable_index}_name`,
+                `container_item${container_index}_name`,
                 '    ' +
                     (containedItem.system.quantity > 1 ? containedItem.system.quantity + ' ' : '') +
                     containedItem.name +
                     (containedItem.isMagical ? ' ‡ ' : ' ')
             );
-            mapper.field('all', `container_item${consumable_index}_invested`, containedItem.isInvested);
-            mapper.field('all', `container_item${consumable_index}_bulk`, containedItem.system.bulk.value);
-            consumable_index++;
+            mapper.field('all', `container_item${container_index}_invested`, containedItem.isInvested);
+            mapper.field('all', `container_item${container_index}_bulk`, containedItem.system.bulk.value);
+            container_index++;
         });
         if (contained_items.length > 0) {
-            consumable_index++;
+            container_index++;
         }
     });
 
