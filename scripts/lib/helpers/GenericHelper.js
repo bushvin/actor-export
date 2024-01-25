@@ -70,4 +70,70 @@ export class genericHelper {
                 return `${number}th`;
         }
     }
+
+    /**
+     * Strip html tags from text, possibly replacing opening and/or closing tags
+     * @param {string} html the HTML code to strip
+     * @param {string} tag the name of the tag to strip
+     * @param {string} openTagReplace the value to use to replace the opening tag with
+     * @param {string} closeTagReplace the value to use to replace the closing tag with
+     * @returns {string} the stripped html text
+     */
+    static stripHTMLtag = function (html, tag, openTagReplace = '', closeTagReplace = '') {
+        tag = tag.trim().toLowerCase();
+        if (['hr', 'br'].includes(tag)) {
+            let re = new RegExp(`<${tag} \/>`, 'gi');
+            html = html.replace(re, openTagReplace);
+        } else {
+            let pre = new RegExp(`<${tag}[^>]*>`, 'i');
+            let post = new RegExp(`</${tag}>`, 'i');
+            while (true) {
+                let originalHtml = html;
+                html = html.replace(pre, openTagReplace);
+                html = html.replace(post, closeTagReplace);
+                if (originalHtml === html) {
+                    break;
+                }
+            }
+        }
+        return html;
+    };
+
+    /**
+     * STrip html tags from html elements based on the parent element tag
+     * @param {string} html the HTML code to strip
+     * @param {string} tag the name of the parent tag to strip child tags
+     * @param {string} childTag the name of the child tag to strip
+     * @param {string} openTagReplace the value to use to replace the opening tag with
+     * @param {string} closeTagReplace the value to use to replace the closing tag with
+     * @returns {string}
+     */
+    static stripNestedHTMLtag = function (html, tag, childTag, openTagReplace = '', closeTagReplace = '') {
+        tag = tag.trim().toLowerCase();
+        childTag = childTag.trim().toLowerCase();
+        let openTag = new RegExp(`<${tag}[^>]*>`, 'i');
+        let closeTag = new RegExp(`</${tag}>`, 'i');
+        let startIndex = 0;
+        while (true) {
+            let originalHtml = html;
+            let searchHtml = html.substring(startIndex);
+            let openMatch = openTag.exec(searchHtml);
+            let closeMatch = closeTag.exec(searchHtml);
+            if (openMatch === null || closeMatch === null) {
+                break;
+            }
+            let htmlPart = searchHtml.substring(openMatch.index + openMatch[0].length, closeMatch.index);
+            htmlPart = this.stripHTMLtag(htmlPart, childTag, openTagReplace, closeTagReplace);
+            html =
+                html.substring(0, startIndex) +
+                searchHtml.substring(0, openMatch.index + openMatch[0].length) +
+                htmlPart +
+                searchHtml.substring(closeMatch.index);
+            startIndex = startIndex + closeMatch.index + closeMatch[0].length;
+            if (originalHtml === html) {
+                break;
+            }
+        }
+        return html;
+    };
 }
