@@ -9,9 +9,9 @@ import { semVer } from '../../scripts/lib/SemVer.js';
 class pf2ePDFProvider extends pdfProvider {
     getAttacks(actor, domain) {
         let field_prefix = '';
-        if (domain === 'ranged-attack-roll') {
+        if (domain === 'ranged') {
             field_prefix = 'ranged';
-        } else if (domain === 'melee-attack-roll') {
+        } else if (domain === 'melee') {
             field_prefix = 'melee';
         } else {
             this.notify('error', `getAttacks: an invalid domain was specified: ${domain}`, { permanent: true });
@@ -21,17 +21,17 @@ class pf2ePDFProvider extends pdfProvider {
             .filter(
                 (i) =>
                     i.type === 'strike' &&
-                    (i.domains?.includes(domain) || i.altUsages?.filter((f) => f.domains?.includes(domain)).length > 0)
+                    (i.options?.includes(domain) || i.altUsages?.filter((f) => f.options?.includes(domain)).length > 0)
             )
             .sort((a, b) => (a.ready > b.ready ? 1 : a.ready < b.ready ? -1 : 0))
             .reverse()
             .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
             .forEach((attack, index) => {
                 let cur_attack = {};
-                if (attack.domains.includes(domain)) {
+                if (attack.options.includes(domain)) {
                     cur_attack = attack;
-                } else if (attack.altUsages.filter((i) => i.domains.includes(domain)).length > 0) {
-                    cur_attack = attack.altUsages.filter((i) => i.domains.includes(domain))[0];
+                } else if (attack.altUsages.filter((i) => i.options.includes(domain)).length > 0) {
+                    cur_attack = attack.altUsages.filter((i) => i.options.includes(domain))[0];
                 }
                 let label = cur_attack.label;
                 let attribute_modifier = 0;
@@ -494,10 +494,10 @@ mapper.field(
 
 /* Strikes */
 /* Melee strikes range from 0-2 */
-mapper.getAttacks(actor, 'melee-attack-roll');
+mapper.getAttacks(actor, 'melee');
 
 /* Ranged strikes range from 0-1 */
-mapper.getAttacks(actor, 'ranged-attack-roll');
+mapper.getAttacks(actor, 'ranged');
 
 /* Weapon Proficiencies */
 Object.keys(actor.system.proficiencies?.attacks || []).forEach((a) => {
@@ -536,363 +536,140 @@ mapper.field('all', 'class_dc_proficiency_modifier', classDcProficiencyModifier)
 mapper.field('all', 'class_dc_item_modifier', classDcItemModifier);
 
 /* Ancestry and General Feats Section*/
-mapper.field(
-    'all',
-    '1_ancestry_hertitage_abilities',
-    actor.items
-        .filter((i) => i.type === 'feat' && (i.category === 'ancestryfeature' || i.category == 'heritage'))
-        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)
-        .join(', ')
-);
-mapper.field(
-    'all',
-    '1_ancestry_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'ancestry-1')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
+const ancestry_hertitage_abilities_1 = [];
+actor.items
+    .filter((i) => i.type === 'feat' && (i.category === 'ancestryfeature' || i.category == 'heritage'))
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+    .forEach((a) => {
+        const sub = actor.items.filter((i) => i.flags?.pf2e?.grantedBy?.id === a._id).map((i) => i.name);
+        if (sub.length === 0) {
+            ancestry_hertitage_abilities_1.push(a.name);
+        } else {
+            ancestry_hertitage_abilities_1.push(`${a.name} (${sub.join(', ')})`);
+        }
+    });
+
+mapper.field('all', '1_ancestry_hertitage_abilities', ancestry_hertitage_abilities_1.join(', '));
+
+const ancestry_feat_1 = [];
+actor.items
+    .filter(
+        (i) =>
+            i.type === 'feat' &&
+            (i.system.location === 'ancestry-1' || (i.system.category === 'ancestry' && i.system.onlyLevel1))
+    )
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+    .forEach((s) => {
+        const sub = actor.items.filter((i) => i.flags?.pf2e?.grantedBy?.id === s._id).map((i) => i.name);
+        if (sub.length === 0) {
+            ancestry_feat_1.push(s.name);
+        } else {
+            ancestry_feat_1.push(`${s.name} (${sub.join(', ')})`);
+        }
+    });
+mapper.field('all', '1_ancestry_feat', ancestry_feat_1.join(', '));
+
 const r1_background_skill_feat = [];
 Object.keys(actor.background?.system.items || []).forEach((b) => {
     r1_background_skill_feat.push(actor.background.system.items[b].name);
 });
 mapper.field('all', '1_background_skill_feat', r1_background_skill_feat.join(', '));
-mapper.field(
-    'all',
-    '2_skill_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'skill-2')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '3_general_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'general-3')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '4_skill_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'skill-4')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '5_ancestry_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'ancestry-5')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-if (actor.system.build !== undefined) {
-    mapper.field('all', '5_boosts', pf2eHelper.formatAttributeBoosts(actor.system.build.attributes.boosts[5]));
+
+for (let s = 2; s <= 20; s = s + 2) {
+    mapper.field(
+        'all',
+        `${s}_skill_feat`,
+        actor.items
+            .filter((i) => i.type === 'feat' && i.system.location === `skill-${s}`)
+            .map((i) => i.name)
+            .join(', ') || ''
+    );
 }
-mapper.field(
-    'all',
-    '6_skill_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'skill-6')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '7_general_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'general-7')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '8_skill_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'skill-8')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '9_ancestry_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'ancestry-9')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '10_skill_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'skill-10')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field('all', '10_boosts', pf2eHelper.formatAttributeBoosts(actor.system.build?.attributes.boosts[10]));
-mapper.field(
-    'all',
-    '11_general_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'general-11')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '12_skill_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'skill-12')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '13_ancestry_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'ancestry-13')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '14_skill_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'skill-14')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '15_general_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'general-15')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field('all', '15_boosts', pf2eHelper.formatAttributeBoosts(actor.system.build?.attributes.boosts[15]));
-mapper.field(
-    'all',
-    '16_skill_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'skill-16')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '17_ancestry_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'ancestry-17')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '18_skill_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'skill-18')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '19_general_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'general-19')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '20_skill_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.location === 'skill-20')
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field('all', '20_boosts', pf2eHelper.formatAttributeBoosts(actor.system.build?.attributes.boosts[20]));
+
+for (let g = 3; g <= 20; g = g + 4) {
+    mapper.field(
+        'all',
+        `${g}_general_feat`,
+        actor.items
+            .filter((i) => i.type === 'feat' && i.system.location === `general-${g}`)
+            .map((i) => i.name)
+            .join(', ') || ''
+    );
+}
+
+for (let a = 5; a <= 20; a = a + 4) {
+    mapper.field(
+        'all',
+        `${a}_ancestry_feat`,
+        actor.items
+            .filter((i) => i.type === 'feat' && i.system.location === `ancestry-${a}`)
+            .map((i) => i.name)
+            .join(', ') || ''
+    );
+}
+
+for (let b = 5; b <= 20; b = b + 5) {
+    if (actor.system.build !== undefined) {
+        mapper.field('all', `${b}_boosts`, pf2eHelper.formatAttributeBoosts(actor.system.build.attributes.boosts[b]));
+    }
+}
 
 /* Class Abilities Section */
-mapper.field(
-    'all',
-    '1_class_feats_features',
+const class_id = actor.class._id;
+const class_feats_features_1 = [];
+actor.items
+    .filter(
+        (i) =>
+            i.type === 'feat' &&
+            i.system.location === class_id &&
+            i.system.level.value <= 1 &&
+            i.flags?.pf2e?.grantedBy?.id === undefined &&
+            (i.system.category === 'classfeature' || i.system.category === 'class')
+    )
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+    .forEach((f) => {
+        const sub = actor.items.filter((i) => i.flags?.pf2e?.grantedBy?.id === f._id).map((i) => i.name);
+        console.log('sub:', sub);
+        if (sub.length === 0) {
+            class_feats_features_1.push(f.name);
+        } else {
+            class_feats_features_1.push(`${f.name} (${sub.join(', ')})`);
+        }
+    });
+mapper.field('all', '1_class_feats_features', class_feats_features_1.join(', '));
+
+for (let f = 3; f <= 20; f = f + 2) {
+    const class_feature = [];
     actor.items
         .filter(
             (i) =>
                 i.type === 'feat' &&
-                i.system.level.value === 1 &&
-                (i.system.category === 'classfeature' || i.system.category === 'class')
+                i.system.category === 'classfeature' &&
+                i.system.location === class_id &&
+                i.system.level.value === f
         )
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '2_class_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && ['archetype-2', 'class-2'].includes(i.system.location))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '3_class_feature',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 3)
-        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '4_class_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && ['archetype-4', 'class-4'].includes(i.system.location))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '5_class_feature',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 5)
-        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '6_class_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && ['archetype-6', 'class-6'].includes(i.system.location))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '7_class_feature',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 7)
-        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '8_class_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && ['archetype-8', 'class-8'].includes(i.system.location))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '9_class_feature',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 9)
-        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '10_class_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && ['archetype-10', 'class-10'].includes(i.system.location))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '11_class_feature',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 11)
-        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '12_class_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && ['archetype-12', 'class-12'].includes(i.system.location))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '13_class_feature',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 13)
-        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '14_class_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && ['archetype-14', 'class-14'].includes(i.system.location))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '15_class_feature',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 15)
-        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '16_class_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && ['archetype-16', 'class-16'].includes(i.system.location))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '17_class_feature',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 17)
-        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '18_class_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && ['archetype-18', 'class-18'].includes(i.system.location))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '19_class_feature',
-    actor.items
-        .filter((i) => i.type === 'feat' && i.system.category === 'classfeature' && i.system.level.value === 18)
-        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
-mapper.field(
-    'all',
-    '20_class_feat',
-    actor.items
-        .filter((i) => i.type === 'feat' && ['archetype-20', 'class-20'].includes(i.system.location))
-        .map((i) => i.name)
-        .join(', ') || ''
-);
+        .forEach((f) => {
+            const sub = actor.items.filter((i) => i.flags?.pf2e?.grantedBy?.id === f._id).map((i) => i.name);
+            if (sub.length === 0) {
+                class_feature.push(f.name);
+            } else {
+                class_feature.push(`${f.name} (${sub.join(', ')})`);
+            }
+        });
+    mapper.field('all', `${f}_class_feature`, class_feature.join(', '));
+}
+
+for (let f = 2; f <= 20; f = f + 2) {
+    mapper.field(
+        'all',
+        `${f}_class_feat`,
+        actor.items
+            .filter((i) => i.type === 'feat' && [`archetype-${f}`, `class-${f}`].includes(i.system.location))
+            .map((i) => i.name)
+            .join(', ') || ''
+    );
+}
 
 /* Inventory Section */
 let held_index = 0;
