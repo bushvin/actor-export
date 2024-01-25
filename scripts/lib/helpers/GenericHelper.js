@@ -106,7 +106,7 @@ export class genericHelper {
      * @param {string} childTag the name of the child tag to strip
      * @param {string} openTagReplace the value to use to replace the opening tag with
      * @param {string} closeTagReplace the value to use to replace the closing tag with
-     * @returns {string}
+     * @returns {string} the stripped html text
      */
     static stripNestedHTMLtag(html, tag, childTag, openTagReplace = '', closeTagReplace = '') {
         tag = tag.trim().toLowerCase();
