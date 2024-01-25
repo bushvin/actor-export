@@ -901,11 +901,11 @@ let worn_index = 0;
 let treasure_index = 0;
 let container_index = 0;
 actor.inventory.contents
-    .filter((i) => i.system.containerId === null)
+    .filter((i) => i.system.containerId === null && i.system.stackGroup !== 'coins')
     .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
     .forEach((item) => {
         const contained_items = actor.inventory.contents
-            .filter((i) => i.system.containerId === item._id)
+            .filter((i) => i.system.containerId === item._id && i.system.stackGroup !== 'coins')
             .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
         const comtainer_label = contained_items.length > 0 ? ' [+]' : '';
         if (item.type === 'consumable') {
