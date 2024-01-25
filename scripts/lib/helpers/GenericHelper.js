@@ -79,7 +79,7 @@ export class genericHelper {
      * @param {string} closeTagReplace the value to use to replace the closing tag with
      * @returns {string} the stripped html text
      */
-    static stripHTMLtag = function (html, tag, openTagReplace = '', closeTagReplace = '') {
+    static stripHTMLtag(html, tag, openTagReplace = '', closeTagReplace = '') {
         tag = tag.trim().toLowerCase();
         if (['hr', 'br'].includes(tag)) {
             let re = new RegExp(`<${tag} \/>`, 'gi');
@@ -97,10 +97,10 @@ export class genericHelper {
             }
         }
         return html;
-    };
+    }
 
     /**
-     * STrip html tags from html elements based on the parent element tag
+     * Strip html tags from html elements based on the parent element tag
      * @param {string} html the HTML code to strip
      * @param {string} tag the name of the parent tag to strip child tags
      * @param {string} childTag the name of the child tag to strip
@@ -108,7 +108,7 @@ export class genericHelper {
      * @param {string} closeTagReplace the value to use to replace the closing tag with
      * @returns {string}
      */
-    static stripNestedHTMLtag = function (html, tag, childTag, openTagReplace = '', closeTagReplace = '') {
+    static stripNestedHTMLtag(html, tag, childTag, openTagReplace = '', closeTagReplace = '') {
         tag = tag.trim().toLowerCase();
         childTag = childTag.trim().toLowerCase();
         let openTag = new RegExp(`<${tag}[^>]*>`, 'i');
@@ -135,5 +135,5 @@ export class genericHelper {
             }
         }
         return html;
-    };
+    }
 }
