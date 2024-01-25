@@ -425,7 +425,7 @@ const perceptionProficiencyModifier = actor.perception.modifiers
     .map((i) => i.modifier)
     .reduce((a, b) => a + b, 0);
 const perceptionItemModifier = actor.perception.modifiers
-    .filter((i) => i.type === 'proficiency' && i.enabled)
+    .filter((i) => i.type === 'item' && i.enabled)
     .map((i) => i.modifier)
     .reduce((a, b) => a + b, 0);
 mapper.field('all', 'perception', pf2eHelper.quantifyNumber(actor.perception.mod - perceptionStatusModifier));
