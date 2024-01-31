@@ -466,11 +466,17 @@ class actorExportCustomProvider extends FormApplication {
         const data = super.getData();
         let exampleCode = `import { baseProvider } from '${window.location.protocol}//${window.location.hostname}/modules/actor-export/scripts/lib/providers/BaseProvider.js';
         import { pdfProvider } from '${window.location.protocol}//${window.location.hostname}/modules/actor-export/scripts/lib/providers/PDFProvider.js';
+        import { scribeProvider } from '${window.location.protocol}//${window.location.hostname}/modules/actor-export/scripts/lib/providers/ScribeProvider.js';
+
         // The full URI above must be specified.
 
         // actor is a global variable containing the actor's information
         // baseProvider is a skeleton with base functionality for the export not to fail. It needs to be enhanced in some way.
+        // scribeProvider is a fully functional class which can be used to export to a markdown format supported by https://scribe.pf2.tools/
         // pdfProvider is a fully functional class which can be used to export to premade PDFs
+
+        // More info can be found here: https://github.com/bushvin/actor-export/wiki
+        // The sections about Custom Providers and API Documentation should help you
 
         const mapper = new baseProvider(actor);
         // do whatever is needed
