@@ -339,55 +339,100 @@ class actorExportDialog extends FormApplication {
                                 { permanent: true }
                             );
                         } else {
-                            module.mapper.download(undefined, undefined, function () {
+                            try {
+                                module.mapper.download(undefined, undefined, function () {
+                                    actorExport.providerFileProgress(
+                                        document.getElementById('field._custom_._custom_')
+                                    );
+                                });
+                            } catch (error) {
+                                actorExport.log('error', error);
+                                ui.notifications.error(
+                                    `${actorExport.ID} | An error ocurred downloading the custom provider file.`,
+                                    {
+                                        permanent: true,
+                                    }
+                                );
                                 actorExport.providerFileProgress(document.getElementById('field._custom_._custom_'));
-                            });
+                            }
                         }
                     })
                     .catch((error) => {
                         actorExport.log('error', error);
+                        ui.notifications.error(`${actorExport.ID} | An error ocurred executing the custom provider.`, {
+                            permanent: true,
+                        });
+                        actorExport.providerFileProgress(document.getElementById('field._custom_._custom_'));
                     });
             } else {
                 dataUri = `/modules/${actorExport.ID}/providers/${providerId}/provider.js?t=${Date.now()}`;
-                import(dataUri).then((module) => {
-                    if (module.mapper === undefined) {
-                        ui.notifications.error(
-                            `${actorExport.ID} | The mapper is not (correctly) exported. Ignoring the ${providerId} provider.`,
-                            { permanent: true }
-                        );
-                    } else if (!baseProvider.prototype.isPrototypeOf(module.mapper)) {
-                        ui.notifications.error(
-                            `${actorExport.ID} | The obtained object (mapper) is not of type baseProvider. Ignoring the ${providerId} provider.`,
-                            { permanent: true }
-                        );
-                    } else {
-                        for (let f = 0; f < selectedFiles[providerId].length; f++) {
-                            if (this.providers.filter((i) => i.id === providerId).length !== 1) {
-                                ui.notifications.error(
-                                    `${actorExport.ID} | Could not find provider info for ${providerId}.`
+                import(dataUri)
+                    .then((module) => {
+                        if (module.mapper === undefined) {
+                            ui.notifications.error(
+                                `${actorExport.ID} | The mapper is not (correctly) exported. Ignoring the ${providerId} provider.`,
+                                { permanent: true }
+                            );
+                        } else if (!baseProvider.prototype.isPrototypeOf(module.mapper)) {
+                            ui.notifications.error(
+                                `${actorExport.ID} | The obtained object (mapper) is not of type baseProvider. Ignoring the ${providerId} provider.`,
+                                { permanent: true }
+                            );
+                        } else {
+                            for (let f = 0; f < selectedFiles[providerId].length; f++) {
+                                if (this.providers.filter((i) => i.id === providerId).length !== 1) {
+                                    ui.notifications.error(
+                                        `${actorExport.ID} | Could not find provider info for ${providerId}.`
+                                    );
+                                    return;
+                                }
+                                const providerInfo = this.providers.filter((i) => i.id === providerId)[0];
+                                const fileInfo = providerInfo.files.filter(
+                                    (i) => i.uri === selectedFiles[providerId][f]
                                 );
-                                return;
+                                if (fileInfo.length != 1) {
+                                    ui.notifications.error(
+                                        `${actorExport.ID} | Something bad happened trying to locate file information for ${selectedFiles[providerId][f]} in provider ${providerId}.`
+                                    );
+                                    return;
+                                }
+                                const sourceFileURI = actorExport.parseFilePath(fileInfo[0].uri, providerId);
+                                const destinationFileName = `${module.mapper.actorName} - ${sourceFileURI
+                                    .split('/')
+                                    .pop()}`;
+
+                                try {
+                                    module.mapper.download(sourceFileURI, destinationFileName, function () {
+                                        actorExport.providerFileProgress(
+                                            document.getElementById(
+                                                `field.${providerId}.${selectedFiles[providerId][f]}`
+                                            )
+                                        );
+                                    });
+                                } catch (error) {
+                                    actorExport.log('error', error);
+                                    ui.notifications.error(
+                                        `${actorExport.ID} | An error ocurred downloading '${selectedFiles[providerId][f]}' from the '${providerId}' provider file.`,
+                                        {
+                                            permanent: true,
+                                        }
+                                    );
+                                    actorExport.providerFileProgress(
+                                        document.getElementById(`field.${providerId}.${selectedFiles[providerId][f]}`)
+                                    );
+                                }
                             }
-                            const providerInfo = this.providers.filter((i) => i.id === providerId)[0];
-                            const fileInfo = providerInfo.files.filter((i) => i.uri === selectedFiles[providerId][f]);
-                            if (fileInfo.length != 1) {
-                                ui.notifications.error(
-                                    `${actorExport.ID} | Something bad happened trying to locate file information for ${selectedFiles[providerId][f]} in provider ${providerId}.`
-                                );
-                                return;
-                            }
-                            const sourceFileURI = actorExport.parseFilePath(fileInfo[0].uri, providerId);
-                            const destinationFileName = `${module.mapper.actorName} - ${sourceFileURI
-                                .split('/')
-                                .pop()}`;
-                            module.mapper.download(sourceFileURI, destinationFileName, function () {
-                                actorExport.providerFileProgress(
-                                    document.getElementById(`field.${providerId}.${selectedFiles[providerId][f]}`)
-                                );
-                            });
                         }
-                    }
-                });
+                    })
+                    .catch((error) => {
+                        actorExport.log('error', error);
+                        ui.notifications.error(
+                            `${actorExport.ID} | An error ocurred executing the '${providerId}' provider.`,
+                            {
+                                permanent: true,
+                            }
+                        );
+                    });
             }
         }
     }
