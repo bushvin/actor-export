@@ -171,7 +171,37 @@ mapper.field('all', 'hero_point_3', (actor.system.resources.heroPoints.value || 
 /* Class Section */
 mapper.field('all', 'class', actor.class?.name || '');
 /* FIXME: complete class notes */
-mapper.field('all', 'class_notes', '');
+const subClassFeatures = [
+    'research-field', // alchemist
+    'instinct', // barbarian
+    'muses', // bard
+    'deity-and-cause', // champion
+    'doctrine', // cleric
+    'druidic-order', // druid
+    'gunslingers-way', // gunslinger
+    'innovation', // inventor
+    'methodology', // investigator
+    'hybrid-study', // magus
+    'mystery', // oracle
+    'conscious-mind', // psychic
+    'rogues-racket', // rogue
+    'bloodline', // sorcerer
+    'evolution-feat', // summoner
+    'swashbucklers-style', // swashbucklers
+    'patron', // witch
+    'arcane-thesis', // wizard
+];
+const subClass = [];
+actor.items
+    .filter((i) => i.type === 'feat' && subClassFeatures.includes(i.system.slug))
+    .forEach((f) => {
+        actor.items
+            .filter((i) => i.flags?.pf2e?.grantedBy?.id === f._id)
+            .forEach((s) => {
+                subClass.push(s.name);
+            });
+    });
+mapper.field('all', 'class_notes', subClass.join('/'));
 
 /* attributes Section */
 Object.keys(actor.abilities).forEach((a) => {
@@ -968,6 +998,7 @@ mapper.field(
 );
 
 /* Spell Statistics Section */
+// FIXME: when no cantrips are available, return an empty string
 mapper.field(
     'all',
     'cantrip_slots',
