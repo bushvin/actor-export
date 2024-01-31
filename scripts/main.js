@@ -340,7 +340,7 @@ class actorExportDialog extends FormApplication {
                             );
                         } else {
                             module.mapper.download(undefined, undefined, function () {
-                                actorExport.providerFileProgress(document.getElementById('field._custom_._custom'));
+                                actorExport.providerFileProgress(document.getElementById('field._custom_._custom_'));
                             });
                         }
                     })
