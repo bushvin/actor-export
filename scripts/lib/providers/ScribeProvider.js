@@ -88,93 +88,23 @@ class scribeBase {
         value = value.replace(/@check\[type:([^\|]+)\|[^\]]+classOrSpellDC[^\]]+\]/gi, '$1 save');
         value = value.replace(/@check\[[^\]]+\]/gi, '');
 
-        value = this._strip_html_element('br', value, '\n');
-        value = this._strip_html_element('hr', value, '-');
-        value = this._strip_html_element('p', value, '', '\n');
-        value = this._strip_html_element('strong', value, '**', '**');
-        value = this._strip_html_element('em', value, '*', '*');
-        value = this._strip_html_element('span', value);
-        value = this._strip_nested_html_element('ol', 'li', value, '1. ', '\n');
-        value = this._strip_html_element('ol', value);
-        value = this._strip_nested_html_element('ul', 'li', value, '- ', '\n');
-        value = this._strip_html_element('ul', value);
-        /*
-        value = this._strip_html_element("li", value, '1. ', '\n');
-        */
+        value = pf2eHelper.stripHTMLtag(value, 'br');
+        value = pf2eHelper.stripHTMLtag(value, 'hr', '-');
+        value = pf2eHelper.stripHTMLtag(value, 'p', '', '\n');
+        value = pf2eHelper.stripHTMLtag(value, 'strong', '**', '**');
+        value = pf2eHelper.stripHTMLtag(value, 'em', '*', '*');
+        value = pf2eHelper.stripHTMLtag(value, 'span');
+        value = pf2eHelper.stripNestedHTMLtag(value, 'ol', 'li', '1. ');
+        value = pf2eHelper.stripHTMLtag(value, 'ol');
+        value = pf2eHelper.stripNestedHTMLtag(value, 'ul', 'li', '- ');
+        value = pf2eHelper.stripHTMLtag(value, 'ul');
         buff_heading = buff_heading + 1;
-        value = this._strip_html_element('h1', value, '#'.repeat(buff_heading) + ' ', '\n');
-        value = this._strip_html_element('h2', value, '#'.repeat(buff_heading) + ' ', '\n');
-        value = this._strip_html_element('h3', value, '#'.repeat(buff_heading) + ' ', '\n');
-        value = this._strip_html_element('h4', value, '#'.repeat(buff_heading) + ' ', '\n');
-        value = this._strip_html_element('h5', value, '#'.repeat(buff_heading) + ' ', '\n');
+        value = pf2eHelper.stripHTMLtag(value, 'h1', '#'.repeat(buff_heading) + ' ', '\n');
+        value = pf2eHelper.stripHTMLtag(value, 'h2', '#'.repeat(buff_heading) + ' ', '\n');
+        value = pf2eHelper.stripHTMLtag(value, 'h3', '#'.repeat(buff_heading) + ' ', '\n');
+        value = pf2eHelper.stripHTMLtag(value, 'h4', '#'.repeat(buff_heading) + ' ', '\n');
+        value = pf2eHelper.stripHTMLtag(value, 'h5', '#'.repeat(buff_heading) + ' ', '\n');
 
-        return value;
-    };
-
-    /**
-     * Strip the given HTML element from a text
-     * @param {string} element The element to replace/remove
-     * @param {string} value The text to be parsed
-     * @param {string} pre_replace what to add before the replaced element
-     * @param {string} post_replace what to add after the replaced element
-     * @returns {string} the parsed string
-     */
-    _strip_html_element = function (element, value, pre_replace = '', post_replace = '') {
-        element = element.toLowerCase();
-        if (['hr', 'br'].includes(element)) {
-            let re = new RegExp(`<${element} \/>`, 'gi');
-            value = value.replace(re, pre_replace);
-        } else {
-            let pre = new RegExp(`<${element}[^>]*>`, 'i');
-            let post = new RegExp(`</${element}>`, 'i');
-            while (true) {
-                let ovalue = value;
-                value = value.replace(pre, pre_replace);
-                value = value.replace(post, post_replace);
-                if (ovalue === value) {
-                    break;
-                }
-            }
-        }
-        return value;
-    };
-
-    /**
-     * Strip the given HTML element from a parent HTML tag
-     * @param {string} parent The parent element to look for
-     * @param {string} element The element to replace/remove
-     * @param {string} value The text to be parsed
-     * @param {string} pre_replace what to add before the replaced element
-     * @param {string} post_replace what to add after the replaced element
-     * @returns {string} the parsed string
-     */
-    _strip_nested_html_element = function (parent, element, value, pre_replace = '', post_replace = '') {
-        let pre_parent = new RegExp(`<${parent}[^>]*>`, 'i');
-        let post_parent = new RegExp(`</${parent}>`, 'i');
-        let start_index = 0;
-        while (true) {
-            let ovalue = value;
-            let search_value = value.substring(start_index);
-            let pre_match = pre_parent.exec(search_value);
-            let post_match = post_parent.exec(search_value);
-            if (typeof pre_match === 'object' && !pre_match) {
-                break;
-            }
-            if (typeof post_match === 'object' && !post_match) {
-                break;
-            }
-            let snippet = search_value.substring(pre_match.index + pre_match[0].length, post_match.index);
-            snippet = this._strip_html_element(element, snippet, pre_replace, post_replace);
-            value =
-                value.substring(0, start_index) +
-                search_value.substring(0, pre_match.index + pre_match[0].length) +
-                snippet +
-                search_value.substring(post_match.index);
-            start_index = start_index + post_match.index + post_match[0].length;
-            if (ovalue === value) {
-                break;
-            }
-        }
         return value;
     };
 }
