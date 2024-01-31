@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2024-01-31
+
+### Added
+
+- PF2eHelper: new functions to strip html code from text (stripHTMLtag, stripNestedHTMLtag)
+- pf2e-remaster: show sub class in class notes
+-
+
+### Changed
+
+- pf2e-remaster: updated PDF to better format character information
+- pf2e-remaster: format character background information
+- pf2e-scribe: replace legacy functions with helper functions
+- module: improve error handling of custom and regular providers
+
+### Fixed
+
+- module: fix custom provider updating the progress
+
 ## [1.2.0] - 2024-01-25
 
 ### Added
