@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - PF2eHelper: new functions to strip html code from text (stripHTMLtag, stripNestedHTMLtag)
 - pf2e-remaster: show sub class in class notes
--
 
 ### Changed
 
@@ -22,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- module: fix custom provider updating the progress
+- module: fix custom provider updating the progress (thank you Peter G)
 
 ## [1.2.0] - 2024-01-25
 
