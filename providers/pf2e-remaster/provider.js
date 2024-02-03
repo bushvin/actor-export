@@ -7,94 +7,114 @@ import { semVer } from '../../scripts/lib/SemVer.js';
 
 // helper functions
 class pf2ePDFProvider extends pdfProvider {
-    getAttacks(actor, domain) {
-        if (!['ranged', 'melee'].includes(domain)) {
-            this.notify('error', `getAttacks: an invalid domain was specified: ${domain}`, { permanent: true });
-            return false;
-        }
+    getStrikes() {
+        let strikes = [];
+        let meleeIndex = 1;
+        let rangedIndex = 1;
+
         actor.system.actions
-            .filter(
-                (i) =>
-                    i.type === 'strike' &&
-                    (i.options?.includes(domain) || i.altUsages?.filter((f) => f.options?.includes(domain)).length > 0)
-            )
+            .filter((i) => i.type === 'strike')
             .sort((a, b) => (a.ready > b.ready ? 1 : a.ready < b.ready ? -1 : 0))
             .reverse()
             .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
-            .forEach((attack, index) => {
-                let cur_attack = {};
-                if (attack.options.includes(domain)) {
-                    cur_attack = attack;
-                } else if (attack.altUsages.filter((i) => i.options.includes(domain)).length > 0) {
-                    cur_attack = attack.altUsages.filter((i) => i.options.includes(domain))[0];
-                }
-                let label = cur_attack.label;
-                let attribute_modifier = 0;
-                let attribute_name = '';
-                if (domain === 'melee') {
-                    attribute_name = 'Str';
-                    if (
-                        cur_attack.item.system.traits.value.includes('finesse') &&
-                        actor.system.abilities.dex.mod >= actor.system.abilities.str.mod
-                    ) {
-                        attribute_name = 'Dex';
-                        attribute_modifier = actor.system.abilities.dex.mod;
-                    } else {
-                        attribute_name = 'Str';
-                        attribute_modifier = actor.system.abilities.str.mod;
-                    }
-                } else {
-                    attribute_name = 'Dex';
-                    attribute_modifier = actor.system.abilities.dex.mod;
-                }
-                let proficiency_modifier = cur_attack.modifiers
-                    .filter((i) => i.type === 'proficiency')
+            .forEach((strike) => {
+                strikes.push(strike);
+                strikes = strikes.concat(strike.altUsages);
+            });
+
+        for (let i = 0; i < strikes.length; i++) {
+            const strike = strikes[i];
+            // strikes.forEach((strike) => {
+            const isMeleeStrike = strike.options?.includes('melee') || false;
+            const isRangedStrike = strike.options?.includes('ranged') || false;
+            if (!isMeleeStrike && !isRangedStrike) {
+                this.notify('warn', `This strike is neither melee or ranged: ${strike.label}`);
+                continue;
+            }
+            const hasFinesse = strike.item.system.traits.value.includes('finesse');
+            const dexModifier = strike.modifiers
+                .filter((i) => i.type === 'ability' && i.slug === 'dex' && i.enabled)
+                .map((i) => i.modifier)
+                .reduce((a, b) => a + b, 0);
+            const strModifier = strike.modifiers
+                .filter((i) => i.type === 'ability' && i.slug === 'str' && i.enabled)
+                .map((i) => i.modifier)
+                .reduce((a, b) => a + b, 0);
+            const statusModifier = strike.modifiers
+                .filter((i) => i.type === 'status' && i.enabled)
+                .map((i) => i.modifier)
+                .reduce((a, b) => a + b, 0);
+
+            let traitsAndNotes = '';
+            let runes = pf2eHelper.formatRunes(strike.item.system.runes);
+            runes = runes !== '' ? ', ' + runes : '';
+            if (strike.item.system.range != null) {
+                traitsAndNotes =
+                    pf2eHelper.formatTraits(
+                        strike.item.system.traits.value.concat([`range-${strike.item.system.range}`])
+                    ) + runes;
+            } else {
+                traitsAndNotes = pf2eHelper.formatTraits(strike.item.system.traits.value) + runes;
+            }
+
+            const attributeName = isMeleeStrike ? (hasFinesse && dexModifier >= strModifier ? 'Dex' : 'Str') : 'Dex';
+            const attributeModifier = isMeleeStrike
+                ? hasFinesse && dexModifier >= strModifier
+                    ? dexModifier
+                    : strModifier
+                : dexModifier;
+            const ret = {
+                name: strike.label,
+                attack: strike.totalModifier - statusModifier,
+                attribute: attributeName,
+                attributeModifier: attributeModifier,
+                proficiencyModifier: strike.modifiers
+                    .filter((i) => i.type === 'proficiency' && i.enabled)
                     .map((i) => i.modifier)
-                    .reduce((a, b) => a + b, 0);
-                let item_modifier = cur_attack.modifiers
+                    .reduce((a, b) => a + b, 0),
+                itemModifier: strike.modifiers
                     .filter((i) => i.type === 'item' && i.enabled)
                     .map((i) => i.modifier)
-                    .reduce((a, b) => a + b, 0);
-                let status_modifier = cur_attack.modifiers
-                    .filter((i) => i.type === 'status' && i.enabled)
-                    .map((i) => i.modifier)
-                    .reduce((a, b) => a + b, 0);
-                let total_modifier = cur_attack.totalModifier - status_modifier;
-                let bludgeoning_damage =
-                    cur_attack.item.system.damage.damageType === 'bludgeoning' ||
-                    cur_attack.item.system.traits.value.includes('versatile-b') ||
-                    false;
-                let piercing_damage =
-                    cur_attack.item.system.damage.damageType === 'piercing' ||
-                    cur_attack.item.system.traits.value.includes('versatile-p') ||
-                    false;
-                let slashing_damage =
-                    cur_attack.item.system.damage.damageType === 'slashing' ||
-                    cur_attack.item.system.traits.value.includes('versatile-s') ||
-                    false;
-                let traits_notes = '';
-                let runes = pf2eHelper.formatRunes(cur_attack.item.system.runes);
-                runes = runes !== '' ? ', ' + runes : '';
-                if (cur_attack.item.system.range != null) {
-                    traits_notes =
-                        pf2eHelper.formatTraits(
-                            cur_attack.item.system.traits.value.concat([`range-${cur_attack.item.system.range}`])
-                        ) + runes;
-                } else {
-                    traits_notes = pf2eHelper.formatTraits(cur_attack.item.system.traits.value) + runes;
-                }
-                this.field('all', `${domain}${index + 1}_name`, label);
-                this.field('all', `${domain}${index + 1}_attack`, pf2eHelper.quantifyNumber(total_modifier));
-                this.field('all', `${domain}${index + 1}_attribute`, attribute_name);
-                this.field('all', `${domain}${index + 1}_attribute_modifier`, attribute_modifier);
-                this.field('all', `${domain}${index + 1}_proficiency_modifier`, proficiency_modifier);
-                this.field('all', `${domain}${index + 1}_item_modifier`, item_modifier);
-                this.field('all', `${domain}${index + 1}_damage`, pf2eHelper.strikeDamage(cur_attack, actor));
-                this.field('all', `${domain}${index + 1}_bludgeoning_damage`, bludgeoning_damage);
-                this.field('all', `${domain}${index + 1}_piercing_damage`, piercing_damage);
-                this.field('all', `${domain}${index + 1}_slashing_damage`, slashing_damage);
-                this.field('all', `${domain}${index + 1}_traits_notes`, ' '.repeat(26) + traits_notes);
-            });
+                    .reduce((a, b) => a + b, 0),
+                damageFormula: strike.damage({ getFormula: true }),
+                hasBludgeoningDamage:
+                    strike.item.system.damage.damageType === 'bludgeoning' ||
+                    strike.item.system.traits.value.includes('versatile-b') ||
+                    false,
+                hasPiercingDamage:
+                    strike.item.system.damage.damageType === 'piercing' ||
+                    strike.item.system.traits.value.includes('versatile-p') ||
+                    false,
+                hasSlashingDamage:
+                    strike.item.system.damage.damageType === 'slashing' ||
+                    strike.item.system.traits.value.includes('versatile-s') ||
+                    false,
+                traitsAndNotes: traitsAndNotes,
+            };
+            if (isMeleeStrike) {
+                this.addStrike('melee', meleeIndex++, ret);
+            } else {
+                this.addStrike('ranged', rangedIndex++, ret);
+            }
+        }
+    }
+
+    addStrike(domain, index, strike) {
+        this.field('all', `${domain}${index}_name`, strike.name);
+        this.field('all', `${domain}${index}_attack`, strike.attack);
+        this.field('all', `${domain}${index}_attribute`, strike.attribute);
+        this.field('all', `${domain}${index}_attribute_modifier`, strike.attributeModifier);
+        this.field('all', `${domain}${index}_proficiency_modifier`, strike.proficiencyModifier);
+        this.field('all', `${domain}${index}_item_modifier`, strike.itemModifier);
+        this.field('all', `${domain}${index}_damage`, strike.damageFormula, {
+            parseValue: function (value) {
+                return value.replace(/(piercing|bludgeoning|slashing)/gi, '').replace(/\s+/g, ' ');
+            },
+        });
+        this.field('all', `${domain}${index}_bludgeoning_damage`, strike.hasBludgeoningDamage);
+        this.field('all', `${domain}${index}_piercing_damage`, strike.hasPiercingDamage);
+        this.field('all', `${domain}${index}_slashing_damage`, strike.hasSlashingDamage);
+        this.field('all', `${domain}${index}_traits_notes`, ' '.repeat(26) + strike.traitsAndNotes);
     }
 
     replaceNotesHtml(notes) {
@@ -538,11 +558,7 @@ mapper.field(
 );
 
 /* Strikes */
-/* Melee strikes range from 0-2 */
-mapper.getAttacks(actor, 'melee');
-
-/* Ranged strikes range from 0-1 */
-mapper.getAttacks(actor, 'ranged');
+mapper.getStrikes();
 
 /* Weapon Proficiencies */
 Object.keys(actor.system.proficiencies?.attacks || []).forEach((a) => {
