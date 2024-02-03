@@ -400,7 +400,6 @@ class actorExportDialog extends FormApplication {
                                 const destinationFileName = `${module.mapper.actorName} - ${sourceFileURI
                                     .split('/')
                                     .pop()}`;
-
                                 try {
                                     module.mapper.download(sourceFileURI, destinationFileName, function () {
                                         actorExport.providerFileProgress(
