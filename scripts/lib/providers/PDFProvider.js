@@ -122,7 +122,7 @@ export class pdfProvider extends baseProvider {
      * text for text fields, booleans for checkboxes
      * @param {string} file the pdf filename to apply the image to ('all' means all PDFs)
      * @param {string} name The name of the field to reference
-     * @param {string|boolean} value The value to be applied to the field (can be a Promise object as well)
+     * @param {string|boolean|Promise} value The value to be applied to the field
      * @param {Object} options Optional data, functions for the field
      * @param {Function} options.parseValue function to parse the value after resolving the value Promise
      */
