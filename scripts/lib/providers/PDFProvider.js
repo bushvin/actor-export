@@ -122,8 +122,9 @@ export class pdfProvider extends baseProvider {
      * text for text fields, booleans for checkboxes
      * @param {string} file the pdf filename to apply the image to ('all' means all PDFs)
      * @param {string} name The name of the field to reference
-     * @param {string|boolean} value The value to be applied to the field
-     * @param {Object} options Additional data about the field
+     * @param {string|boolean} value The value to be applied to the field (can be a Promise object as well)
+     * @param {Object} options Optional data, functions for the field
+     * @param {Function} options.parseValue function to parse the value after resolving the value Promise
      */
     field(file, name, value, options) {
         if (this.pdfFields.filter((i) => i.file === file && i.name === name).length) {
@@ -156,7 +157,7 @@ export class pdfProvider extends baseProvider {
      * @param {string} name The name of the field to return the value from
      * @returns {string|boolean|undefined} the requested field data
      */
-    getField(file, name) {
+    async getField(file, name) {
         if (this.pdfFields.filter((i) => i.file.toLowerCase() === file.toLowerCase() && i.name === name).length > 0) {
             return this.pdfFields.filter((i) => i.file === file && i.name === name)[0];
         } else if (this.pdfFields.filter((i) => i.file.toLowerCase() === 'all' && i.name === name).length > 0) {
@@ -178,10 +179,16 @@ export class pdfProvider extends baseProvider {
      * @param {string|boolean} defaultValue The value to return if the field cannot be found
      * @returns {string|boolean} - the requested field
      */
-    getFieldValue(file, name, defaultValue) {
-        const field = this.getField(file, name);
+    async getFieldValue(file, name, defaultValue) {
+        const field = await this.getField(file, name);
         if (typeof field !== 'undefined') {
-            return field.value;
+            let parseValue = function (value) {
+                return value;
+            };
+            if (typeof field.options?.parseValue === 'function') {
+                parseValue = field.options.parseValue;
+            }
+            return parseValue(await field.value);
         } else {
             return defaultValue;
         }
@@ -338,13 +345,15 @@ export class pdfProvider extends baseProvider {
             if (this.fieldExists(fieldName)) {
                 switch (fieldType) {
                     case 'PDFTextField':
-                        let stringValue = String(this.getFieldValue(sourceFileURI.split('/').pop(), fieldName, ''));
+                        let stringValue = String(
+                            await this.getFieldValue(sourceFileURI.split('/').pop(), fieldName, '')
+                        );
                         pdfField.setText(stringValue);
                         pdfField.markAsClean();
                         break;
                     case 'PDFCheckBox':
                         let booleanValue = Boolean(
-                            this.getFieldValue(sourceFileURI.split('/').pop(), fieldName, false)
+                            await this.getFieldValue(sourceFileURI.split('/').pop(), fieldName, false)
                         );
                         booleanValue ? pdfField.check() : pdfField.uncheck();
                         break;
