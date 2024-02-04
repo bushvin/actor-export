@@ -682,7 +682,7 @@ actor.items
     .filter(
         (i) =>
             i.type === 'feat' &&
-            i.system.location === class_id &&
+            (i.system.location === class_id || i.system.location === 'class-1') &&
             i.system.level.value <= 1 &&
             i.flags?.pf2e?.grantedBy?.id === undefined &&
             (i.system.category === 'classfeature' || i.system.category === 'class')
