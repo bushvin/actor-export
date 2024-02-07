@@ -48,10 +48,10 @@ A provider is a set of (javascript) instructions to be interpreted in order to g
 
 ### Current providers
 
-| name | description | type | authors |
-|-|-|-|-|
-| PF2e Remaster Character sheet | A set of PDF sheets based on the Paizo Remastered Character Sheet | PDF | [bushvin](https://github.com/bushvin) |
-| PF2e Scribe Generator | A set of templates to generate scribe.pf2.tools markdown | scribe.pf2.tools | [bushvin](https://github.com/bushvin) |
+| name | description | type | authors | notes |
+|-|-|-|-|-|
+| PF2e Remaster Character sheet | A set of PDF sheets based on the Paizo Remastered Character Sheet | PDF | [bushvin](https://github.com/bushvin) | Displays badly using browser built-in PDF viewers. |
+| PF2e Scribe Generator | A set of templates to generate scribe.pf2.tools markdown | scribe.pf2.tools | [bushvin](https://github.com/bushvin) | Displays badly using browser built-in PDF viewers. |
 
 ## Change notes
 
