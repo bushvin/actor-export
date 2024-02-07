@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.2.2] - 2024-02-07
+
+### Fixed
+
+- restored the pf2e-remaster provider as it got somehow deleted
+
 ## [2024.2.1] - 2024-02-07
 
 Release versioning will from now on adhere to CalVer: `YYYY.MM.MICRO`
