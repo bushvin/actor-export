@@ -2,7 +2,7 @@
 
 ![badge_version] ![badge_issues] ![badge_downloads]
 
-![badge_fvtt_versions]
+![badge_fvtt_versions] ![badge_foundry_installs]
 
 ![badge_mastodon] ![badge_discord]
 
@@ -67,3 +67,6 @@ See [CHANGELOG.md](CHANGELOG.md)
 [badge_mastodon]: https://img.shields.io/mastodon/follow/1084764?domain=https%3A%2F%2Fmastodon.social&logo=mastodon&logoColor=white&style=flat-square&label=%40bushvin%40mastodon.social
 
 [badge_discord]: https://img.shields.io/discord/1194592282205237290?style=flat-square&logo=discord
+
+[badge_foundry_installs]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Factor-export&query=package.installs&style=flat-square&label=Foundry%20Installs
+
