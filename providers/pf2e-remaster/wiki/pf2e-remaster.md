@@ -11,9 +11,9 @@ This provider renders the Paizo PF2e Remaster Charactersheet, albeit with a coup
 
 Not all PDF viewers support embedded fonts. If this is the case, install the following additional fonts:
 
-- Good OT Bold
-- Marker Felt Thin
-- action_icons Regular
+- [Good OT Bold](https://blog.elaba.net/files/GoodOT-Bold.ttf)
+- [Marker Felt Thin](https://blog.elaba.net/files/MarkerFelt-Thin.ttf)
+- [action_icons Regular](https://blog.elaba.net/files/action_icons.ttf)
 
 ## Examples
 
