@@ -1118,6 +1118,14 @@ spellCastingEntries
                     (i) =>
                         !i.isCantrip &&
                         ((i.type !== undefined && i.rank === r) ||
+                            (sce.isSpontaneous &&
+                                i.system.heightening !== undefined &&
+                                i.system.location?.signature === true &&
+                                ((i.system.heightening.type === 'interval' &&
+                                    i.rank < r &&
+                                    parseInt((r - i.rank) / i.system.heightening.interval) ==
+                                        (r - i.rank) / i.system.heightening.interval) ||
+                                    (i.system.heightening.type === 'fixed' && i.rank < r))) ||
                             (sce.isPrepared &&
                                 i.system.heightening !== undefined &&
                                 ((i.system.heightening.type === 'interval' &&
