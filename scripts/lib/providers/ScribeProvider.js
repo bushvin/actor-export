@@ -922,14 +922,14 @@ export class scribeProvider extends baseProvider {
 
     /**
      * Download the formatted scribe files
-     * @param sourceFileURI the URI of the file to use
+     * @param providerPath the URI of the provider
+     * @param sourceFileURI the URI of the file to use, relative to the providerPath
      * @param destinationFileName the name of the file to be saved
      * @param execPost the function to be executed after execution
      */
-    download(sourceFileURI, destinationFileName, execPost = function () {}) {
-        super.download(this.sourceFileURI || sourceFileURI, this.destinationFileName || destinationFileName);
-        const scribeOption = (this.sourceFileURI || sourceFileURI).split('/').pop();
-        const ret = this.getScribeData(scribeOption);
+    download(providerPath, sourceFileURI, destinationFileName, execPost = function () {}) {
+        super.download(providerPath, sourceFileURI, destinationFileName, execPost);
+        const ret = this.getScribeData(sourceFileURI);
         if (ret !== undefined && ret != '') {
             saveDataToFile(ret, 'text/plain', this.destinationFileName || destinationFileName);
         }

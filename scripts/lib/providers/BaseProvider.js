@@ -15,49 +15,60 @@ export class baseProvider {
         this.actor = actor;
         this.actorName = this.actor.name || '';
         this.logPrefix = 'actor-export';
+        this.providerPath = undefined;
         this.sourceFileURI = undefined;
         this.destinationFileName = undefined;
+        this.overrideProviderPath = undefined;
+        this.overrideSourceFileURI = undefined;
+        this.overrideDestinationFileName = undefined;
+        this.debug = false;
     }
 
     /**
      * The default function to download whatever provider is used
      * This is here to not fail when the provider definition doesn't have it.
-     * @param sourceFileURI the URI of the file to use
+     * @param providerPath the URI of the provider
+     * @param sourceFileURI the URI of the file to use, relative to the providerPath
      * @param destinationFileName the name of the file to be saved
      * @param execPost the function to be executed after execution
      */
-    download(sourceFileURI, destinationFileName, execPost = function () {}) {}
+    download(providerPath, sourceFileURI, destinationFileName, execPost = function () {}) {
+        this.providerPath = providerPath;
+        this.sourceFileURI = sourceFileURI;
+        this.destinationFileName = destinationFileName;
+    }
 
     /**
      * A function to fetch an image and return an image object promise
-     * @param {string} src The URL to the image to be used
-     * @returns {Promise} the image promise
+     * @param {string} src - The URL to the image to be used.
+     * @returns {Promise<HTMLImageElement>} - A promise that resolves with the loaded image.
+     * @throws {Error} - Throws an error if the image fails to load.
      */
     loadImage(src) {
         return new Promise((resolve, reject) => {
-            let img = new Image();
+            const img = new Image();
             img.crossOrigin = 'anonymous';
             img.onload = () => resolve(img);
-            img.onerror = reject;
+            img.onerror = () => reject(new Error(`Failed to load image from ${src}`));
             img.src = src;
         });
     }
 
     /**
-     * Notifier to display messages while parsing data. Will use the Foundry VTT notifier by default
-     * But falls back on `console` if ui.notifications is not (yet) available
-     * @param {string} severity the severity of the message debug, error, warning or info
-     * @param {string} message what to show
-     * @param {Object} options additional options for ui.notifications.
+     * Notifier to display messages while parsing data.
+     * Will use the Foundry VTT notifier by default but falls back on `console` if ui.notifications is not available.
+     * @param {string} severity - The severity of the message (debug, error, warning, info).
+     * @param {string} message - The message to display.
+     * @param {Object} options - Additional options for ui.notifications.
      */
     notify(severity, message, options) {
-        if (typeof ui !== 'undefined' && typeof ui.notifications !== undefined) {
-            const msg = `${this.logPrefix} | ${message}`;
+        const msg = `${this.logPrefix} | ${message}`;
+        if (typeof ui !== 'undefined' && typeof ui.notifications !== 'undefined') {
             switch (severity) {
                 case 'error':
                     ui.notifications.error(msg, options);
                     break;
-                case 'warn':
+                case 'warning':
                     ui.notifications.warn(msg, options);
                     break;
                 case 'debug':
@@ -67,11 +78,12 @@ export class baseProvider {
                     ui.notifications.info(msg, options);
             }
         } else {
+            // Fallback to console logging
             switch (severity) {
                 case 'error':
                     console.error(msg);
                     break;
-                case 'warn':
+                case 'warning':
                     console.warn(msg);
                     break;
                 case 'debug':
@@ -81,5 +93,35 @@ export class baseProvider {
                     console.info(msg);
             }
         }
+    }
+
+    /**
+     * Cleanup Foundry Markup entries
+     * @param {string} value the string to be cleaned
+     * @param {object} helper the helper object to use to clean up the value
+     * @returns {string} Returns the cleaned string
+     */
+    cleanFoundryMarkup(value, helper) {
+        if (typeof value !== 'string') {
+            return value;
+        }
+        if (!helper || typeof helper.stripHTMLtag !== 'function' || typeof helper.stripNestedHTMLtag !== 'function') {
+            return value;
+        }
+        value = helper.stripHTMLtag(value, 'br', '', '\n');
+        value = helper.stripHTMLtag(value, 'hr', '---');
+        value = helper.stripHTMLtag(value, 'p', '', '\n');
+        value = helper.stripHTMLtag(value, 'strong');
+        value = helper.stripHTMLtag(value, 'em');
+        value = helper.stripHTMLtag(value, 'span');
+        value = helper.stripNestedHTMLtag(value, 'ol', 'li', '- ');
+        value = helper.stripHTMLtag(value, 'ol');
+        value = helper.stripNestedHTMLtag(value, 'ul', 'li', '- ');
+        value = helper.stripHTMLtag(value, 'ul');
+        value = helper.stripHTMLtag(value, 'h1');
+        value = helper.stripHTMLtag(value, 'h2');
+        value = helper.stripHTMLtag(value, 'h3');
+        value = helper.stripHTMLtag(value, 'h4');
+        return value;
     }
 }

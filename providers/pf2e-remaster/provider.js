@@ -7,6 +7,13 @@ import { semVer } from '../../scripts/lib/SemVer.js';
 
 // helper functions
 class pf2ePDFProvider extends pdfProvider {
+    constructor(actor) {
+        super(actor);
+        this.page_width = 612;
+        this.page_height = 792;
+        //this.debug = true;
+    }
+
     getStrikes() {
         let strikes = [];
         let meleeIndex = 1;
@@ -133,6 +140,14 @@ class pf2ePDFProvider extends pdfProvider {
         notes = pf2eHelper.stripHTMLtag(notes, 'h3');
         notes = pf2eHelper.stripHTMLtag(notes, 'h4');
         return notes;
+    }
+
+    image(file, page, x, y, path, maxWidth = -1, maxHeight = -1, options) {
+        x = x / this.page_width;
+        y = y / this.page_height;
+        maxWidth = maxWidth > 0 ? maxWidth / this.page_width : maxWidth;
+        maxHeight = maxHeight > 0 ? maxHeight / this.page_height : maxHeight;
+        super.image(file, page, x, y, path, maxWidth, maxHeight, options);
     }
 }
 

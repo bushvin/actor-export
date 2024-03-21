@@ -166,6 +166,10 @@ class actorExport {
         }
     }
 
+    static providerPath(provider) {
+        return `/modules/${this.ID}/providers/${provider}`;
+    }
+
     /**
      * Return the full path to the specified path
      * @param {string} filePath - the path to the file to be parsed
@@ -174,7 +178,7 @@ class actorExport {
      */
     static parseFilePath(filePath, provider) {
         /* FIXME: check if the URI is complete before building it */
-        return `/modules/${this.ID}/providers/${provider}/${filePath}`;
+        return this.providerPath(provider) + `/${filePath}`;
     }
 
     static providerFileProgress(html) {
@@ -340,11 +344,16 @@ class actorExportDialog extends FormApplication {
                             );
                         } else {
                             try {
-                                module.mapper.download(undefined, undefined, function () {
-                                    actorExport.providerFileProgress(
-                                        document.getElementById('field._custom_._custom_')
-                                    );
-                                });
+                                module.mapper.download(
+                                    actorExport.providerPath(providerId),
+                                    undefined,
+                                    undefined,
+                                    function () {
+                                        actorExport.providerFileProgress(
+                                            document.getElementById('field._custom_._custom_')
+                                        );
+                                    }
+                                );
                             } catch (error) {
                                 actorExport.log('error', error);
                                 ui.notifications.error(
@@ -396,18 +405,22 @@ class actorExportDialog extends FormApplication {
                                     );
                                     return;
                                 }
-                                const sourceFileURI = actorExport.parseFilePath(fileInfo[0].uri, providerId);
-                                const destinationFileName = `${module.mapper.actorName} - ${sourceFileURI
+                                const destinationFileName = `${module.mapper.actorName} - ${fileInfo[0].uri
                                     .split('/')
                                     .pop()}`;
                                 try {
-                                    module.mapper.download(sourceFileURI, destinationFileName, function () {
-                                        actorExport.providerFileProgress(
-                                            document.getElementById(
-                                                `field.${providerId}.${selectedFiles[providerId][f]}`
-                                            )
-                                        );
-                                    });
+                                    module.mapper.download(
+                                        actorExport.providerPath(providerId),
+                                        fileInfo[0].uri,
+                                        destinationFileName,
+                                        function () {
+                                            actorExport.providerFileProgress(
+                                                document.getElementById(
+                                                    `field.${providerId}.${selectedFiles[providerId][f]}`
+                                                )
+                                            );
+                                        }
+                                    );
                                 } catch (error) {
                                     actorExport.log('error', error);
                                     ui.notifications.error(
