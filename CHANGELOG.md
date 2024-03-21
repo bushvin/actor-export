@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.3.1] - 2024-03-21
+
+### Added
+
+- baseProvider.cleanFoundryMarkup: a function to cleanup Foundry text
+- pdfProvider.convertHexColorToRgb: convert html color to rgb
+- pdfProvider.defaultFont: set the default font for text boxes in the PDF
+- pdfProvider.defaultFontColor: set the default font color for text boxes in the PDF
+- pdfProvider.embedFont: embed a font file into a PDF
+- pdfProvider.embedTextBox: embed a text box into a PDF
+- pdfProvider.parseValue: parse a value using a parser function
+- pdfProvider.textBox: Add PDF textbox information
+- actorExport.providerPath: Provide the path to the provider
+- fonts
+
+### Changed
+
+- baseProvider.download functionality is changed to include the path to the provider
+- baseProvider.loadImage handles errors better
+- baseProvider.notify improvements
+- pdfProvider.download to align with baseProvider.download and improve error handling
+- pdfProvider.embedImage improve code and error handling
+- pdfProvider.field code improvements
+- pdfProvider.getFieldValue use pdfProvider.parseValue method
+- pdfProvider.image code improvements
+- pdfProvider.parseFile better error handling
+- scribeProvider.download to align with baseProvider.download.
+- actorExport.parseFilePath use actorExport.providerPath
+- actorExport.downloadFiles to provide the providerpath to the mapper download method
+
 ## [2024.2.3] - 2024-02-28
 
 ### Added
