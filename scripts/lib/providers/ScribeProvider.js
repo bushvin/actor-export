@@ -72,7 +72,9 @@ class scribeBase {
 
         // @UUID[Compendium.pf2e.bestiary-ability-glossary-srd.Item.v61oEQaDdcRpaZ9X]{Aura}
         value = value.replace(/\[\[\/r [^\]]+\]\]{([^}]+)}/g, '$1');
+        value = value.replace(/\[\[\/br [^\]]+\]\]{([^}]+)}/g, '$1');
         value = value.replace(/\[\[\/r [0-9]+d[0-9]+\[[^\]]+\]\]\]{([^}]+)}/g, '$1');
+        value = value.replace(/\[\[\/r \(@damage\)([^\[]+)\[([^\]]+)\]\]\]/, '$1 $2');
         value = value.replace(/@damage\[([^\[]+)\[([^\]]+)\]\]{([^}]+)}/gi, '$1 $2 ($3)');
         value = value.replace(/@damage\[([^\[]+)\[([^\]]+)\]\]/gi, '$1 $2');
         value = value.replace(/@Template\[[^\]]+\]{([^}]+)}/gi, '$1');
@@ -88,11 +90,13 @@ class scribeBase {
         value = value.replace(/@check\[type:([^\|]+)\|[^\]]+classOrSpellDC[^\]]+\]/gi, '$1 save');
         value = value.replace(/@check\[[^\]]+\]/gi, '');
 
+        value = value.replace(/&nbsp;/gi, ' ');
+
         value = pf2eHelper.stripHTMLtag(value, 'br');
         value = pf2eHelper.stripHTMLtag(value, 'hr', '-');
         value = pf2eHelper.stripHTMLtag(value, 'p', '', '\n');
-        value = pf2eHelper.stripHTMLtag(value, 'strong', '**', '**');
-        value = pf2eHelper.stripHTMLtag(value, 'em', '*', '*');
+        value = pf2eHelper.stripHTMLtag(value, 'strong', ' **', '**');
+        value = pf2eHelper.stripHTMLtag(value, 'em', ' *', '*');
         value = pf2eHelper.stripHTMLtag(value, 'span');
         value = pf2eHelper.stripNestedHTMLtag(value, 'ol', 'li', '1. ');
         value = pf2eHelper.stripHTMLtag(value, 'ol');
