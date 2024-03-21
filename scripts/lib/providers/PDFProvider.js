@@ -59,7 +59,6 @@ export class pdfProvider extends baseProvider {
      * @param {string} font The name of the font file
      * @param {number} size The size of the font, expressed in % of the page height.
      * @param {number} lineHeight The lineheight of the font, expressed in % of the page height.
-     * @returns
      */
     defaultFont(font, size, lineHeight = undefined) {
         // TODO: should we check the font is available?
