@@ -96,6 +96,7 @@ export class pf2eHelper extends genericHelper {
      * @param {Object} strike the strike object as found in actor.system.actions
      * @param {Object} actor the actor object to check for additional feats like weapon specialization
      * @returns {string}
+     * @static
      */
     static strikeDamage(strike, actor) {
         let strikeDamage = '';
@@ -176,12 +177,18 @@ export class pf2eHelper extends genericHelper {
      * @param {Object} strike the strike object as found in actor.system.actions
      * @param {Object} actor the actor object to check for additional feats like weapon specialization
      * @returns {string}
+     * @static
      */
     static damageFormula(strike, actor) {
         if (strike.damageFormula !== undefined) {
             return strike.damageFormula;
         } else {
-            return pf2eHelper.strikeDamage(strike, actor) + ' ' + strike.item.system.damage.damageType;
+            if (typeof strike.item.system.damage !== 'undefined') {
+                return pf2eHelper.strikeDamage(strike, actor) + ' ' + strike.item.system.damage.damageType;
+            } else {
+                const damageRoll = strike.item.system.damageRolls[Object.keys(strike.item.system.damageRolls)[0]];
+                return damageRoll.damage + ' ' + damageRoll.damageType;
+            }
         }
     }
 
