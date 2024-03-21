@@ -1,0 +1,26 @@
+{
+    "id": "pf2e-remaster-paizo",
+    "name": "PF2e Remaster Character sheet (new)",
+    "description": "The official Paizo Remastered Character Sheet",
+    "icon": "fas fa-file-pdf",
+    "type": "pdf",
+    "authors": [
+        {
+            "name": "bushvin",
+            "url": "https://github.com/bushvin"
+        }
+    ],
+    "requirements": [
+        {
+            "system": "pf2e",
+            "system_version": "5.9.0"
+        }
+    ],
+    "files": [
+        {
+            "uri": "RemasterPlayerCoreCharacterSheet.pdf",
+            "name": "PF2e Remaster Character Sheet by Paizo",
+            "description": "The standard Paizo pf2e remaster player character sheet"
+        }
+    ]
+}
