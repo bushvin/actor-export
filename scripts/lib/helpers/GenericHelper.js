@@ -85,8 +85,8 @@ export class genericHelper {
             let re = new RegExp(`<${tag} \/>`, 'gi');
             html = html.replace(re, openTagReplace);
         } else {
-            let pre = new RegExp(`<${tag}[^>]*>`, 'i');
-            let post = new RegExp(`</${tag}>`, 'i');
+            let pre = new RegExp(`<${tag}[^>]*>\\s*`, 'i');
+            let post = new RegExp(`\\s*</${tag}>`, 'i');
             while (true) {
                 let originalHtml = html;
                 html = html.replace(pre, openTagReplace);
