@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.3.2] 2024-03-21
+
+### Changed
+
+- genericHelper.stripHTMLtag: remove additional spaces before/after opening/closing tags
+- pf2eHelper.damageFormula: damage calculation for NPCs is done differently
+- scribeBase._parse_description: filter more and better
+- pf2e-scribe provider: item( needs to be followed by a newline
+
 ## [2024.3.1] - 2024-03-21
 
 ### Added
