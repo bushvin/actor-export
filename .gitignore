@@ -5,3 +5,5 @@ tmp
 **sh
 **_autosave_**
 node_modules
+fonts/**.ttf
+fonts/**.otf
