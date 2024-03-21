@@ -110,16 +110,16 @@ if (strikeActions.length > 0) {
     strikeActions.forEach((el) => {
         const strike = new scribeProvider.class.scribeStrike(el, actor);
         if (strike.isMelee) {
-            meleeActions.push('item(' + strike.scribify() + ')');
+            meleeActions.push('item(\n' + strike.scribify() + '\n)');
         } else if (strike.isRanged) {
-            rangedActions.push('item(' + strike.scribify() + ')');
+            rangedActions.push('item(\n' + strike.scribify() + '\n)');
         }
         (el.altUsages || []).forEach((alt) => {
             const altStrike = new scribeProvider.class.scribeStrike(alt, actor);
             if (altStrike.isMelee) {
-                meleeActions.push('item(' + altStrike.scribify() + ')');
+                meleeActions.push('item(\n' + altStrike.scribify() + '\n)');
             } else if (altStrike.isRanged) {
-                rangedActions.push('item(' + altStrike.scribify() + ')');
+                rangedActions.push('item(\n' + altStrike.scribify() + '\n)');
             }
         });
     });
