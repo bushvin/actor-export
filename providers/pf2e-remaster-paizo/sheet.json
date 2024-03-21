@@ -1,6 +1,6 @@
 {
     "id": "pf2e-remaster-paizo",
-    "name": "PF2e Remaster Character sheet (new)",
+    "name": "PF2e Remaster Character sheet (original)",
     "description": "The official Paizo Remastered Character Sheet",
     "icon": "fas fa-file-pdf",
     "type": "pdf",
