@@ -559,7 +559,7 @@ export class pdfProvider extends baseProvider {
             } catch (error) {
                 this.notify(
                     'error',
-                    `An error ocurred loading the pdf form for ${this.providerFullFilePath}: ${error.message}`,
+                    `An error ocurred loading the pdf form for ${this.providerFullFilePath()}: ${error.message}`,
                     {
                         permanent: true,
                     }

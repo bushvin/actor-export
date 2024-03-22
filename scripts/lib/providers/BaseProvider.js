@@ -18,7 +18,6 @@ export class baseProvider {
         this.providerRootPath = undefined;
         this.providerFilePath = undefined;
         this.providerDestinationFileName = undefined;
-        this.providerFullFilePath = undefined;
         this.overrideProviderPath = undefined;
         this.overrideSourceFileURI = undefined;
         this.overrideDestinationFileName = undefined;
@@ -77,13 +76,13 @@ export class baseProvider {
         this.providerRootPath = providerRootPath;
         this.providerFilePath = providerFilePath;
         this.providerDestinationFileName = providerDestinationFileName;
-        this.providerFullFilePath =
-            (this.overrideProviderPath || this.providerRootPath) +
-            '/' +
-            (this.overrideSourceFileURI || this.providerFilePath);
+        // this.providerFullFilePath =
+        //     (this.overrideProviderPath || this.providerRootPath) +
+        //     '/' +
+        //     (this.overrideSourceFileURI || this.providerFilePath);
 
         // Check if the file exists
-        fetch(this.providerFullFilePath, { method: 'HEAD' })
+        fetch(this.providerFullFilePath(), { method: 'HEAD' })
             .then(async (headResponse) => {
                 if (!headResponse.ok) {
                     // File does not exist, try to create a new one from scratch
@@ -92,11 +91,11 @@ export class baseProvider {
                     } catch (error) {
                         this.notify('error', 'There was an error creating the export file');
                         console.error('error:', error);
-                        throw new Error(`Failed to create ${this.providerFullFilePath}: ${error.message}`);
+                        throw new Error(`Failed to create ${this.providerFullFilePath()}: ${error.message}`);
                     }
                 }
                 // File exists, proceed with downloading
-                return fetch(this.providerFullFilePath);
+                return fetch(this.providerFullFilePath());
             })
             .then(async (response) => {
                 if (!response) {
@@ -104,7 +103,7 @@ export class baseProvider {
                     return;
                 }
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch ${this.providerFullFilePath}: ${response.statusText}`);
+                    throw new Error(`Failed to fetch ${this.providerFullFilePath()}: ${response.statusText}`);
                 }
                 this.fileResponse = response;
                 try {
@@ -112,14 +111,14 @@ export class baseProvider {
                 } catch (error) {
                     this.notify('error', 'There was an error updating the export file');
                     console.error('error:', error);
-                    throw new Error(`Failed to update ${this.providerFullFilePath}: ${error.message}`);
+                    throw new Error(`Failed to update ${this.providerFullFilePath()}: ${error.message}`);
                 }
                 try {
                     await this.saveFile();
                 } catch (error) {
                     this.notify('error', 'There was an error saving the export file');
                     console.error('error:', error);
-                    throw new Error(`Failed to save ${this.providerFullFilePath}: ${error.message}`);
+                    throw new Error(`Failed to save ${this.providerFullFilePath()}: ${error.message}`);
                 }
                 try {
                     await postDownloadFunction();
@@ -192,6 +191,14 @@ export class baseProvider {
                     console.info(msg);
             }
         }
+    }
+
+    providerFullFilePath() {
+        return (
+            (this.overrideProviderPath || this.providerRootPath) +
+            '/' +
+            (this.overrideSourceFileURI || this.providerFilePath)
+        );
     }
 
     /**
