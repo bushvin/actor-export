@@ -15,9 +15,10 @@ export class baseProvider {
         this.actor = actor;
         this.actorName = this.actor.name || '';
         this.logPrefix = 'actor-export';
-        this.providerPath = undefined;
-        this.sourceFileURI = undefined;
-        this.destinationFileName = undefined;
+        this.providerRootPath = undefined;
+        this.providerFilePath = undefined;
+        this.providerDestinationFileName = undefined;
+        this.providerFullFilePath = undefined;
         this.overrideProviderPath = undefined;
         this.overrideSourceFileURI = undefined;
         this.overrideDestinationFileName = undefined;
@@ -67,20 +68,22 @@ export class baseProvider {
     /**
      * The default function to download whatever provider is used and save it
      * This is here to not fail when the provider definition doesn't have it.
-     * @param providerPath the URI of the provider
-     * @param sourceFileURI the URI of the file to use, relative to the providerPath
-     * @param destinationFileName the name of the file to be saved
-     * @param execPost the function to be executed after execution
+     * @param {string} providerRootPath the URI of the provider
+     * @param {string} providerFilePath the URI of the file to use, relative to the providerPath
+     * @param {string} providerDestinationFileName the name of the file to be saved
+     * @param {function} postDownloadFunction the function to be executed after execution
      */
-    download(providerPath, sourceFileURI, destinationFileName, execPost = function () {}) {
-        this.providerPath = providerPath;
-        this.sourceFileURI = sourceFileURI;
-        this.destinationFileName = destinationFileName;
-        this.fullSourceFileURI =
-            (this.overrideProviderPath || this.providerPath) + '/' + (this.overrideSourceFileURI || this.sourceFileURI);
+    download(providerRootPath, providerFilePath, providerDestinationFileName, postDownloadFunction = function () {}) {
+        this.providerRootPath = providerRootPath;
+        this.providerFilePath = providerFilePath;
+        this.providerDestinationFileName = providerDestinationFileName;
+        this.providerFullFilePath =
+            (this.overrideProviderPath || this.providerRootPath) +
+            '/' +
+            (this.overrideSourceFileURI || this.providerFilePath);
 
         // Check if the file exists
-        fetch(this.fullSourceFileURI, { method: 'HEAD' })
+        fetch(this.providerFullFilePath, { method: 'HEAD' })
             .then(async (headResponse) => {
                 if (!headResponse.ok) {
                     // File does not exist, try to create a new one from scratch
@@ -89,11 +92,11 @@ export class baseProvider {
                     } catch (error) {
                         this.notify('error', 'There was an error creating the export file');
                         console.error('error:', error);
-                        throw new Error(`Failed to create ${this.fullSourceFileURI}: ${error.message}`);
+                        throw new Error(`Failed to create ${this.providerFullFilePath}: ${error.message}`);
                     }
                 }
                 // File exists, proceed with downloading
-                return fetch(this.fullSourceFileURI);
+                return fetch(this.providerFullFilePath);
             })
             .then(async (response) => {
                 if (!response) {
@@ -101,7 +104,7 @@ export class baseProvider {
                     return;
                 }
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch ${this.fullSourceFileURI}: ${response.statusText}`);
+                    throw new Error(`Failed to fetch ${this.providerFullFilePath}: ${response.statusText}`);
                 }
                 this.fileResponse = response;
                 try {
@@ -109,17 +112,17 @@ export class baseProvider {
                 } catch (error) {
                     this.notify('error', 'There was an error updating the export file');
                     console.error('error:', error);
-                    throw new Error(`Failed to update ${this.fullSourceFileURI}: ${error.message}`);
+                    throw new Error(`Failed to update ${this.providerFullFilePath}: ${error.message}`);
                 }
                 try {
                     await this.saveFile();
                 } catch (error) {
                     this.notify('error', 'There was an error saving the export file');
                     console.error('error:', error);
-                    throw new Error(`Failed to save ${this.fullSourceFileURI}: ${error.message}`);
+                    throw new Error(`Failed to save ${this.providerFullFilePath}: ${error.message}`);
                 }
                 try {
-                    await execPost();
+                    await postDownloadFunction();
                 } catch (error) {
                     this.notify('error', 'There was an error executing post exporting');
                     console.error('error:', error);

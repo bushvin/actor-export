@@ -170,9 +170,9 @@ export class pdfProvider extends baseProvider {
         if (typeof this.pdfEmbeddedFonts[fileName] !== 'undefined') {
             return this.pdfEmbeddedFonts[fileName];
         }
-        const moduleRootPath = this.providerPath.split('/').slice(0, 3).join('/');
+        const moduleRootPath = this.providerRootPath.split('/').slice(0, 3).join('/');
         const fontURIs = [
-            `${this.providerPath}/fonts/${fileName}?t=${Date.now()}`,
+            `${this.providerRootPath}/fonts/${fileName}?t=${Date.now()}`,
             `${moduleRootPath}/fonts/${fileName}?t=${Date.now()}`,
         ];
         let errorCount = 0;
@@ -559,7 +559,7 @@ export class pdfProvider extends baseProvider {
             } catch (error) {
                 this.notify(
                     'error',
-                    `An error ocurred loading the pdf form for ${this.fullSourceFileURI}: ${error.message}`,
+                    `An error ocurred loading the pdf form for ${this.providerFullFilePath}: ${error.message}`,
                     {
                         permanent: true,
                     }
@@ -575,12 +575,14 @@ export class pdfProvider extends baseProvider {
                 if (this.fieldExists(fieldName)) {
                     switch (fieldType) {
                         case 'PDFTextField':
-                            let stringValue = String(await this.getFieldValue(this.sourceFileURI, fieldName, ''));
+                            let stringValue = String(await this.getFieldValue(this.providerFilePath, fieldName, ''));
                             pdfField.setText(stringValue);
                             pdfField.markAsClean();
                             break;
                         case 'PDFCheckBox':
-                            let booleanValue = Boolean(await this.getFieldValue(this.sourceFileURI, fieldName, false));
+                            let booleanValue = Boolean(
+                                await this.getFieldValue(this.providerFilePath, fieldName, false)
+                            );
                             booleanValue ? pdfField.check() : pdfField.uncheck();
                             break;
                         default:
@@ -595,7 +597,7 @@ export class pdfProvider extends baseProvider {
             // embed images
             for (let i = 0; i < this.pdfImages.length; i++) {
                 const image = this.pdfImages[i];
-                if (image.file.toLowerCase() === 'all' || image.file === this.sourceFileURI) {
+                if (image.file.toLowerCase() === 'all' || image.file === this.providerFilePath) {
                     await this.embedImage(pdf, image);
                 }
             }
@@ -603,7 +605,7 @@ export class pdfProvider extends baseProvider {
             // embed text boxes
             for (let i = 0; i < this.pdfTextBoxes.length; i++) {
                 const textBox = this.pdfTextBoxes[i];
-                if (textBox.file.toLowerCase() === 'all' || textBox.file === this.sourceFileURI) {
+                if (textBox.file.toLowerCase() === 'all' || textBox.file === this.providerFilePath) {
                     await this.embedTextBox(pdf, textBox);
                 }
             }
@@ -618,7 +620,7 @@ export class pdfProvider extends baseProvider {
     }
 
     async saveFile() {
-        const destinationFileName = this.overrideDestinationFileName || this.destinationFileName;
+        const destinationFileName = this.overrideDestinationFileName || this.providerDestinationFileName;
         const blob = new Blob([await this.pdf.save()], { type: 'application/pdf' });
         await saveAs(blob, destinationFileName);
     }
