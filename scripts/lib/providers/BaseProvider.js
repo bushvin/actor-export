@@ -25,7 +25,47 @@ export class baseProvider {
     }
 
     /**
-     * The default function to download whatever provider is used
+     * Cleanup Foundry Markup entries
+     * @param {string} value the string to be cleaned
+     * @param {object} helper the helper object to use to clean up the value
+     * @returns {string} Returns the cleaned string
+     */
+    cleanFoundryMarkup(value, helper) {
+        if (typeof value !== 'string') {
+            return value;
+        }
+        if (!helper || typeof helper.stripHTMLtag !== 'function' || typeof helper.stripNestedHTMLtag !== 'function') {
+            return value;
+        }
+        value = helper.stripHTMLtag(value, 'br', '', '\n');
+        value = helper.stripHTMLtag(value, 'hr', '---');
+        value = helper.stripHTMLtag(value, 'p', '', '\n');
+        value = helper.stripHTMLtag(value, 'strong');
+        value = helper.stripHTMLtag(value, 'em');
+        value = helper.stripHTMLtag(value, 'span');
+        value = helper.stripNestedHTMLtag(value, 'ol', 'li', '- ');
+        value = helper.stripHTMLtag(value, 'ol');
+        value = helper.stripNestedHTMLtag(value, 'ul', 'li', '- ');
+        value = helper.stripHTMLtag(value, 'ul');
+        value = helper.stripHTMLtag(value, 'h1');
+        value = helper.stripHTMLtag(value, 'h2');
+        value = helper.stripHTMLtag(value, 'h3');
+        value = helper.stripHTMLtag(value, 'h4');
+        return value;
+    }
+
+    /**
+     * Create a new file
+     * @async
+     * @returns {Promise} must return a promise with the attribute `ok` set to `true` if it is ok.
+     */
+    async createFile() {
+        this.notify('error', 'There is no createFile method for this provider', { permanent: true });
+        throw new Error(`There is no createFile method for this provider`);
+    }
+
+    /**
+     * The default function to download whatever provider is used and save it
      * This is here to not fail when the provider definition doesn't have it.
      * @param providerPath the URI of the provider
      * @param sourceFileURI the URI of the file to use, relative to the providerPath
@@ -36,6 +76,62 @@ export class baseProvider {
         this.providerPath = providerPath;
         this.sourceFileURI = sourceFileURI;
         this.destinationFileName = destinationFileName;
+        this.fullSourceFileURI =
+            (this.overrideProviderPath || this.providerPath) + '/' + (this.overrideSourceFileURI || this.sourceFileURI);
+
+        // Check if the file exists
+        fetch(this.fullSourceFileURI, { method: 'HEAD' })
+            .then(async (headResponse) => {
+                if (!headResponse.ok) {
+                    // File does not exist, try to create a new one from scratch
+                    try {
+                        return await this.createFile();
+                    } catch (error) {
+                        this.notify('error', 'There was an error creating the export file');
+                        console.error('error:', error);
+                        throw new Error(`Failed to create ${this.fullSourceFileURI}: ${error.message}`);
+                    }
+                }
+                // File exists, proceed with downloading
+                return fetch(this.fullSourceFileURI);
+            })
+            .then(async (response) => {
+                if (!response) {
+                    // File does not exist, no need to proceed further, this case should never be hit.
+                    return;
+                }
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch ${this.fullSourceFileURI}: ${response.statusText}`);
+                }
+                this.fileResponse = response;
+                try {
+                    await this.updateFile();
+                } catch (error) {
+                    this.notify('error', 'There was an error updating the export file');
+                    console.error('error:', error);
+                    throw new Error(`Failed to update ${this.fullSourceFileURI}: ${error.message}`);
+                }
+                try {
+                    await this.saveFile();
+                } catch (error) {
+                    this.notify('error', 'There was an error saving the export file');
+                    console.error('error:', error);
+                    throw new Error(`Failed to save ${this.fullSourceFileURI}: ${error.message}`);
+                }
+                try {
+                    await execPost();
+                } catch (error) {
+                    this.notify('error', 'There was an error executing post exporting');
+                    console.error('error:', error);
+                    throw new Error(`Failed to perform post export tasks: ${error.message}`);
+                }
+            })
+            .catch((error) => {
+                // Notify users of any errors that occurred during the download process
+                this.notify('error', `Failed to download file: ${error.message}`, {
+                    permanent: true,
+                });
+            });
     }
 
     /**
@@ -96,32 +192,35 @@ export class baseProvider {
     }
 
     /**
-     * Cleanup Foundry Markup entries
-     * @param {string} value the string to be cleaned
-     * @param {object} helper the helper object to use to clean up the value
-     * @returns {string} Returns the cleaned string
+     * Save the file
+     * @async
      */
-    cleanFoundryMarkup(value, helper) {
-        if (typeof value !== 'string') {
-            return value;
+    async saveFile() {
+        this.notify('error', 'There is no saveFile method for this provider', { permanent: true });
+        throw new Error(`There is no saveFile method for this provider`);
+    }
+
+    /**
+     * Update the file
+     * @async
+     */
+    async updateFile() {
+        this.notify('error', 'There is no updateFile method for this provider', { permanent: true });
+        throw new Error(`There is no updateFile method for this provider`);
+    }
+
+    /**
+     * Check if a given URL exists
+     * @async
+     * @param {string} url a correct url
+     * @returns {boolean} whether or not the URL exists
+     */
+    async urlExists(url) {
+        try {
+            const response = await fetch(url, { method: 'HEAD' });
+            return response.ok;
+        } catch (error) {
+            return false; // An error occurred or the request failed
         }
-        if (!helper || typeof helper.stripHTMLtag !== 'function' || typeof helper.stripNestedHTMLtag !== 'function') {
-            return value;
-        }
-        value = helper.stripHTMLtag(value, 'br', '', '\n');
-        value = helper.stripHTMLtag(value, 'hr', '---');
-        value = helper.stripHTMLtag(value, 'p', '', '\n');
-        value = helper.stripHTMLtag(value, 'strong');
-        value = helper.stripHTMLtag(value, 'em');
-        value = helper.stripHTMLtag(value, 'span');
-        value = helper.stripNestedHTMLtag(value, 'ol', 'li', '- ');
-        value = helper.stripHTMLtag(value, 'ol');
-        value = helper.stripNestedHTMLtag(value, 'ul', 'li', '- ');
-        value = helper.stripHTMLtag(value, 'ul');
-        value = helper.stripHTMLtag(value, 'h1');
-        value = helper.stripHTMLtag(value, 'h2');
-        value = helper.stripHTMLtag(value, 'h3');
-        value = helper.stripHTMLtag(value, 'h4');
-        return value;
     }
 }

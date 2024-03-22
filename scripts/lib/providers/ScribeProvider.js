@@ -903,6 +903,7 @@ export class scribeProvider extends baseProvider {
     constructor(actor) {
         super(actor);
         this.scribeData = [];
+        this.scribeFile = undefined;
     }
 
     /**
@@ -925,21 +926,40 @@ export class scribeProvider extends baseProvider {
     };
 
     /**
-     * Download the formatted scribe files
-     * @param providerPath the URI of the provider
-     * @param sourceFileURI the URI of the file to use, relative to the providerPath
-     * @param destinationFileName the name of the file to be saved
-     * @param execPost the function to be executed after execution
+     * Create an empty file for scribe
+     * @async
+     * @returns {Promise} a dummy promise
      */
-    download(providerPath, sourceFileURI, destinationFileName, execPost = function () {}) {
-        super.download(providerPath, sourceFileURI, destinationFileName, execPost);
-        const ret = this.getScribeData(sourceFileURI);
-        if (ret !== undefined && ret != '') {
-            saveDataToFile(ret, 'text/plain', this.destinationFileName || destinationFileName);
+    async createFile() {
+        return new Promise((resolve) => {
+            resolve({ ok: true });
+        });
+    }
+
+    /**
+     * Update the file
+     * @async
+     * @param {string} sourceFileURI The full path of the file loaded
+     * @returns
+     */
+    async updateFile(sourceFileURI) {
+        // const option = sourceFileURI.split('/').pop();
+        const option = this.sourceFileURI;
+        this.scribeFile = this.getScribeData(option);
+        return;
+    }
+
+    /**
+     * Save the file
+     * @async
+     */
+    async saveFile() {
+        console.log('saveFile');
+        console.log('this.scribeFile:', this.scribeFile);
+        if (this.scribeFile !== undefined && this.scribeFile != '') {
+            saveDataToFile(this.scribeFile, 'text/plain', this.destinationFileName || destinationFileName);
         }
-        if (typeof execPost === 'function') {
-            execPost();
-        }
+        return;
     }
 
     /**

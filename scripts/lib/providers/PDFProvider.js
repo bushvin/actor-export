@@ -36,6 +36,8 @@ export class pdfProvider extends baseProvider {
         this.pdfFontSize = 0;
         this.pdfFontLineHeight = 0;
         this.pdfFontColor = '#000000';
+
+        this.pdf = undefined;
     }
 
     /**
@@ -92,42 +94,6 @@ export class pdfProvider extends baseProvider {
      */
     defaultFontColor(color) {
         this.pdfFontColor = color;
-    }
-    /**
-     * Generate the PDF and download it
-     * @param providerPath the URI of the provider
-     * @param sourceFileURI the URI of the file to use, relative to the providerPath
-     * @param destinationFileName the name of the file to be saved
-     * @param execPost the function to be executed after execution
-     */
-    download(providerPath, sourceFileURI, destinationFileName, execPost = function () {}) {
-        super.download(providerPath, sourceFileURI, destinationFileName, execPost);
-        const fullSourceFileURI =
-            (this.overrideProviderPath || this.providerPath) + '/' + (this.overrideSourceFileURI || this.sourceFileURI);
-
-        // Fetch the PDF file
-        fetch(fullSourceFileURI)
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch ${fullSourceFileURI}: ${response.statusText}`);
-                }
-                return response.arrayBuffer();
-            })
-            .then((data) => {
-                // Parse and save the PDF file
-                return this.parseFile(
-                    data,
-                    fullSourceFileURI,
-                    this.overrideDestinationFileName || this.destinationFileName,
-                    execPost
-                );
-            })
-            .catch((error) => {
-                // Notify users of any errors that occurred during the download process
-                this.notify('error', `Failed to download PDF: ${error.message}`, {
-                    permanent: true,
-                });
-            });
     }
 
     /**
@@ -576,13 +542,12 @@ export class pdfProvider extends baseProvider {
     /**
      * Parses the provided filedata, fills out pdf form fields, adds images and saves the blob
      * @async
-     * @param {fetch} data the fetched data
-     * @param sourceFileURI the URI of the file to use
-     * @param destinationFileName the name of the file to be saved
      */
-    async parseFile(buffer, sourceFileURI, destinationFileName, execPost) {
+    async updateFile() {
         try {
+            const buffer = await this.fileResponse.arrayBuffer();
             const pdf = await PDFDocument.load(buffer);
+            this.pdf = pdf;
             pdf.registerFontkit(fontkit);
 
             // Fill out form
@@ -592,9 +557,13 @@ export class pdfProvider extends baseProvider {
                 pdfForm = pdf.getForm();
                 pdfFormFields = pdfForm.getFields();
             } catch (error) {
-                this.notify('error', `An error ocurred loading the pdf form for ${sourceFileURI}: ${error.message}`, {
-                    permanent: true,
-                });
+                this.notify(
+                    'error',
+                    `An error ocurred loading the pdf form for ${this.fullSourceFileURI}: ${error.message}`,
+                    {
+                        permanent: true,
+                    }
+                );
                 throw Error(error);
             }
             console.debug(`actor-export | PDF | ${pdfFormFields.length} fields found.`);
@@ -606,16 +575,12 @@ export class pdfProvider extends baseProvider {
                 if (this.fieldExists(fieldName)) {
                     switch (fieldType) {
                         case 'PDFTextField':
-                            let stringValue = String(
-                                await this.getFieldValue(sourceFileURI.split('/').pop(), fieldName, '')
-                            );
+                            let stringValue = String(await this.getFieldValue(this.sourceFileURI, fieldName, ''));
                             pdfField.setText(stringValue);
                             pdfField.markAsClean();
                             break;
                         case 'PDFCheckBox':
-                            let booleanValue = Boolean(
-                                await this.getFieldValue(sourceFileURI.split('/').pop(), fieldName, false)
-                            );
+                            let booleanValue = Boolean(await this.getFieldValue(this.sourceFileURI, fieldName, false));
                             booleanValue ? pdfField.check() : pdfField.uncheck();
                             break;
                         default:
@@ -630,10 +595,7 @@ export class pdfProvider extends baseProvider {
             // embed images
             for (let i = 0; i < this.pdfImages.length; i++) {
                 const image = this.pdfImages[i];
-                if (
-                    image.file.toLowerCase() === 'all' ||
-                    image.file.toLowerCase() === sourceFileURI.toLowerCase().split('/').pop()
-                ) {
+                if (image.file.toLowerCase() === 'all' || image.file === this.sourceFileURI) {
                     await this.embedImage(pdf, image);
                 }
             }
@@ -641,18 +603,9 @@ export class pdfProvider extends baseProvider {
             // embed text boxes
             for (let i = 0; i < this.pdfTextBoxes.length; i++) {
                 const textBox = this.pdfTextBoxes[i];
-                if (
-                    textBox.file.toLowerCase() === 'all' ||
-                    textBox.file.toLowerCase() === sourceFileURI.toLowerCase().split('/').pop()
-                ) {
+                if (textBox.file.toLowerCase() === 'all' || textBox.file === this.sourceFileURI) {
                     await this.embedTextBox(pdf, textBox);
                 }
-            }
-
-            const blob = new Blob([await pdf.save()], { type: 'application/pdf' });
-            await saveAs(blob, destinationFileName);
-            if (typeof execPost === 'function') {
-                execPost();
             }
         } catch (error) {
             // Notify users of any errors that occurred during the parsing process
@@ -662,6 +615,12 @@ export class pdfProvider extends baseProvider {
             console.error('error', error);
             throw error; // Rethrow the error for further handling if needed
         }
+    }
+
+    async saveFile() {
+        const destinationFileName = this.overrideDestinationFileName || this.destinationFileName;
+        const blob = new Blob([await this.pdf.save()], { type: 'application/pdf' });
+        await saveAs(blob, destinationFileName);
     }
 
     /**
