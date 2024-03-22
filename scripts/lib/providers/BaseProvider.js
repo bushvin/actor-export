@@ -76,10 +76,6 @@ export class baseProvider {
         this.providerRootPath = providerRootPath;
         this.providerFilePath = providerFilePath;
         this.providerDestinationFileName = providerDestinationFileName;
-        // this.providerFullFilePath =
-        //     (this.overrideProviderPath || this.providerRootPath) +
-        //     '/' +
-        //     (this.overrideSourceFileURI || this.providerFilePath);
 
         // Check if the file exists
         fetch(this.providerFullFilePath(), { method: 'HEAD' })
