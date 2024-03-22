@@ -940,10 +940,10 @@ export class scribeProvider extends baseProvider {
      * Update the file
      * @async
      * @param {string} sourceFileURI The full path of the file loaded
-     * @returns
+     * @returns {undefined}
      */
     async updateFile() {
-        const option = this.providerFilePath;
+        const option = this.overrideFilePath || this.providerFilePath;
         this.scribeFile = this.getScribeData(option);
         return;
     }
@@ -955,8 +955,13 @@ export class scribeProvider extends baseProvider {
     async saveFile() {
         console.log('saveFile');
         console.log('this.scribeFile:', this.scribeFile);
+        console.log('this.scribeData', this.scribeData);
         if (this.scribeFile !== undefined && this.scribeFile != '') {
-            saveDataToFile(this.scribeFile, 'text/plain', this.providerDestinationFileName || destinationFileName);
+            saveDataToFile(
+                this.scribeFile,
+                'text/plain',
+                this.overrideDestinationFileName || this.providerDestinationFileName
+            );
         }
         return;
     }

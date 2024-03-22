@@ -19,7 +19,7 @@ export class baseProvider {
         this.providerFilePath = undefined;
         this.providerDestinationFileName = undefined;
         this.overrideProviderPath = undefined;
-        this.overrideSourceFileURI = undefined;
+        this.overrideFilePath = undefined;
         this.overrideDestinationFileName = undefined;
         this.debugProvider = false;
     }
@@ -193,7 +193,7 @@ export class baseProvider {
         return (
             (this.overrideProviderPath || this.providerRootPath) +
             '/' +
-            (this.overrideSourceFileURI || this.providerFilePath)
+            (this.overrideFilePath || this.providerFilePath)
         );
     }
 
