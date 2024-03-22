@@ -320,7 +320,7 @@ export class pdfProvider extends baseProvider {
         }
         // TODO: vertical alignment: middle
 
-        if (textOptions.debug || this.debug || false) {
+        if (textOptions.debug || this.debugProvider || false) {
             pdfPages[page].drawRectangle({
                 x: pageWidth * x,
                 y: pageHeight - pageHeight * y - textOptions.height,
@@ -330,7 +330,7 @@ export class pdfProvider extends baseProvider {
             });
         }
         if (modifiedText != '') {
-            if (textOptions.debug || this.debug || false) {
+            if (textOptions.debug || this.debugProvider || false) {
                 pdfPages[page].drawRectangle({
                     x: textOptions.x,
                     y: textOptions.y - textHeight + textLineHeight,

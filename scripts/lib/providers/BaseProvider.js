@@ -21,7 +21,7 @@ export class baseProvider {
         this.overrideProviderPath = undefined;
         this.overrideSourceFileURI = undefined;
         this.overrideDestinationFileName = undefined;
-        this.debug = false;
+        this.debugProvider = false;
     }
 
     /**
