@@ -12,10 +12,16 @@ import fontkit from './fontkit.es.js';
 
 /**
  * @class
- * A class to manipulate PDF files. Fills out forms and adds images.
+ * A class to manipulate PDF files. Fills out forms created text boxes and adds images.
+ *
+ * You should use:
+ *   - pdfProvider.field to add form field text
+ *   - pdfProvider.image to add images
+ *   - pdfProvider.textBox to add text boxes
  * @param {Object} actor The Foundry VTT actor object.
  * @extends baseProvider
  * @requires pdf-lib
+ * @requires fontkit
  * requires pdf-lib.esm
  * url: https://cdnjs.com/libraries/pdf-lib
  * requires fontkit.es
@@ -559,7 +565,7 @@ export class pdfProvider extends baseProvider {
             } catch (error) {
                 this.notify(
                     'error',
-                    `An error ocurred loading the pdf form for ${this.providerFullFilePath()}: ${error.message}`,
+                    `An error ocurred loading the pdf form for ${this.providerFullFilePath}: ${error.message}`,
                     {
                         permanent: true,
                     }

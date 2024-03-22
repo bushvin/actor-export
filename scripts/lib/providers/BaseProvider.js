@@ -78,7 +78,7 @@ export class baseProvider {
         this.providerDestinationFileName = providerDestinationFileName;
 
         // Check if the file exists
-        fetch(this.providerFullFilePath(), { method: 'HEAD' })
+        fetch(this.providerFullFilePath, { method: 'HEAD' })
             .then(async (headResponse) => {
                 if (!headResponse.ok) {
                     // File does not exist, try to create a new one from scratch
@@ -87,11 +87,11 @@ export class baseProvider {
                     } catch (error) {
                         this.notify('error', 'There was an error creating the export file');
                         console.error('error:', error);
-                        throw new Error(`Failed to create ${this.providerFullFilePath()}: ${error.message}`);
+                        throw new Error(`Failed to create ${this.providerFullFilePath}: ${error.message}`);
                     }
                 }
                 // File exists, proceed with downloading
-                return fetch(this.providerFullFilePath());
+                return fetch(this.providerFullFilePath);
             })
             .then(async (response) => {
                 if (!response) {
@@ -99,7 +99,7 @@ export class baseProvider {
                     return;
                 }
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch ${this.providerFullFilePath()}: ${response.statusText}`);
+                    throw new Error(`Failed to fetch ${this.providerFullFilePath}: ${response.statusText}`);
                 }
                 this.fileResponse = response;
                 try {
@@ -107,14 +107,14 @@ export class baseProvider {
                 } catch (error) {
                     this.notify('error', 'There was an error updating the export file');
                     console.error('error:', error);
-                    throw new Error(`Failed to update ${this.providerFullFilePath()}: ${error.message}`);
+                    throw new Error(`Failed to update ${this.providerFullFilePath}: ${error.message}`);
                 }
                 try {
                     await this.saveFile();
                 } catch (error) {
                     this.notify('error', 'There was an error saving the export file');
                     console.error('error:', error);
-                    throw new Error(`Failed to save ${this.providerFullFilePath()}: ${error.message}`);
+                    throw new Error(`Failed to save ${this.providerFullFilePath}: ${error.message}`);
                 }
                 try {
                     await postDownloadFunction();
@@ -189,7 +189,10 @@ export class baseProvider {
         }
     }
 
-    providerFullFilePath() {
+    /**
+     * Get providerFullFilePath
+     */
+    get providerFullFilePath() {
         return (
             (this.overrideProviderPath || this.providerRootPath) +
             '/' +
