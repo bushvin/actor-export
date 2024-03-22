@@ -10,11 +10,19 @@ import { semVer } from '../../scripts/lib/SemVer.js';
 class pf2ePDFProvider extends pdfProvider {
     constructor(actor) {
         super(actor);
-        this.page_width = 612;
-        this.page_height = 792;
-        //this.debug = true;
+        /*
+         * pf2ePDFProvider expects % instead of pixels.
+         * this provides the actual size in pixels of the PDF(s)
+         */
+        this.pageWidth = 612;
+        this.pageHeight = 792;
     }
 
+    /**
+     * pf2ePDFProvider.defaultFont expects % instead of pixels.
+     * this function converts pixels to % before committing them.
+     * yes, I am lazy.
+     */
     defaultFont(font, size, lineHeight = undefined) {
         if (!isNaN(Number(size))) {
             size = size / mapper.page_height;
@@ -25,22 +33,38 @@ class pf2ePDFProvider extends pdfProvider {
 
         super.defaultFont(font, size, lineHeight);
     }
+
+    /**
+     * pf2ePDFProvider.image expects % instead of pixels.
+     * this function converts pixels to % before committing them.
+     * yes, I am lazy.
+     */
     image(file, page, x, y, path, maxWidth = -1, maxHeight = -1, options) {
-        x = x / this.page_width;
-        y = y / this.page_height;
-        maxWidth = maxWidth > 0 ? maxWidth / this.page_width : maxWidth;
-        maxHeight = maxHeight > 0 ? maxHeight / this.page_height : maxHeight;
+        x = x / this.pageWidth;
+        y = y / this.pageHeight;
+        maxWidth = maxWidth > 0 ? maxWidth / this.pageWidth : maxWidth;
+        maxHeight = maxHeight > 0 ? maxHeight / this.pageHeight : maxHeight;
         super.image(file, page, x, y, path, maxWidth, maxHeight, options);
     }
 
+    /**
+     * pf2ePDFProvider.textBox expects % instead of pixels.
+     * this function converts pixels to % before committing them.
+     * yes, I am lazy.
+     */
     textBox(reference, file, page, x, y, width, height, text, options = {}) {
-        x = x / this.page_width;
-        y = y / this.page_height;
-        width = width / this.page_width;
-        height = height / this.page_height;
+        x = x / this.pageWidth;
+        y = y / this.pageHeight;
+        width = width / this.pageWidth;
+        height = height / this.pageHeight;
         super.textBox(reference, file, page, x, y, width, height, text, options);
     }
 
+    /**
+     * return the same for all checkboxes
+     * @param {boolean} value logic operator to evaluate
+     * @returns {string} x or an empty string.
+     */
     checkMark(value) {
         if (value === true) {
             return 'x';
@@ -50,8 +74,8 @@ class pf2ePDFProvider extends pdfProvider {
 }
 
 const mapper = new pf2ePDFProvider(actor);
-let ref = '';
-mapper.defaultFont('MarkerFelt.ttf', 12, 12);
+let ref;
+mapper.defaultFont('MarkerFelt.ttf', 12, 14);
 mapper.defaultFontColor('#01579b');
 //mapper.debug = true;
 // Font definitions
