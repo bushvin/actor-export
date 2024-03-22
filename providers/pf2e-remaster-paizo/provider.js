@@ -25,10 +25,10 @@ class pf2ePDFProvider extends pdfProvider {
      */
     defaultFont(font, size, lineHeight = undefined) {
         if (!isNaN(Number(size))) {
-            size = size / mapper.page_height;
+            size = size / mapper.pageHeight;
         }
         if (!isNaN(Number(lineHeight))) {
-            lineHeight = lineHeight / mapper.page_height;
+            lineHeight = lineHeight / mapper.pageHeight;
         }
 
         super.defaultFont(font, size, lineHeight);
@@ -75,56 +75,44 @@ class pf2ePDFProvider extends pdfProvider {
 
 const mapper = new pf2ePDFProvider(actor);
 let ref;
-mapper.defaultFont('MarkerFelt.ttf', 12, 14);
+mapper.defaultFont('MarkerFelt.ttf', 12, 12);
 mapper.defaultFontColor('#01579b');
-//mapper.debug = true;
+
 // Font definitions
-const mf_default = {
-    // debug: true,
-    // font: 'MarkerFelt.ttf',
-    // size: 12 / mapper.page_height,
-    // color: '#01579b',
-};
-const mf_6 = { ...mf_default, ...{ size: 6 / mapper.page_height, lineHeight: 8 / mapper.page_height } };
+const mf_default = {};
+const mf_6 = { ...mf_default, ...{ size: 6 / mapper.pageHeight, lineHeight: 8 / mapper.pageHeight } };
 const mf_6_centered = { ...mf_6, ...{ halign: 'center' } };
 const mf_6_multiline = { ...mf_6, ...{ multiline: true, valign: 'top' } };
-const mf_8 = { ...mf_default, ...{ size: 8 / mapper.page_height, lineHeight: 10 / mapper.page_height } };
+const mf_8 = { ...mf_default, ...{ size: 8 / mapper.pageHeight, lineHeight: 10 / mapper.pageHeight } };
 const mf_8_centered = { ...mf_8, ...{ halign: 'center' } };
 const mf_8_top = { ...mf_8, ...{ valign: 'top' } };
 const mf_8_multiline = { ...mf_8, ...{ multiline: true, valign: 'top' } };
-const mf_10 = { ...mf_default, ...{ size: 10 / mapper.page_height, lineHeight: 12 / mapper.page_height } };
+const mf_10 = { ...mf_default, ...{ size: 10 / mapper.pageHeight, lineHeight: 12 / mapper.pageHeight } };
 const mf_10_centered = { ...mf_10, ...{ halign: 'center' } };
 const mf_10_centered_top = { ...mf_10_centered, ...{ valign: 'top' } };
 const mf_10_multiline = { ...mf_10, ...{ multiline: true, valign: 'top' } };
-const mf_12 = { ...mf_default, ...{ size: 12 / mapper.page_height, lineHeight: 14 / mapper.page_height } };
+const mf_12 = { ...mf_default, ...{ size: 12 / mapper.pageHeight, lineHeight: 14 / mapper.pageHeight } };
 const mf_12_centered = { ...mf_12, ...{ halign: 'center' } };
-const mf_15 = { ...mf_default, ...{ size: 15 / mapper.page_height, lineHeight: 17 / mapper.page_height } };
+const mf_15 = { ...mf_default, ...{ size: 15 / mapper.pageHeight, lineHeight: 17 / mapper.pageHeight } };
 const mf_15_centered = { ...mf_15, ...{ halign: 'center' } };
-const mf_17 = { ...mf_default, ...{ size: 17 / mapper.page_height, lineHeight: 19 / mapper.page_height } };
+const mf_17 = { ...mf_default, ...{ size: 17 / mapper.pageHeight, lineHeight: 19 / mapper.pageHeight } };
 const mf_17_centered = { ...mf_17, ...{ halign: 'center' } };
 const f_debug = { debug: true };
 
 const action_8 = {
     font: 'action_icons.ttf',
-    size: 8 / mapper.page_height,
-    lineHeight: 8 / mapper.page_height,
+    size: 8 / mapper.pageHeight,
+    lineHeight: 8 / mapper.pageHeight,
     color: '#01579b',
 };
 const action_8_centered = { ...action_8, ...{ halign: 'center' } };
 const action_8_centered_top = { ...action_8_centered, ...{ valign: 'top' } };
 
-const action_10 = { ...action_8, ...{ size: 10 / mapper.page_height, lineHeight: 12 / mapper.page_height } };
-//const action_10 = { ...action_12, ...{ size: 10 / mapper.page_height, lineHeight: 12 / mapper.page_height } };
+const action_10 = { ...action_8, ...{ size: 10 / mapper.pageHeight, lineHeight: 12 / mapper.pageHeight } };
 const action_10_centered = { ...action_10, ...{ halign: 'center' } };
 const action_10_centered_top = { ...action_10_centered, ...{ valign: 'top' } };
 
-const action_12 = { ...action_8, ...{ size: 12 / mapper.page_height, lineHeight: 14 / mapper.page_height } };
-//     const action_12 = {
-//     font: 'action_icons.ttf',
-//     size: 12 / mapper.page_height,
-//     lineHeight: 14 / mapper.page_height,
-//     color: '#01579b',
-// };
+const action_12 = { ...action_8, ...{ size: 12 / mapper.pageHeight, lineHeight: 14 / mapper.pageHeight } };
 const action_12_centered = { ...action_12, ...{ halign: 'center' } };
 
 const fileName = 'RemasterPlayerCoreCharacterSheet.pdf';
