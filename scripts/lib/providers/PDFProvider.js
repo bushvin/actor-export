@@ -195,6 +195,7 @@ export class pdfProvider extends baseProvider {
 
     /**
      * Embed a fontfile into the given PDF
+     * @async
      * @param {PDFDocument} pdf The pdf to embed the font into
      * @param {string} fileName the name of the file
      * @returns {CustomFontEmbedder} The resulted embedded font
@@ -412,6 +413,7 @@ export class pdfProvider extends baseProvider {
 
     /**
      * Return a PDF field object definition
+     * @async
      * @param {string} file The name of the PDF file a field belongs to
      * @param {string} name The name of the field to return the value from
      * @returns {string|boolean|undefined} the requested field data
@@ -433,6 +435,7 @@ export class pdfProvider extends baseProvider {
 
     /**
      * Return a PDF field value
+     * @async
      * @param {string} file The name of the PDF file a field belongs to
      * @param {string} name The name of the field to return the value from
      * @param {string|boolean} defaultValue The value to return if the field cannot be found
@@ -663,6 +666,7 @@ export class pdfProvider extends baseProvider {
 
     /**
      * asynchronously parse a value through a function
+     * @async
      * @param {any|Promise} value the value to be parsed
      * @param {Function} parser the parser function, arguments passed are the (awaited) value and `this`
      * @returns the parsed value
