@@ -437,13 +437,13 @@ class actorExportDialog extends FormApplication {
                         }
                     })
                     .catch((error) => {
-                        actorExport.log('error', error);
                         ui.notifications.error(
-                            `${actorExport.ID} | An error ocurred executing the '${providerId}' provider.`,
+                            `${actorExport.ID} | An error ocurred executing the '${providerId}' provider: ${error.message}`,
                             {
                                 permanent: true,
                             }
                         );
+                        throw new Error(error);
                     });
             }
         }
