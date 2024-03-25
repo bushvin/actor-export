@@ -117,175 +117,87 @@ const action_12_centered = { ...action_12, ...{ halign: 'center' } };
 
 const fileName = 'RemasterPlayerCoreCharacterSheet.pdf';
 
+// an abstraction of actor
+const character = pf2eHelper.getActorObject(game, actor);
+
 mapper.image(fileName, 2, 29, 39, actor.img, 178, 265);
 
 /* PAGE 1 */
-const ownerName = Object.entries(actor.ownership)
-    .filter((i) => i[1] === 3)
-    .map((i) => i[0])
-    .map((id) => (!game.users.get(id)?.isGM ? game.users.get(id)?.name : null))
-    .filter((x) => x)
-    .join(', ');
-mapper.textBox('actor name', fileName, 0, 217, 40, 178, 18, actor.name, mf_17);
-mapper.textBox('player name', fileName, 0, 260, 69, 135, 10, ownerName, mf_10);
-mapper.textBox('ancestry', fileName, 0, 30, 98, 176, 8, actor.ancestry?.name || '', mf_12);
-mapper.textBox('heritage', fileName, 0, 30, 114, 142, 22, actor.heritage?.name || '', mf_12);
-mapper.textBox('size', fileName, 0, 180, 114, 26, 22, actor.system.traits.size.value, mf_12);
+mapper.textBox('actor name', fileName, 0, 217, 40, 178, 18, character.name, mf_17);
+mapper.textBox('player name', fileName, 0, 260, 69, 135, 10, character.ownerName, mf_10);
+mapper.textBox('ancestry', fileName, 0, 30, 98, 176, 8, character.ancestry, mf_12);
+mapper.textBox('heritage', fileName, 0, 30, 114, 142, 22, character.heritage, mf_12);
+mapper.textBox('size', fileName, 0, 180, 114, 26, 22, character.size, mf_12);
 
 // Background
-mapper.textBox('background', fileName, 0, 217, 98, 178, 8, actor.background?.name || '', mf_12);
+mapper.textBox('background', fileName, 0, 217, 98, 178, 8, character.background, mf_12);
 /* TODO: background notes */
 
 // Class
-mapper.textBox('class', fileName, 0, 406, 98, 176, 8, actor.class?.name || '', mf_12);
-const subClassFeatures = [
-    'research-field', // alchemist
-    'instinct', // barbarian
-    'muses', // bard
-    'deity-and-cause', // champion
-    'doctrine', // cleric
-    'druidic-order', // druid
-    'gunslingers-way', // gunslinger
-    'innovation', // inventor
-    'methodology', // investigator
-    'hybrid-study', // magus
-    'mystery', // oracle
-    'conscious-mind', // psychic
-    'rogues-racket', // rogue
-    'bloodline', // sorcerer
-    'evolution-feat', // summoner
-    'swashbucklers-style', // swashbucklers
-    'patron', // witch
-    'arcane-thesis', // wizard
-];
-const subClass = [];
-actor.items
-    .filter((i) => i.type === 'feat' && subClassFeatures.includes(i.system.slug))
-    .forEach((f) => {
-        actor.items
-            .filter((i) => i.flags?.pf2e?.grantedBy?.id === f._id)
-            .forEach((s) => {
-                subClass.push(s.name);
-            });
-    });
-mapper.textBox('class notes', fileName, 0, 406, 114, 176, 22, subClass.join('/'), mf_12);
+mapper.textBox('class', fileName, 0, 406, 98, 176, 8, character.class, mf_12);
+mapper.textBox('class notes', fileName, 0, 406, 114, 176, 22, character.subClass, mf_12);
 
 // level
-mapper.textBox('level', fileName, 0, 412, 50, 19, 19, actor.system.details.level.value, mf_15_centered);
-mapper.textBox('xp', fileName, 0, 446, 52, 42, 15, actor.system.details.xp?.value, mf_12);
+mapper.textBox('level', fileName, 0, 412, 50, 19, 19, character.level, mf_15_centered);
+mapper.textBox('xp', fileName, 0, 446, 52, 42, 15, character.xp, mf_12);
 
 // Hero points
-const heroPoints = actor.system.resources.heroPoints.value || 0;
-mapper.textBox('heropoint', fileName, 0, 510, 36, 9, 16, mapper.checkMark(heroPoints >= 1), mf_17_centered);
-mapper.textBox('heropoint', fileName, 0, 533, 36, 9, 16, mapper.checkMark(heroPoints >= 2), mf_17_centered);
-mapper.textBox('heropoint', fileName, 0, 556, 36, 9, 16, mapper.checkMark(heroPoints >= 3), mf_17_centered);
+mapper.textBox('heropoint', fileName, 0, 510, 36, 9, 16, mapper.checkMark(character.heroPoints >= 1), mf_17_centered);
+mapper.textBox('heropoint', fileName, 0, 533, 36, 9, 16, mapper.checkMark(character.heroPoints >= 2), mf_17_centered);
+mapper.textBox('heropoint', fileName, 0, 556, 36, 9, 16, mapper.checkMark(character.heroPoints >= 3), mf_17_centered);
 
 // Attributes
 const attr_x = [29, 123, 217, 311, 405, 499];
-const attr_boost_x = [56, 150, 244, 338, 432, 526];
-Object.keys(actor.abilities).forEach((a, i) => {
-    const modifier = pf2eHelper.quantifyNumber(actor.abilities[a].mod);
-    const isPartialBoost = pf2eHelper.isPartialBoost(actor, a);
-    mapper.textBox(`${a} attribute`, fileName, 0, attr_x[i], 150, 21, 19, modifier, mf_15_centered);
-    mapper.textBox(
-        `${a} attribute boost`,
-        fileName,
-        0,
-        attr_boost_x[i],
-        168,
-        5,
-        5,
-        mapper.checkMark(isPartialBoost),
-        mf_12_centered
-    );
+Object.values(character.attributes).forEach((a, i) => {
+    ref = `${a.name} attribute`;
+    mapper.textBox(ref, fileName, 0, attr_x[i], 150, 21, 19, a.modifier, mf_15_centered);
+    ref = `${a.name} attribute boost`;
+    const checkMark = mapper.checkMark(a.isPartialBoost);
+    mapper.textBox(ref, fileName, 0, attr_x[i] + 27, 168, 5, 5, checkMark, mf_12_centered);
 });
 
 // Defense
-const acAttributeModifier = actor.armorClass.modifiers
-    .filter((i) => i.type === 'ability')
-    .map((i) => i.modifier)
-    .reduce((a, b) => a + b, 0);
-const acProficiencyModifier = actor.armorClass.modifiers
-    .filter((i) => i.type === 'proficiency')
-    .map((i) => i.modifier)
-    .reduce((a, b) => a + b, 0);
-const acItemModifier = actor.armorClass.modifiers
-    .filter((i) => i.type === 'item')
-    .map((i) => i.modifier)
-    .reduce((a, b) => a + b, 0);
-const acStatusModifier = actor.armorClass.modifiers
-    .filter((i) => i.type === 'status')
-    .map((i) => i.modifier)
-    .reduce((a, b) => a + b, 0);
-
-mapper.textBox('ac', fileName, 0, 51, 212, 25, 17, actor.armorClass.value - acStatusModifier, mf_17_centered);
-mapper.textBox('ac', fileName, 0, 46, 248, 17, 10, acAttributeModifier, mf_10_centered);
-mapper.textBox('ac', fileName, 0, 64, 248, 17, 10, acProficiencyModifier, mf_10_centered);
-mapper.textBox('ac', fileName, 0, 82, 248, 18, 10, acItemModifier, mf_10_centered);
+mapper.textBox('ac', fileName, 0, 51, 212, 25, 17, character.ac.modifier, mf_17_centered);
+mapper.textBox('ac', fileName, 0, 46, 248, 17, 10, character.ac.attributeModifier, mf_10_centered);
+mapper.textBox('ac', fileName, 0, 64, 248, 17, 10, character.ac.proficiencyModifier, mf_10_centered);
+mapper.textBox('ac', fileName, 0, 82, 248, 18, 10, character.ac.itemModifier, mf_10_centered);
 
 // Shield
-const shieldAcBonus =
-    actor.items.filter((i) => i.type === 'shield' && i.isEquipped).map((i) => i.system.acBonus)[0] || '';
-const shieldHardness =
-    actor.items.filter((i) => i.type === 'shield' && i.isEquipped).map((i) => i.system.hardness)[0] || '';
-const shieldHPmax = actor.items.filter((i) => i.type === 'shield' && i.isEquipped).map((i) => i.system.hp.max)[0] || '';
-const shieldHPbt =
-    actor.items.filter((i) => i.type === 'shield' && i.isEquipped).map((i) => i.system.hp.brokenThreshold)[0] || '';
-const shieldHPvalue =
-    actor.items.filter((i) => i.type === 'shield' && i.isEquipped).map((i) => i.system.hp.value)[0] || '';
-mapper.textBox('shield', fileName, 0, 104, 205, 15, 17, shieldAcBonus, mf_15);
-mapper.textBox('shield', fileName, 0, 127, 209, 21, 10, shieldHardness, mf_10_centered);
-mapper.textBox('shield', fileName, 0, 153, 209, 17, 10, shieldHPmax, mf_10_centered);
-mapper.textBox('shield', fileName, 0, 170, 209, 18, 10, shieldHPbt, mf_10_centered);
-mapper.textBox('shield', fileName, 0, 192, 209, 16, 10, shieldHPvalue, mf_10_centered);
-
+if (character.hasShieldEquipped) {
+    mapper.textBox('shield', fileName, 0, 104, 205, 15, 17, character.equippedShield.ac, mf_15);
+    mapper.textBox('shield', fileName, 0, 127, 209, 21, 10, character.equippedShield.hardness, mf_10_centered);
+    mapper.textBox('shield', fileName, 0, 153, 209, 17, 10, character.equippedShield.hpMax, mf_10_centered);
+    mapper.textBox('shield', fileName, 0, 170, 209, 18, 10, character.equippedShield.bt, mf_10_centered);
+    mapper.textBox('shield', fileName, 0, 192, 209, 16, 10, character.equippedShield.hpValue, mf_10_centered);
+}
 // Armor proficiencies
 const armor_proficiency_x = [127, 152, 172, 194];
-Object.keys(actor.system.proficiencies?.defenses || []).forEach((d, i) => {
-    const defenseRank = actor.system.proficiencies.defenses[d].rank;
-    const x = armor_proficiency_x[i];
-    ref = `${d} proficiency`;
-    if (!d.endsWith('-barding')) {
-        mapper.textBox(ref, fileName, 0, x, 244, 7, 5, mapper.checkMark(defenseRank >= 1), mf_10_centered);
-        mapper.textBox(ref, fileName, 0, x, 250, 7, 5, mapper.checkMark(defenseRank >= 2), mf_10_centered);
-        mapper.textBox(ref, fileName, 0, x, 257, 7, 5, mapper.checkMark(defenseRank >= 3), mf_10_centered);
-        mapper.textBox(ref, fileName, 0, x, 264, 7, 5, mapper.checkMark(defenseRank >= 4), mf_10_centered);
-    }
-});
+Object.values(character.defenseProficiencies)
+    .filter((f) => !f.name.endsWith('-barding'))
+    .forEach((d, i) => {
+        ref = `${d.name} proficiency`;
+        const x = armor_proficiency_x[i];
+        mapper.textBox(ref, fileName, 0, x, 244, 7, 5, mapper.checkMark(d.rank >= 1), mf_10_centered);
+        mapper.textBox(ref, fileName, 0, x, 250, 7, 5, mapper.checkMark(d.rank >= 2), mf_10_centered);
+        mapper.textBox(ref, fileName, 0, x, 257, 7, 5, mapper.checkMark(d.rank >= 3), mf_10_centered);
+        mapper.textBox(ref, fileName, 0, x, 264, 7, 5, mapper.checkMark(d.rank >= 4), mf_10_centered);
+    });
 
 // Saving Throws
 const saves_x = [217, 279, 341];
-Object.keys(actor.saves).forEach((s, i) => {
-    const saveAttributeModifier = actor.saves[s].modifiers
-        .filter((i) => i.type === 'ability' && i.enabled)
-        .map((i) => i.modifier)
-        .reduce((a, b) => a + b, 0);
-    const saveProficiencyModifier = actor.saves[s].modifiers
-        .filter((i) => i.type === 'proficiency' && i.enabled)
-        .map((i) => i.modifier)
-        .reduce((a, b) => a + b, 0);
-    const saveItemModifier = actor.saves[s].modifiers
-        .filter((i) => i.type === 'item' && i.enabled)
-        .map((i) => i.modifier)
-        .reduce((a, b) => a + b, 0);
-    const saveStatusModifier = actor.saves[s].modifiers
-        .filter((i) => i.type === 'item' && i.enabled)
-        .map((i) => i.modifier)
-        .reduce((a, b) => a + b, 0);
-    const saveRank = actor.saves[s].rank;
-    const save = pf2eHelper.quantifyNumber(actor.saves[s].mod - saveStatusModifier);
+Object.values(character.savingThrows).forEach((s, i) => {
+    ref = `${s.name} save`;
     const x = saves_x[i];
-    ref = `${s} save`;
-    mapper.textBox(ref, fileName, 0, x, 202, 43, 18, save, mf_15_centered);
-    mapper.textBox(ref, fileName, 0, x - 1, 228, 17, 10, saveAttributeModifier, mf_10_centered);
-    mapper.textBox(ref, fileName, 0, x + 17, 228, 17, 10, saveProficiencyModifier, mf_10_centered);
-    mapper.textBox(ref, fileName, 0, x + 35, 228, 17, 10, saveItemModifier, mf_10_centered);
+    mapper.textBox(ref, fileName, 0, x, 202, 43, 18, pf2eHelper.quantifyNumber(s.modifier), mf_15_centered);
+    mapper.textBox(ref, fileName, 0, x - 1, 228, 17, 10, s.attributeModifier, mf_10_centered);
+    mapper.textBox(ref, fileName, 0, x + 17, 228, 17, 10, s.proficiencyModifier, mf_10_centered);
+    mapper.textBox(ref, fileName, 0, x + 35, 228, 17, 10, s.itemModifier, mf_10_centered);
 
-    ref = `${s} proficiency`;
-    mapper.textBox(ref, fileName, 0, x + 47, 205, 5, 4, mapper.checkMark(saveRank >= 1), mf_10_centered);
-    mapper.textBox(ref, fileName, 0, x + 47, 209, 5, 4, mapper.checkMark(saveRank >= 2), mf_10_centered);
-    mapper.textBox(ref, fileName, 0, x + 47, 215, 5, 4, mapper.checkMark(saveRank >= 3), mf_10_centered);
-    mapper.textBox(ref, fileName, 0, x + 47, 220, 5, 4, mapper.checkMark(saveRank >= 4), mf_10_centered);
+    ref = `${s.name} proficiency`;
+    mapper.textBox(ref, fileName, 0, x + 47, 205, 5, 4, mapper.checkMark(s.rank >= 1), mf_10_centered);
+    mapper.textBox(ref, fileName, 0, x + 47, 209, 5, 4, mapper.checkMark(s.rank >= 2), mf_10_centered);
+    mapper.textBox(ref, fileName, 0, x + 47, 215, 5, 4, mapper.checkMark(s.rank >= 3), mf_10_centered);
+    mapper.textBox(ref, fileName, 0, x + 47, 220, 5, 4, mapper.checkMark(s.rank >= 4), mf_10_centered);
 });
 
 /* Defense Notes */
@@ -327,115 +239,53 @@ mapper.textBox('defense notes', fileName, 0, 215, 251, 180, 25, ' '.repeat(28) +
 });
 
 // Hit points
-mapper.textBox('hitpoints', fileName, 0, 402, 201, 40, 20, actor.hitPoints.max, mf_15_centered);
-mapper.textBox('hitpoints', fileName, 0, 442, 199, 87, 34, actor.hitPoints.value, { ...mf_10, ...{ valign: 'top' } });
-mapper.textBox('hitpoints', fileName, 0, 535, 199, 48, 10, actor.hitPoints.temp, mf_10);
+mapper.textBox('hitpoints', fileName, 0, 402, 201, 40, 20, character.hp.max, mf_15_centered);
+mapper.textBox('hitpoints', fileName, 0, 442, 199, 87, 34, character.hp.value, { ...mf_10, ...{ valign: 'top' } });
+mapper.textBox('hitpoints', fileName, 0, 535, 199, 48, 10, character.hp.temp, mf_10);
 
-const dyingValue = actor.system.attributes.dying.value;
-mapper.textBox('dying', fileName, 0, 555, 215, 4, 4, mapper.checkMark(dyingValue >= 1), mf_10_centered);
-mapper.textBox('dying', fileName, 0, 564, 215, 4, 4, mapper.checkMark(dyingValue >= 2), mf_10_centered);
-mapper.textBox('dying', fileName, 0, 572, 215, 4, 4, mapper.checkMark(dyingValue >= 3), mf_10_centered);
-mapper.textBox('dying', fileName, 0, 580, 215, 4, 4, mapper.checkMark(dyingValue >= 4), mf_10_centered);
+mapper.textBox('dying', fileName, 0, 555, 215, 4, 4, mapper.checkMark(character.dying.value >= 1), mf_10_centered);
+mapper.textBox('dying', fileName, 0, 564, 215, 4, 4, mapper.checkMark(character.dying.value >= 2), mf_10_centered);
+mapper.textBox('dying', fileName, 0, 572, 215, 4, 4, mapper.checkMark(character.dying.value >= 3), mf_10_centered);
+mapper.textBox('dying', fileName, 0, 580, 215, 4, 4, mapper.checkMark(character.dying.value >= 4), mf_10_centered);
 
-const woundedValue = actor.system.attributes.wounded.value;
-const woundedMax = actor.system.attributes.wounded.max;
-mapper.textBox('wounds', fileName, 0, 567, 222, 17, 11, `${woundedValue}/${woundedMax}`, mf_10_centered);
-const resistance_immunities = actor.system.attributes.resistances
-    .map((i) => i.type + ' ' + i.value)
-    .concat(actor.system.attributes.immunities.map((i) => i.type))
-    .sort()
-    .join(', ');
+const wounded = `${character.wounded.value}/${character.wounded.max}`;
+mapper.textBox('wounds', fileName, 0, 567, 222, 17, 11, wounded, mf_10_centered);
+const resistance_immunities = character.immunities + ', ' + character.resistance;
 mapper.textBox('resistance', fileName, 0, 405, 240, 179, 16, resistance_immunities, mf_10);
-mapper.textBox('conditions', fileName, 0, 405, 262, 179, 16, actor.conditions.map((i) => i.name).join(', '), mf_10);
+mapper.textBox('conditions', fileName, 0, 405, 262, 179, 16, character.conditions, mf_10);
 
 /* Skills */
 const skill_y = [291, 317, 344, 370, 397, 424, 450, 530, 556, 583, 609, 636, 663, 689, 716, 742];
-Object.values(actor.skills)
-    .filter((i) => !i.lore)
-    .forEach((skill, i) => {
-        const skillStatusModifier = skill.modifiers
-            .filter((i) => i.type == 'status')
-            .map((i) => i.modifier)
-            .reduce((a, b) => a + b, 0);
-        const skillProficiencyModifier = skill.modifiers
-            .filter((i) => i.type == 'proficiency')
-            .map((i) => i.modifier)
-            .reduce((a, b) => a + b, 0);
-        const itemExcludes = ['armor-check-penalty', 'no-crowbar'];
-        const skillItemModifier = skill.modifiers
-            .filter((i) => i.type === 'item' && i.enabled && !itemExcludes.includes(i.slug))
-            .map((i) => i.modifier)
-            .reduce((a, b) => a + b, 0);
-        const skillArmorModifier = skill.modifiers
-            .filter((i) => i.slug === 'armor-check-penalty')
-            .map((i) => i.modifier)
-            .reduce((a, b) => a + b, 0);
-        const skillTotalModifier = pf2eHelper.quantifyNumber(skill.mod - skillStatusModifier);
-        const skillAttributeModifier = skill.attributeModifier.modifier || '0';
-        const y = skill_y[i];
-        ref = `${skill.slug} skill`;
-        mapper.textBox(ref, fileName, 0, 95, y, 32, 18, skillTotalModifier, mf_15_centered);
-        mapper.textBox(ref, fileName, 0, 146, y + 1, 19, 12, skillAttributeModifier, mf_12_centered);
-        mapper.textBox(ref, fileName, 0, 166, y + 1, 19, 12, skillProficiencyModifier, mf_12_centered);
-        mapper.textBox(ref, fileName, 0, 187, y + 1, 19, 12, skillItemModifier, mf_12_centered);
-
-        if (['acrobatics', 'athletics', 'stealth', 'thievery'].indexOf(skill.slug) !== -1) {
-            mapper.textBox(ref, fileName, 0, 207, y + 1, 19, 12, skillArmorModifier, mf_12_centered);
-        }
-
-        ref = `${skill.slug} proficiency`;
-        mapper.textBox(ref, fileName, 0, 133, y, 5, 5, mapper.checkMark(skill.rank >= 1), mf_8_centered);
-        mapper.textBox(ref, fileName, 0, 133, y + 5, 5, 5, mapper.checkMark(skill.rank >= 2), mf_8_centered);
-        mapper.textBox(ref, fileName, 0, 133, y + 10, 5, 5, mapper.checkMark(skill.rank >= 3), mf_8_centered);
-        mapper.textBox(ref, fileName, 0, 133, y + 15, 5, 5, mapper.checkMark(skill.rank >= 4), mf_8_centered);
-    });
-
-/* Lore Skills */
 const lore_skill_y = [477, 503];
-Object.values(actor.skills)
-    .filter((i) => i.lore)
-    .forEach((skill, index) => {
-        if (index < 2) {
-            const skillStatusModifier = skill.modifiers
-                .filter((i) => i.type == 'status')
-                .map((i) => i.modifier)
-                .reduce((a, b) => a + b, 0);
-            const skillProficiencyModifier = skill.modifiers
-                .filter((i) => i.type == 'proficiency')
-                .map((i) => i.modifier)
-                .reduce((a, b) => a + b, 0);
-            const itemExcludes = ['armor-check-penalty', 'no-crowbar'];
-            const skillItemModifier = skill.modifiers
-                .filter((i) => i.type === 'item' && i.enabled && !itemExcludes.includes(i.slug))
-                .map((i) => i.modifier)
-                .reduce((a, b) => a + b, 0);
-            const skillArmorModifier = skill.modifiers
-                .filter((i) => i.slug === 'armor-check-penalty')
-                .map((i) => i.modifier)
-                .reduce((a, b) => a + b, 0);
-            const y = lore_skill_y[index];
-            const skillTotalModifier = pf2eHelper.quantifyNumber(skill.mod - skillStatusModifier);
-            const skillAttributeModifier = skill.attributeModifier.modifier || '0';
-            const skillName = skill.label;
-            let pdfNameStyle = mf_12;
-            if (skillName.length > 14) {
-                pdfNameStyle = mf_10;
-            }
-            ref = 'lore skill';
-            mapper.textBox(ref, fileName, 0, 0, y - 3, 68, 18, skillName, {
-                ...pdfNameStyle,
-                ...{ halign: 'right' },
-            });
-            mapper.textBox(ref, fileName, 0, 95, y + 1, 32, 18, skillTotalModifier, mf_15_centered);
-            mapper.textBox(ref, fileName, 0, 146, y + 1, 19, 12, skillAttributeModifier, mf_12_centered);
-            mapper.textBox(ref, fileName, 0, 166, y + 1, 19, 12, skillProficiencyModifier, mf_12_centered);
-            mapper.textBox(ref, fileName, 0, 187, y + 1, 19, 12, skillItemModifier, mf_12_centered);
-            mapper.textBox(ref, fileName, 0, 133, y, 5, 5, mapper.checkMark(skill.rank >= 1), mf_8_centered);
-            mapper.textBox(ref, fileName, 0, 133, y + 5, 5, 5, mapper.checkMark(skill.rank >= 2), mf_8_centered);
-            mapper.textBox(ref, fileName, 0, 133, y + 10, 5, 5, mapper.checkMark(skill.rank >= 3), mf_8_centered);
-            mapper.textBox(ref, fileName, 0, 133, y + 15, 5, 5, mapper.checkMark(skill.rank >= 4), mf_8_centered);
+Object.values(character.skills).forEach((skill) => {
+    let y;
+    let pdfLabelStyle;
+    if (skill.isLore) {
+        y = lore_skill_y[0];
+        lore_skill_y.shift();
+        pdfLabelStyle = { ...mf_12, ...{ halign: 'right' } };
+        if (skill.label.length > 14) {
+            pdfLabelStyle = { ...mf_10, ...{ halign: 'right' } };
         }
-    });
+        mapper.textBox(ref, fileName, 0, 0, y - 3, 68, 18, skill.label, pdfLabelStyle);
+    } else {
+        y = skill_y[0];
+        skill_y.shift();
+    }
+    ref = `${skill.label} skill`;
+    mapper.textBox(ref, fileName, 0, 95, y, 32, 18, skill.modifier, mf_15_centered);
+    mapper.textBox(ref, fileName, 0, 146, y + 1, 19, 12, skill.attributeModifier, mf_12_centered);
+    mapper.textBox(ref, fileName, 0, 166, y + 1, 19, 12, skill.proficiencyModifier, mf_12_centered);
+    mapper.textBox(ref, fileName, 0, 187, y + 1, 19, 12, skill.itemModifier, mf_12_centered);
+    if (typeof skill.armorModifier !== 'undefined') {
+        mapper.textBox(ref, fileName, 0, 207, y + 1, 19, 12, skill.armorModifier, mf_12_centered);
+    }
+    ref = `${skill.label} proficiency`;
+    mapper.textBox(ref, fileName, 0, 133, y, 5, 5, mapper.checkMark(skill.rank >= 1), mf_8_centered);
+    mapper.textBox(ref, fileName, 0, 133, y + 5, 5, 5, mapper.checkMark(skill.rank >= 2), mf_8_centered);
+    mapper.textBox(ref, fileName, 0, 133, y + 10, 5, 5, mapper.checkMark(skill.rank >= 3), mf_8_centered);
+    mapper.textBox(ref, fileName, 0, 133, y + 15, 5, 5, mapper.checkMark(skill.rank >= 4), mf_8_centered);
+});
 
 // Skill Notes
 let skill_notes = [];
@@ -477,72 +327,21 @@ mapper.textBox('languages', fileName, 0, 311, 294, 84, 73, languages, {
 });
 
 // Perception
-const perceptionStatusModifier = actor.perception.modifiers
-    .filter((i) => i.type === 'status' && i.enabled)
-    .map((i) => i.modifier)
-    .reduce((a, b) => a + b, 0);
-const perceptionAbilityModifier = actor.perception.modifiers
-    .filter((i) => i.type === 'ability' && i.enabled)
-    .map((i) => i.modifier)
-    .reduce((a, b) => a + b, 0);
-const perceptionProficiencyModifier = actor.perception.modifiers
-    .filter((i) => i.type === 'proficiency' && i.enabled)
-    .map((i) => i.modifier)
-    .reduce((a, b) => a + b, 0);
-const perceptionItemModifier = actor.perception.modifiers
-    .filter((i) => i.type === 'item' && i.enabled)
-    .map((i) => i.modifier)
-    .reduce((a, b) => a + b, 0);
-const perceptionModifier = pf2eHelper.quantifyNumber(actor.perception.mod - perceptionStatusModifier);
-mapper.textBox('perception', fileName, 0, 403, 302, 20, 10, perceptionModifier, mf_12_centered);
-mapper.textBox('perception', fileName, 0, 436, 302, 18, 10, perceptionAbilityModifier, mf_10_centered);
-mapper.textBox('perception', fileName, 0, 455, 302, 17, 10, perceptionProficiencyModifier, mf_10_centered);
-mapper.textBox('perception', fileName, 0, 473, 302, 17, 10, perceptionItemModifier, mf_10_centered);
-mapper.textBox('perception', fileName, 0, 424, 297, 5, 5, mapper.checkMark(actor.perception.rank >= 1), mf_8_centered);
-mapper.textBox('perception', fileName, 0, 424, 302, 5, 5, mapper.checkMark(actor.perception.rank >= 2), mf_8_centered);
-mapper.textBox('perception', fileName, 0, 424, 308, 5, 5, mapper.checkMark(actor.perception.rank >= 3), mf_8_centered);
-mapper.textBox('perception', fileName, 0, 424, 313, 5, 5, mapper.checkMark(actor.perception.rank >= 4), mf_8_centered);
+const perception = pf2eHelper.quantifyNumber(character.perception.value);
+mapper.textBox('perception', fileName, 0, 403, 302, 20, 10, perception, mf_12_centered);
+mapper.textBox('perception', fileName, 0, 436, 302, 18, 10, character.perception.attributeModifier, mf_10_centered);
+mapper.textBox('perception', fileName, 0, 455, 302, 17, 10, character.perception.proficiencyModifier, mf_10_centered);
+mapper.textBox('perception', fileName, 0, 473, 302, 17, 10, character.perception.itemModifier, mf_10_centered);
+const pRank = character.perception.rank;
+mapper.textBox('perception', fileName, 0, 424, 297, 5, 5, mapper.checkMark(pRank >= 1), mf_8_centered);
+mapper.textBox('perception', fileName, 0, 424, 302, 5, 5, mapper.checkMark(pRank >= 2), mf_8_centered);
+mapper.textBox('perception', fileName, 0, 424, 308, 5, 5, mapper.checkMark(pRank >= 3), mf_8_centered);
+mapper.textBox('perception', fileName, 0, 424, 313, 5, 5, mapper.checkMark(pRank >= 4), mf_8_centered);
 
-let senses_notes = '';
-if (semVer.gte(game.system.version, '5.12.0')) {
-    senses_notes = actor.system.perception.senses
-        .filter((i) => i.type)
-        .map((i) => i.label)
-        .concat(
-            actor.system.perception.modifiers
-                .filter((i) => i.type === 'item' || i.type === 'untyped')
-                .map((i) => ' ' + (i.slug ? i.slug : i.label) + ' ' + (i.modifier < 0 ? '' : '+') + i.modifier)
-        )
-        .join(', ');
-} else {
-    senses_notes = actor.system.traits.senses
-        .filter((i) => i.type)
-        .map((i) => i.label)
-        .concat(
-            actor.system.attributes.perception.modifiers
-                .filter((i) => i.type === 'item' || i.type === 'untyped')
-                .map((i) => ' ' + (i.slug ? i.slug : i.label) + ' ' + (i.modifier < 0 ? '' : '+') + i.modifier)
-        )
-        .join(', ');
-}
-mapper.textBox('senses notes', fileName, 0, 405, 327, 84, 40, senses_notes, {
-    ...mf_8,
-    ...{ valign: 'top', multiline: true },
-});
+mapper.textBox('senses notes', fileName, 0, 405, 327, 84, 40, character.senses, mf_8_multiline);
 
 // speed
-let speed = actor.system.attributes.speed.value + actor.system.attributes.speed.totalModifier;
-const armorList = actor.items.filter((i) => i.type === 'armor' && i.isEquipped);
-let armor = undefined;
-let armorSpeedPenalty = 0;
-if (armorList.length > 0) {
-    armor = armorList[0];
-    armorSpeedPenalty = armor.speedPenalty;
-    if (armorSpeedPenalty < 0 && armor.strength <= actor.abilities.str.mod) {
-        armorSpeedPenalty = armorSpeedPenalty + 5 > 0 ? 0 : armorSpeedPenalty + 5;
-    }
-}
-mapper.textBox('speed', fileName, 0, 498, 298, 50, 14, speed + armorSpeedPenalty, mf_12_centered);
+mapper.textBox('speed', fileName, 0, 498, 298, 50, 14, character.baseSpeed, mf_12_centered);
 
 const special_movement =
     actor.system.attributes.speed.otherSpeeds.map((i) => ' ' + i.label + ' ' + i.value).join(', ') +
@@ -556,1163 +355,642 @@ mapper.textBox('special movement', fileName, 0, 499, 327, 84, 40, special_moveme
 });
 
 // Strikes
-let strikes = [];
-actor.system.actions
-    .filter((i) => i.type === 'strike' && (i.options?.includes('melee') || i.options?.includes('ranged')))
-    .sort((a, b) => (a.ready > b.ready ? 1 : a.ready < b.ready ? -1 : 0))
-    .reverse()
-    .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
-    .forEach((strike) => {
-        strikes.push(strike);
-        strikes = strikes.concat(strike.altUsages);
-    });
-
 const melee_strike_y = [408, 457, 506];
 const ranged_strike_y = [570, 619];
-let melee_strike_count = 0;
-let ranged_strike_count = 0;
-for (let i = 0; i < strikes.length; i++) {
-    const strike = strikes[i];
-    const isMeleeStrike = strike.options?.includes('melee') || false;
-    const isRangedStrike = strike.options?.includes('ranged') || false;
-    const hasFinesse = strike.item.system.traits.value.includes('finesse');
-    const dexModifier = strike.modifiers
-        .filter((i) => i.type === 'ability' && i.slug === 'dex' && i.enabled)
-        .map((i) => i.modifier)
-        .reduce((a, b) => a + b, 0);
-    const strModifier = strike.modifiers
-        .filter((i) => i.type === 'ability' && i.slug === 'str' && i.enabled)
-        .map((i) => i.modifier)
-        .reduce((a, b) => a + b, 0);
-    const statusModifier = strike.modifiers
-        .filter((i) => i.type === 'status' && i.enabled)
-        .map((i) => i.modifier)
-        .reduce((a, b) => a + b, 0);
-    let traitsAndNotes = '';
-    let runes = pf2eHelper.formatRunes(strike.item.system.runes);
-    runes = runes !== '' ? ', ' + runes : '';
-    if (strike.item.system.range != null) {
-        traitsAndNotes =
-            pf2eHelper.formatTraits(strike.item.system.traits.value.concat([`range-${strike.item.system.range}`])) +
-            runes;
-    } else {
-        traitsAndNotes = pf2eHelper.formatTraits(strike.item.system.traits.value) + runes;
+character.strikes.forEach((strike) => {
+    let y;
+    if (strike.isMelee && melee_strike_y.length > 0) {
+        y = melee_strike_y[0];
+        melee_strike_y.shift();
+    } else if (strike.isRanged && ranged_strike_y.length > 0) {
+        y = ranged_strike_y[0];
+        ranged_strike_y.shift();
     }
-    const strikeModifier = pf2eHelper.quantifyNumber(strike.totalModifier - statusModifier);
-    const attributeName = isMeleeStrike ? (hasFinesse && dexModifier >= strModifier ? 'Dex' : 'Str') : 'Dex';
-    const attributeModifier = isMeleeStrike
-        ? hasFinesse && dexModifier >= strModifier
-            ? dexModifier
-            : strModifier
-        : dexModifier;
-    const proficiencyModifier = strike.modifiers
-        .filter((i) => i.type === 'proficiency' && i.enabled)
-        .map((i) => i.modifier)
-        .reduce((a, b) => a + b, 0);
-    const itemModifier = strike.modifiers
-        .filter((i) => i.type === 'item' && i.enabled)
-        .map((i) => i.modifier)
-        .reduce((a, b) => a + b, 0);
-    const damageFormula = strike.damage({ getFormula: true });
-    const hasBludgeoningDamage =
-        strike.item.system.damage.damageType === 'bludgeoning' ||
-        strike.item.system.traits.value.includes('versatile-b') ||
-        false;
-    const hasPiercingDamage =
-        strike.item.system.damage.damageType === 'piercing' ||
-        strike.item.system.traits.value.includes('versatile-p') ||
-        false;
-    const hasSlashingDamage =
-        strike.item.system.damage.damageType === 'slashing' ||
-        strike.item.system.traits.value.includes('versatile-s') ||
-        false;
-    let strike_y = 0;
-    const dmgParser = function (value) {
-        return value.replace(/(piercing|bludgeoning|slashing)/gi, '').replace(/\s+/g, ' ');
-    };
-    if (isMeleeStrike) {
-        if (melee_strike_count >= melee_strike_y.length) {
-            continue;
-        }
-        strike_y = melee_strike_y[melee_strike_count];
-        melee_strike_count++;
-    } else if (isRangedStrike) {
-        if (ranged_strike_count >= ranged_strike_y.length) {
-            continue;
-        }
-        strike_y = ranged_strike_y[ranged_strike_count];
-        ranged_strike_count++;
-    }
-    const strikeName = strike.label;
-    let pdfNameStyle = mf_10;
-    if (strikeName.length > 32) {
-        pdfNameStyle = mf_6;
-    } else if (strikeName.length > 20) {
-        pdfNameStyle = mf_8;
-    }
-    let pdfTraitsStyle = mf_8;
-    if (traitsAndNotes.length > 77) {
-        pdfTraitsStyle = mf_6;
-    }
-    if (strike_y > 0) {
+    if (typeof y !== 'undefined') {
         ref = 'strike';
-        mapper.textBox(ref, fileName, 0, 311, strike_y - 5, 84, 17, strikeName, pdfNameStyle);
-        mapper.textBox(ref, fileName, 0, 404, strike_y - 5, 26, 17, strikeModifier, mf_12_centered);
-        mapper.textBox(ref, fileName, 0, 436, strike_y + 1, 18, 10, attributeModifier, mf_10_centered);
-        if (isMeleeStrike && attributeName !== 'Str') {
-            mapper.textBox(ref, fileName, 0, 440, strike_y + 11, 10, 10, attributeName, mf_8);
+        const modifier = pf2eHelper.quantifyNumber(strike.modifier);
+        const attributeName = pf2eHelper.capitalize(strike.attributeName);
+        const dmgParser = function (value) {
+            return value.replace(/(piercing|bludgeoning|slashing)/gi, '').replace(/\s+/g, ' ');
+        };
+        const traitsAndNotes = pf2eHelper.formatTraits(strike.traits);
+        const hasBludgeoningDamage = strike.hasBludgeoningDamage;
+        const hasPiercingDamage = strike.hasPiercingDamage;
+        const hasSlashingDamage = strike.hasSlashingDamage;
+
+        let pdfNameStyle = mf_10;
+        if (strike.label.length > 32) {
+            pdfNameStyle = mf_6;
+        } else if (strike.label.length > 20) {
+            pdfNameStyle = mf_8;
+        }
+        let pdfTraitsStyle = mf_8;
+        if (traitsAndNotes.length > 77) {
+            pdfTraitsStyle = mf_6;
         }
 
-        mapper.textBox(ref, fileName, 0, 455, strike_y + 1, 17, 10, proficiencyModifier, mf_10_centered);
-        mapper.textBox(ref, fileName, 0, 472, strike_y + 1, 17, 10, itemModifier, mf_10_centered);
-        mapper.textBox(ref, fileName, 0, 499, strike_y - 5, 74, 17, damageFormula, {
+        mapper.textBox(ref, fileName, 0, 311, y - 5, 84, 17, strike.label, pdfNameStyle);
+        mapper.textBox(ref, fileName, 0, 404, y - 5, 26, 17, modifier, mf_12_centered);
+        mapper.textBox(ref, fileName, 0, 436, y + 1, 18, 10, strike.attributeModifier, mf_10_centered);
+        if (strike.isMelee && strike.attributeName !== 'str') {
+            mapper.textBox(ref, fileName, 0, 440, y + 11, 10, 10, attributeName, mf_8);
+        }
+        mapper.textBox(ref, fileName, 0, 455, y + 1, 17, 10, strike.proficiencyModifier, mf_10_centered);
+        mapper.textBox(ref, fileName, 0, 472, y + 1, 17, 10, strike.itemModifier, mf_10_centered);
+        mapper.textBox(ref, fileName, 0, 499, y - 5, 74, 17, strike.damageFormula, {
             ...mf_10,
             ...{ valueParser: dmgParser },
         });
-        mapper.textBox(ref, fileName, 0, 365, strike_y + 22, 219, 10, traitsAndNotes, pdfTraitsStyle);
-        mapper.textBox(ref, fileName, 0, 576, strike_y, 5, 5, mapper.checkMark(hasBludgeoningDamage), mf_8_centered);
-        mapper.textBox(ref, fileName, 0, 576, strike_y + 6, 5, 5, mapper.checkMark(hasPiercingDamage), mf_8_centered);
-        mapper.textBox(ref, fileName, 0, 576, strike_y + 12, 5, 5, mapper.checkMark(hasSlashingDamage), mf_8_centered);
+
+        mapper.textBox(ref, fileName, 0, 365, y + 22, 219, 10, traitsAndNotes, pdfTraitsStyle);
+        mapper.textBox(ref, fileName, 0, 576, y, 5, 5, mapper.checkMark(hasBludgeoningDamage), mf_8_centered);
+        mapper.textBox(ref, fileName, 0, 576, y + 6, 5, 5, mapper.checkMark(hasPiercingDamage), mf_8_centered);
+        mapper.textBox(ref, fileName, 0, 576, y + 12, 5, 5, mapper.checkMark(hasSlashingDamage), mf_8_centered);
     }
-}
+});
 
 // Weapon proficiencies
 const wp_x = [314, 336, 360, 381];
-['simple', 'martial', 'advanced', 'unarmed'].forEach((a, i) => {
+['simple', 'martial', 'advanced', 'unarmed'].forEach((a) => {
     // Object.keys(actor.system.proficiencies?.attacks || []).forEach((a, i) => {
-    const wp = actor.system.proficiencies.attacks[a].rank || 0;
-    mapper.textBox('weapon proficiencies', fileName, 0, wp_x[i], 672, 6, 6, mapper.checkMark(wp >= 1), mf_8_centered);
-    mapper.textBox('weapon proficiencies', fileName, 0, wp_x[i], 679, 6, 6, mapper.checkMark(wp >= 2), mf_8_centered);
-    mapper.textBox('weapon proficiencies', fileName, 0, wp_x[i], 685, 6, 6, mapper.checkMark(wp >= 3), mf_8_centered);
-    mapper.textBox('weapon proficiencies', fileName, 0, wp_x[i], 692, 6, 6, mapper.checkMark(wp >= 4), mf_8_centered);
+    //const wp = actor.system.proficiencies.attacks[a].rank || 0;
+    let x = wp_x[0];
+    wp_x.shift();
+    const wp = character.weaponProficiencies[a].rank;
+    mapper.textBox('weapon proficiencies', fileName, 0, x, 672, 6, 6, mapper.checkMark(wp >= 1), mf_8_centered);
+    mapper.textBox('weapon proficiencies', fileName, 0, x, 679, 6, 6, mapper.checkMark(wp >= 2), mf_8_centered);
+    mapper.textBox('weapon proficiencies', fileName, 0, x, 685, 6, 6, mapper.checkMark(wp >= 3), mf_8_centered);
+    mapper.textBox('weapon proficiencies', fileName, 0, x, 692, 6, 6, mapper.checkMark(wp >= 4), mf_8_centered);
 });
 // TODO: 'Other' weapon proficiencies
 // TODO: Weapon proficiency notes
 // TODO: Critical Specializations
 
 // Class DC
-const classDcStatusModifier = (actor.classDC?.modifiers || [])
-    .filter((i) => i.type === 'status')
-    .map((i) => i.modifier)
-    .reduce((a, b) => a + b, 0);
-const classDcProficiencyModifier = (actor.classDC?.modifiers || [])
-    .filter((i) => i.type === 'proficiency')
-    .map((i) => i.modifier)
-    .reduce((a, b) => a + b, 0);
-const classDcItemModifier = (actor.classDC?.modifiers || [])
-    .filter((i) => i.type === 'item')
-    .map((i) => i.modifier)
-    .reduce((a, b) => a + b, 0);
-const classDcModifier = (actor.classDC?.mod || 0) + 10 - classDcStatusModifier;
-const classDcAttrModifier = actor.classDC?.attributeModifier.value || 0;
-mapper.textBox('class dc', fileName, 0, 319, 705, 70, 25, classDcModifier, mf_15_centered);
-mapper.textBox('class dc', fileName, 0, 336, 746, 17, 10, classDcAttrModifier, mf_10_centered);
-mapper.textBox('class dc', fileName, 0, 354, 746, 17, 10, classDcProficiencyModifier, mf_10_centered);
-mapper.textBox('class dc', fileName, 0, 372, 746, 18, 10, classDcItemModifier, mf_10_centered);
+mapper.textBox('class dc', fileName, 0, 319, 705, 70, 25, character.classDC.modifier, mf_15_centered);
+mapper.textBox('class dc', fileName, 0, 336, 746, 17, 10, character.classDC.attributeModifier, mf_10_centered);
+mapper.textBox('class dc', fileName, 0, 354, 746, 17, 10, character.classDC.proficiencyModifier, mf_10_centered);
+mapper.textBox('class dc', fileName, 0, 372, 746, 18, 10, character.classDC.itemModifier, mf_10_centered);
 
 /* PAGE 2 */
 // Ancestry and General Feats
 // Ancestry and heritage Abilities
-const ancestryAndHeritageAbilities = [];
-actor.items
-    .filter((i) => i.type === 'feat' && (i.category === 'ancestryfeature' || i.category == 'heritage'))
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-    .forEach((a) => {
-        const sub = actor.items.filter((i) => i.flags?.pf2e?.grantedBy?.id === a._id).map((i) => i.name);
-        if (sub.length === 0) {
-            ancestryAndHeritageAbilities.push(a.name);
-        } else {
-            ancestryAndHeritageAbilities.push(`${a.name} (${sub.join(', ')})`);
-        }
-    });
 ref = 'Ancestry and heritage Abilities';
+const ancestryAndHeritageAbilities = character.ancestryAndHeritageAbilities;
 mapper.textBox(ref, fileName, 1, 49, 53, 162, 25, ancestryAndHeritageAbilities.join(', '), mf_8_multiline);
 
 // Ancestry Feats
 const ancestry_y = [86, 272, 398, 524, 650];
-for (let i = 1; i <= 20; i = i + 4) {
-    const feats = [];
-    actor.items
-        .filter((f) => f.type === 'feat' && (f.system.location === `ancestry-${i}` || (i === 1 && f.system.onlyLevel1)))
-        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .forEach((f) => {
-            const sub = actor.items.filter((f) => f.flags?.pf2e?.grantedBy?.id === f._id).map((m) => m.name);
-            if (sub.length === 0) {
-                feats.push(f.name);
-            } else {
-                feats.push(`${f.name} (${sub.join(', ')})`);
-            }
-        });
-    const y = ancestry_y[0];
-    mapper.textBox('Ancestry feats', fileName, 1, 49, y, 162, 20, feats.join(', '), mf_8_multiline);
 
-    ancestry_y.shift();
-}
+pf2eHelper
+    .unique(character.ancestryFeats.map((m) => m.level))
+    .sort()
+    .forEach((level) => {
+        const feats = character.ancestryFeats.filter((f) => f.level === level).map((m) => m.name);
+        if (ancestry_y.length > 0) {
+            const y = ancestry_y[0];
+            ancestry_y.shift();
+            mapper.textBox('Ancestry feats', fileName, 1, 49, y, 162, 20, feats.join(', '), mf_8_multiline);
+        }
+    });
 
 // Background Skill Feats
-const backgroundSkillFeats = [];
-Object.keys(actor.background?.system.items || []).forEach((b) => {
-    backgroundSkillFeats.push(actor.background.system.items[b].name);
-});
 ref = 'background skill feats';
-mapper.textBox(ref, fileName, 1, 49, 123, 162, 43, backgroundSkillFeats.join(', '), mf_8_multiline);
+mapper.textBox(ref, fileName, 1, 49, 123, 162, 43, character.backgroundSkillFeats.join(', '), mf_8_multiline);
 
 // Skill feats
 const skill_feats_y = [176, 239, 302, 365, 428, 491, 554, 617, 680, 742];
-for (let i = 2; i <= 20; i = i + 2) {
-    const feats = actor.items.filter((f) => f.type === 'feat' && f.system.location === `skill-${i}`).map((m) => m.name);
-    const y = skill_feats_y[0];
-    mapper.textBox('skill feats', fileName, 1, 49, y, 162, 20, feats.join(', '), mf_8_multiline);
-
-    skill_feats_y.shift();
-}
+pf2eHelper
+    .unique(character.skillFeats.map((m) => m.level))
+    .sort()
+    .forEach((level) => {
+        const feats = character.skillFeats.filter((f) => f.level === level).map((m) => m.name);
+        if (skill_feats_y.length > 0) {
+            const y = skill_feats_y[0];
+            skill_feats_y.shift();
+            mapper.textBox('skill feats', fileName, 1, 49, y, 162, 20, feats.sort().join(', '), mf_8_multiline);
+        }
+    });
 
 // General feats
 const general_feats_y = [208, 333, 460, 586, 712];
-for (let i = 3; i <= 20; i = i + 4) {
-    const feats = actor.items
-        .filter((f) => f.type === 'feat' && f.system.location === `general-${i}`)
-        .map((m) => m.name);
-    const y = general_feats_y[0];
-    mapper.textBox('general feats', fileName, 1, 49, y, 162, 20, feats.sort().join(', '), mf_8_multiline);
-
-    general_feats_y.shift();
-}
+pf2eHelper
+    .unique(character.generalFeats.map((m) => m.level))
+    .sort()
+    .forEach((level) => {
+        const feats = character.generalFeats.filter((f) => f.level === level).map((m) => m.name);
+        if (general_feats_y.length > 0) {
+            const y = general_feats_y[0];
+            general_feats_y.shift();
+            mapper.textBox('general feats', fileName, 1, 49, y, 162, 20, feats.sort().join(', '), mf_8_multiline);
+        }
+    });
 
 // Attribute boosts
 const boost_y = [271, 428, 586, 743];
-for (let i = 5; i <= 20; i = i + 5) {
-    const y = boost_y[0];
-    if (actor.system.build !== undefined) {
-        const boosts = pf2eHelper.formatAttributeBoosts(actor.system.build.attributes.boosts[i]);
-        mapper.textBox('attribute boosts', fileName, 1, 184, y, 27, 20, boosts, mf_6_multiline);
-    }
-
-    boost_y.shift();
-}
-
-// Class Feats and Features
-const classId = actor.class?._id || 'unknown';
-const classFeatsFeatures = [];
-actor.items
-    .filter(
-        (f) =>
-            f.type === 'feat' &&
-            (f.system.location === classId || f.system.location === 'class-1') &&
-            f.system.level.value <= 1 &&
-            f.flags?.pf2e?.grantedBy?.id === undefined &&
-            (f.system.category === 'classfeature' || f.system.category === 'class')
-    )
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-    .forEach((item) => {
-        const sub = actor.items.filter((f) => f.flags?.pf2e?.grantedBy?.id === item._id).map((m) => m.name);
-        if (sub.length > 0 && sub.join(', ') !== item.name) {
-            classFeatsFeatures.push(`${item.name} (${sub.join(', ')})`);
-        } else {
-            classFeatsFeatures.push(item.name);
+pf2eHelper
+    .unique(character.attributeBoosts.map((m) => m.level))
+    .sort()
+    .forEach((level) => {
+        const boosts = pf2eHelper.formatAttributeBoosts(
+            character.attributeBoosts.filter((f) => f.level === level).map((m) => m.boost)
+        );
+        if (boost_y.length > 0) {
+            const y = boost_y[0];
+            boost_y.shift();
+            mapper.textBox('attribute boosts', fileName, 1, 184, y, 27, 20, boosts, mf_6_multiline);
         }
     });
-ref = 'class feats and features';
-mapper.textBox(ref, fileName, 1, 216, 53, 179, 113, classFeatsFeatures.join(', '), mf_8_multiline);
+
+// Class Feats and Features
+// Class Features
+const class_features_y = [53, 208, 272, 333, 398, 460, 524, 586, 650, 712];
+let firstFeature = true;
+pf2eHelper
+    .unique(character.classFeatures.map((m) => m.level))
+    .sort()
+    .forEach((level) => {
+        const features = character.classFeatures.filter((f) => f.level === level).map((m) => m.name);
+        ref = 'class features';
+        if (class_features_y.length > 0) {
+            const y = class_features_y[0];
+            class_features_y.shift();
+            let pdfHeight = 20;
+            if (firstFeature) {
+                firstFeature = false;
+                pdfHeight = 113;
+            }
+            mapper.textBox(ref, fileName, 1, 216, y, 179, pdfHeight, features.sort().join(', '), mf_8_multiline);
+        }
+    });
 
 // Class Feats
 const class_feats_y = [176, 239, 302, 365, 428, 491, 554, 617, 680, 742];
-for (let i = 2; i <= 20; i = i + 2) {
-    const feats = actor.items
-        .filter((f) => f.type === 'feat' && [`archetype-${i}`, `class-${i}`].includes(f.system.location))
-        .map((m) => m.name);
-    const y = class_feats_y[0];
-    mapper.textBox('class feats', fileName, 1, 216, y, 179, 20, feats.sort().join(', '), mf_8_multiline);
-    class_feats_y.shift();
-}
-
-// Class Features
-const class_features_y = [208, 272, 333, 398, 460, 524, 586, 650, 712];
-for (let i = 3; i <= 20; i = i + 2) {
-    const classFeatures = [];
-    actor.items
-        .filter(
-            (f) =>
-                f.type === 'feat' &&
-                f.system.category === 'classfeature' &&
-                f.system.location === classId &&
-                f.system.level.value === i
-        )
-        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-        .forEach((item) => {
-            const sub = actor.items.filter((f) => f.flags?.pf2e?.grantedBy?.id === item._id).map((m) => m.name);
-            if (sub.length > 0 && sub.join(', ') !== item.name) {
-                classFeatures.push(`${item.name} (${sub.join(', ')})`);
-            } else {
-                classFeatures.push(item.name);
-            }
-        });
-    const y = class_features_y[0];
-    mapper.textBox('class features', fileName, 1, 216, y, 179, 20, classFeatures.sort().join(', '), mf_8_multiline);
-    class_features_y.shift();
-}
+pf2eHelper
+    .unique(character.classFeats.map((m) => m.level))
+    .sort()
+    .forEach((level) => {
+        const feats = character.classFeats.filter((f) => f.level === level).map((m) => m.name);
+        if (class_feats_y.length > 0) {
+            const y = class_feats_y[0];
+            class_feats_y.shift();
+            mapper.textBox('class feats', fileName, 1, 216, y, 179, 20, feats.sort().join(', '), mf_8_multiline);
+        }
+    });
 
 // Inventory
 let y = 0;
 // Held items
 // item names shouldn't be longer than 50/45 characters
 y = 48;
-actor.inventory.contents
-    .filter(
-        (f) =>
-            f.system.containerId === null &&
-            f.system.stackGroup !== 'coins' &&
-            f.type !== 'consumable' &&
-            f.type !== 'treasure' &&
-            f.system.equipped.carryType === 'held'
-    )
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-    .forEach((item) => {
-        if (y <= 180) {
-            let itemName = item.name;
-            const suffix = item.isMagical ? ' ‡' : '';
-            const bulk = item.system.bulk.value;
-            mapper.textBox('held items', fileName, 1, 406, y, 153, 10, itemName, { ...mf_8, ...{ suffix: suffix } });
-            mapper.textBox('held items', fileName, 1, 566, y, 14, 10, bulk, mf_8_centered);
-        } else if (y <= 190) {
-            mapper.textBox('held items', fileName, 1, 406, y, 153, 10, '...', mf_8);
+ref = 'held items';
+character.heldItems.forEach((item) => {
+    if (y < 180) {
+        let pdfStyle = mf_8;
+        if (item.isMagical) {
+            pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
         }
-        y = y + 10;
-    });
+        mapper.textBox(ref, fileName, 1, 406, y, 153, 10, item.displayName, pdfStyle);
+        mapper.textBox(ref, fileName, 1, 566, y, 14, 10, item.bulk, mf_8_centered);
+    }
+    y = y + 10;
+});
 
 // Consumables
 y = 203;
-actor.inventory.contents
-    .filter((f) => f.system.containerId === null && f.system.stackGroup !== 'coins' && f.type === 'consumable')
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-    .forEach((item) => {
-        if (y <= 340) {
-            let itemName = item.system.quantity > 1 ? `${item.system.quantity} ${item.name}` : item.name;
-            const suffix = item.isMagical ? ' ‡' : '';
-            const bulk = item.system.bulk.value;
-            mapper.textBox('consumables', fileName, 1, 406, y, 153, 10, itemName, { ...mf_8, ...{ suffix: suffix } });
-            mapper.textBox('consumables', fileName, 1, 566, y, 14, 10, bulk, mf_8_centered);
-        } else if (y <= 350) {
-            mapper.textBox('consumables', fileName, 1, 406, y, 153, 10, '...', mf_8);
+ref = 'consumables';
+character.consumables.forEach((item) => {
+    if (y < 340) {
+        let pdfStyle = mf_8;
+        if (item.isMagical) {
+            pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
         }
-        y = y + 10;
-    });
+        mapper.textBox(ref, fileName, 1, 406, y, 153, 10, item.displayName, pdfStyle);
+        mapper.textBox(ref, fileName, 1, 566, y, 14, 10, item.bulk, mf_8_centered);
+    }
+    y = y + 10;
+});
 
 // Worn items
 y = 365;
-actor.inventory.contents
-    .filter(
-        (f) =>
-            f.system.containerId === null &&
-            f.system.stackGroup !== 'coins' &&
-            f.type !== 'consumable' &&
-            f.type !== 'treasure' &&
-            f.system.equipped.carryType !== 'held' &&
-            f.system.equipped.carryType === 'worn'
-    )
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-    .forEach((item) => {
-        if (y <= 568) {
-            let itemName = item.system.quantity > 1 ? `${item.system.quantity} ${item.name}` : item.name;
-            const suffix = item.isMagical ? ' ‡' : '';
-            const bulk = item.system.bulk.value;
-            mapper.textBox('worn items', fileName, 1, 406, y, 120, 10, itemName, { ...mf_8, ...{ suffix: suffix } });
-            mapper.textBox('worn items', fileName, 1, 530, y, 27, 10, mapper.checkMark(item.isInvested), mf_8_centered);
-            mapper.textBox('worn items', fileName, 1, 566, y, 14, 10, bulk, mf_8_centered);
-            y = y + 10;
-
-            actor.inventory.contents
-                .filter((f) => f.system.containerId === item._id)
-                .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-                .forEach((cItem) => {
-                    if (y <= 568) {
-                        let cItemName =
-                            cItem.system.quantity > 1
-                                ? `    ${cItem.system.quantity} ${cItem.name}`
-                                : `    ${cItem.name}`;
-                        const cSuffix = cItem.isMagical ? ' ‡' : '';
-                        const cItemInvested = cItem.isInvested ? 'X' : '';
-                        const cBulk = cItem.system.bulk.value;
-                        mapper.textBox('worn items', fileName, 1, 406, y, 120, 10, cItemName, {
-                            ...mf_8,
-                            ...{ suffix: cSuffix },
-                        });
-                        mapper.textBox('worn items', fileName, 1, 530, y, 27, 10, cItemInvested, mf_8_centered);
-                        mapper.textBox('worn items', fileName, 1, 566, y, 14, 10, cBulk, mf_8_centered);
-                    } else if (y <= 578) {
-                        mapper.textBox('worn items', fileName, 1, 406, y, 120, 10, '...', mf_8);
-                    }
-                    y = y + 10;
-                });
-        } else if (y <= 578) {
-            mapper.textBox('worn items', fileName, 1, 406, y, 120, 10, '...', mf_8);
-            y = y + 10;
+ref = 'worn items';
+character.wornItems.forEach((container) => {
+    if (y <= 568) {
+        let pdfStyle = mf_8;
+        if (container.isMagical) {
+            pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
         }
-    });
+        mapper.textBox(ref, fileName, 1, 406, y, 120, 10, container.displayName, pdfStyle);
+        mapper.textBox(ref, fileName, 1, 530, y, 27, 10, mapper.checkMark(container.isInvested), mf_8_centered);
+        mapper.textBox(ref, fileName, 1, 566, y, 14, 10, container.bulk, mf_8_centered);
+        y = y + 10;
+
+        container.items.forEach((item) => {
+            if (y <= 568) {
+                let pdfStyle = mf_8;
+                if (container.isMagical) {
+                    pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
+                }
+                mapper.textBox(ref, fileName, 1, 416, y, 110, 10, item.displayName, pdfStyle);
+                mapper.textBox(ref, fileName, 1, 530, y, 27, 10, mapper.checkMark(item.isInvested), mf_8_centered);
+                mapper.textBox(ref, fileName, 1, 566, y, 14, 10, item.bulk, mf_8_centered);
+                y = y + 10;
+            }
+        });
+    }
+});
 
 // Bulk
-mapper.textBox('bulk', fileName, 1, 413, 610, 25, 22, actor.inventory.bulk.value.normal, mf_15_centered);
+mapper.textBox('bulk', fileName, 1, 413, 610, 25, 22, character.totalBulk, mf_15_centered);
 
 // Wealth
-mapper.textBox('wealth', fileName, 1, 415, 665, 28, 20, actor.inventory.coins.cp || 0, mf_15_centered);
-mapper.textBox('wealth', fileName, 1, 458, 665, 28, 20, actor.inventory.coins.sp || 0, mf_15_centered);
-mapper.textBox('wealth', fileName, 1, 501, 665, 28, 20, actor.inventory.coins.gp || 0, mf_15_centered);
-mapper.textBox('wealth', fileName, 1, 544, 665, 28, 20, actor.inventory.coins.pp || 0, mf_15_centered);
+mapper.textBox('wealth', fileName, 1, 415, 665, 28, 20, character.coins.cp || 0, mf_15_centered);
+mapper.textBox('wealth', fileName, 1, 458, 665, 28, 20, character.coins.sp || 0, mf_15_centered);
+mapper.textBox('wealth', fileName, 1, 501, 665, 28, 20, character.coins.gp || 0, mf_15_centered);
+mapper.textBox('wealth', fileName, 1, 544, 665, 28, 20, character.coins.pp || 0, mf_15_centered);
 
 // Gems and Artwork
 ref = 'gems and artwork';
 y = 711;
-actor.inventory.contents
-    .filter(
-        (f) =>
-            f.system.containerId === null &&
-            f.system.stackGroup !== 'coins' &&
-            f.type !== 'consumable' &&
-            f.type === 'treasure'
-    )
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-    .forEach((item) => {
-        if (y <= 752) {
-            let itemName = item.system.quantity > 1 ? `${item.system.quantity} ${item.name}` : item.name;
-            itemName = item.isMagical ? `${itemName} ‡` : itemName;
-            const bulk = item.system.bulk.value;
-            const itemPrice = [];
-            ['pp', 'gp', 'sp', 'cp'].forEach((coin) => {
-                if (item.system.price.value[coin] > 0) {
-                    itemPrice.push(`${item.system.price.value[coin]} ${coin}`);
-                }
-            });
-
-            mapper.textBox(ref, fileName, 1, 406, y, 120, 10, itemName, mf_8);
-            mapper.textBox(ref, fileName, 1, 530, y, 27, 10, itemPrice.join(' '), mf_8_centered);
-            mapper.textBox(ref, fileName, 1, 566, y, 14, 10, bulk, mf_8_centered);
-        } else if (y <= 762) {
-            mapper.textBox(ref, fileName, 1, 406, y, 120, 10, '...', mf_8);
+character.gemsAndArtwork.forEach((item) => {
+    if (y < 752) {
+        let pdfStyle = mf_8;
+        if (item.isMagical) {
+            pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
         }
+        mapper.textBox(ref, fileName, 1, 406, y, 153, 10, item.displayName, pdfStyle);
+        mapper.textBox(ref, fileName, 1, 530, y, 27, 10, item.price.join(' '), mf_8_centered);
+        mapper.textBox(ref, fileName, 1, 566, y, 14, 10, item.bulk, mf_8_centered);
         y = y + 10;
-    });
+    }
+});
 
 /* Page 3 */
 // Origin and Appearance
-mapper.textBox('ethnicity', fileName, 2, 218, 48, 59, 15, actor.system.details.ethnicity?.value || '', mf_10);
-mapper.textBox('nationality', fileName, 2, 283, 48, 59, 15, actor.system.details.nationality?.value || '', mf_10);
-mapper.textBox('birthplace', fileName, 2, 348, 48, 59, 15, actor.system.details.biography?.birthPlace || '', mf_10);
-mapper.textBox('age', fileName, 2, 413, 48, 22, 15, actor.system.details.age?.value || '', mf_10);
-mapper.textBox('gender & pronouns', fileName, 2, 440, 48, 67, 15, actor.system.details.gender?.value || '', mf_10);
-mapper.textBox('height', fileName, 2, 512, 48, 31, 15, actor.system.details.height?.value || '', mf_10);
-mapper.textBox('weight', fileName, 2, 549, 48, 33, 15, actor.system.details.weight?.value || '', mf_10);
+mapper.textBox('ethnicity', fileName, 2, 218, 48, 59, 15, character.details.ethnicity, mf_10);
+mapper.textBox('nationality', fileName, 2, 283, 48, 59, 15, character.details.nationality, mf_10);
+mapper.textBox('birthplace', fileName, 2, 348, 48, 59, 15, character.details.biography.birthplace, mf_10);
+mapper.textBox('age', fileName, 2, 413, 48, 22, 15, character.details.age, mf_10);
+mapper.textBox('gender & pronouns', fileName, 2, 440, 48, 67, 15, character.details.gender, mf_10);
+mapper.textBox('height', fileName, 2, 512, 48, 31, 15, character.details.height, mf_10);
+mapper.textBox('weight', fileName, 2, 549, 48, 33, 15, character.details.weight, mf_10);
 
-mapper.textBox('appearance', fileName, 2, 218, 79, 364, 15, actor.system.details.biography?.appearance || '', mf_10);
+mapper.textBox('appearance', fileName, 2, 218, 79, 364, 15, character.details.biography.appearance, mf_10);
 
 // Personality
-mapper.textBox('attitude', fileName, 2, 218, 123, 178, 15, actor.system.details.biography?.attitude || '', mf_10);
-mapper.textBox('deity or philosofy', fileName, 2, 404, 123, 178, 15, actor.deity?.name || '', mf_10);
-const actorEdicts = actor.system.details.biography?.edicts || '';
+mapper.textBox('attitude', fileName, 2, 218, 123, 178, 15, character.details.biography.attitude, mf_10);
+mapper.textBox('deity or philosofy', fileName, 2, 404, 123, 178, 15, character.details.deity, mf_10);
+const actorEdicts = character.details.biography.edicts;
 mapper.textBox('edicts', fileName, 2, 218, 141, 178, 70, ' '.repeat(10) + actorEdicts, mf_10_multiline);
 
-const actorAnathema = actor.system.details.biography?.anathema || '';
+const actorAnathema = character.details.biography.anathema;
 mapper.textBox('edicts', fileName, 2, 404, 141, 178, 70, ' '.repeat(15) + actorAnathema, mf_10_multiline);
 
-mapper.textBox('likes', fileName, 2, 218, 226, 364, 15, actor.system.details.biography?.likes || '', mf_10);
-const actorDislikes = actor.system.details.biography?.dislikes || '';
+mapper.textBox('likes', fileName, 2, 218, 226, 364, 15, character.details.biography.likes, mf_10);
+const actorDislikes = character.details.biography.dislikes;
 mapper.textBox('dislikes', fileName, 2, 218, 257, 364, 15, actorDislikes, mf_10);
-const actorCatchPhrases = actor.system.details.biography?.catchphrases || '';
+const actorCatchPhrases = character.details.biography.catchphrases;
 mapper.textBox('catchphrases', fileName, 2, 218, 289, 364, 15, actorCatchPhrases, mf_10);
 
 // /* Campaign notes Section */
-const actorNotes = actor.system.details.biography?.campaignNotes || '';
+const actorNotes = character.details.biography.campaignNotes;
 mapper.textBox('campaignNotes', fileName, 2, 30, 329, 270, 96, actorNotes, mf_8_multiline);
 // allies and enemies are not really good at
-const actorAllies = actor.system.details.biography?.allies || '';
+const actorAllies = character.details.biography.allies;
 mapper.textBox('allies', fileName, 2, 312, 329, 270, 22, actorAllies, mf_6_multiline);
-const actorEnemies = actor.system.details.biography?.enemies || '';
+const actorEnemies = character.details.biography?.enemies;
 mapper.textBox('enemies', fileName, 2, 312, 366, 270, 22, actorEnemies, mf_6_multiline);
-const actorOrganizations = actor.system.details.biography?.organizations || '';
+const actorOrganizations = character.details.biography.organizations;
 mapper.textBox('organizations', fileName, 2, 312, 403, 270, 22, actorOrganizations, mf_8_multiline);
 
 // Actions and activities
 const actorActionsActivities_y = [454, 534, 615, 694];
-actor.items
-    .filter((i) => i.system.actionType?.value == 'action')
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-    .forEach((action) => {
-        if (actorActionsActivities_y.length > 0) {
-            const y = actorActionsActivities_y[0];
-            const actionName = action.name;
-            const actionActions = pf2eHelper.formatActivity(
-                action.system.actionType.value,
-                action.system.actions.value,
-                pf2eHelper.pdfActionIconsGlyphs
-            );
-            const actionTraits = pf2eHelper.formatTraits(
-                [action.system.traits.rarity].concat(action.system.traits.value)
-            );
-            const actionReference = pf2eHelper.abbreviateSource(
-                action.system.publication?.title || action.system.source?.value || ''
-            );
-            let actionFrequency = '';
-            if (action.frequency?.max !== undefined && action.frequency?.per !== undefined) {
-                actionFrequency = `${action.frequency.max}/` + pf2eHelper.frequencyToHuman(action.frequency.per);
-            }
-            mapper.textBox('action name', fileName, 2, 30, y, 92, 20, actionName, mf_8_multiline);
-            mapper.textBox('action actions', fileName, 2, 124, y, 35, 20, actionActions, action_10_centered_top);
-            mapper.textBox('action traits', fileName, 2, 161, y, 116, 30, actionTraits, mf_8_multiline);
-            mapper.textBox('action reference', fileName, 2, 279, y, 21, 20, actionReference, mf_8_multiline);
-            mapper.textBox(
-                'action effects',
-                fileName,
-                2,
-                30,
-                y + 29,
-                271,
-                38,
-                actionFrequency + '\n' + action.system.description.value,
-                mf_6_multiline
-            );
-
-            actorActionsActivities_y.shift();
-        }
-    });
-
 const actorFreeActionsActivities_y = [454, 534, 615, 694];
-actor.items
-    .filter((i) => i.system.actionType?.value == 'reaction' || i.system.actionType?.value == 'free')
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-    .forEach((action) => {
-        if (actorFreeActionsActivities_y.length > 0) {
-            const y = actorFreeActionsActivities_y[0];
-            const actionName = action.name;
-            const isReaction = action.system.actionType.value === 'reaction' || false;
-            const isFreeAction = action.system.actionType.value !== 'reaction' || false;
-
-            const actionTraits = pf2eHelper.formatTraits(
-                [action.system.traits.rarity].concat(action.system.traits.value)
+// FIXME: trigger and effect doesn't work somehow
+character.activities.forEach((a) => {
+    let y;
+    if (a.type === 'action' && actorActionsActivities_y.length > 0) {
+        y = actorActionsActivities_y[0];
+        actorActionsActivities_y.shift();
+    } else if (a.type === 'free' && actorFreeActionsActivities_y.length > 0) {
+        y = actorFreeActionsActivities_y[0];
+        actorFreeActionsActivities_y.shift();
+    } else if (a.type === 'reaction' && actorFreeActionsActivities_y.length > 0) {
+        y = actorFreeActionsActivities_y[0];
+        actorFreeActionsActivities_y.shift();
+    }
+    if (typeof y !== 'undefined' && a.type === 'action') {
+        ref = 'action';
+        const glyph = pf2eHelper.abbreviateSource(a.glyph);
+        const traits = pf2eHelper.formatTraits(a.traits);
+        const reference = pf2eHelper.abbreviateSource(a.reference);
+        const description = a.frequency + '\n' + a.description;
+        mapper.textBox(ref, fileName, 2, 30, y, 92, 20, a.name, mf_8_multiline);
+        mapper.textBox(ref, fileName, 2, 124, y, 35, 20, glyph, action_10_centered_top);
+        mapper.textBox(ref, fileName, 2, 161, y, 116, 30, traits, mf_8_multiline);
+        mapper.textBox(ref, fileName, 2, 279, y, 21, 20, reference, mf_8_multiline);
+        mapper.textBox(ref, fileName, 2, 30, y + 26, 271, 43, description, mf_6_multiline);
+    } else if (typeof y !== 'undefined' && (a.type === 'free' || a.type === 'reaction')) {
+        ref = 'free/re -action';
+        const traits = pf2eHelper.formatTraits(a.traits);
+        const reference = pf2eHelper.abbreviateSource(a.reference);
+        const description = a.frequency + '\n' + a.description;
+        let trigger = 'blah';
+        let effect = 'blah';
+        if (a.type === 'reaction') {
+            trigger = (description.split('<hr />').length > 0 ? description.split('<hr />')[0] : '').replace(
+                /<strong>Trigger<\/strong>/i,
+                ''
             );
-            const actionReference = pf2eHelper.abbreviateSource(
-                action.system.publication?.title || action.system.source?.value || ''
-            );
-            let actionDescription = '';
-            let actionTrigger = '';
-            let actionEffects = '';
-            if (isReaction) {
-                actionDescription = action.system.description.value.split('<hr />');
-                if (actionDescription[0].replace(/<strong>Trigger<\/strong>/, '') != actionDescription[0]) {
-                    actionTrigger = actionDescription[0].replace(/<strong>Trigger<\/strong>/, '');
-                    actionEffects = actionDescription.slice(1).join('\n');
-                } else {
-                    actionEffects = actionDescription.join('\n');
-                }
-            }
-            let actionFrequency = '';
-            if (action.frequency?.max !== undefined && action.frequency?.per !== undefined) {
-                actionFrequency = `${action.frequency.max}/` + pf2eHelper.frequencyToHuman(action.frequency.per);
-            }
-            mapper.textBox('reaction name', fileName, 2, 312, y, 94, 20, actionName, mf_8_multiline);
-            mapper.textBox(
-                'reaction freeaction',
-                fileName,
-                2,
-                408,
-                y - 8,
-                8,
-                8,
-                mapper.checkMark(isFreeAction),
-                mf_8_centered
-            );
-            mapper.textBox(
-                'reaction reaction',
-                fileName,
-                2,
-                408,
-                y + 2,
-                8,
-                8,
-                mapper.checkMark(isReaction),
-                mf_8_centered
-            );
-            mapper.textBox('reaction traits', fileName, 2, 444, y, 115, 30, actionTraits, mf_8_multiline);
-            mapper.textBox('reaction reference', fileName, 2, 561, y, 21, 20, actionReference, mf_8_multiline);
-            mapper.textBox('reaction trigger', fileName, 2, 312, y + 28, 270, 15, actionTrigger, mf_6_multiline);
-            mapper.textBox('reaction effects', fileName, 2, 312, y + 49, 270, 18, actionEffects, mf_6_multiline);
-
-            actorFreeActionsActivities_y.shift();
+            effect = description.split('<hr />').length > 1 ? description.split('<hr />').slice(1).join('<hr />') : '';
         }
-    });
+        mapper.textBox(ref, fileName, 2, 312, y, 94, 20, a.name, mf_8_multiline);
+        mapper.textBox(ref, fileName, 2, 408, y - 8, 8, 8, mapper.checkMark(a.type === 'free'), mf_8_centered);
+        mapper.textBox(ref, fileName, 2, 408, y + 2, 8, 8, mapper.checkMark(a.type === 'reaction'), mf_8_centered);
+        mapper.textBox(ref, fileName, 2, 444, y, 115, 30, traits, mf_8_multiline);
+        mapper.textBox(ref, fileName, 2, 561, y, 21, 20, reference, mf_8_multiline);
+        mapper.textBox(ref, fileName, 2, 312, y + 26, 270, 16, trigger, mf_6_multiline);
+        mapper.textBox(ref, fileName, 2, 312, y + 49, 270, 16, effect, mf_6_multiline);
+    }
+});
 
 /*  Page 4 */
 // Magical Tradition
-const spellcastingTraditions = ['arcane', 'occult', 'primal', 'divine'];
-const spellcastingTypes = ['prepared', 'spontaneous'];
-const hasArcaneTradition =
-    actor.spellcasting.filter(
-        (f) => f.system?.tradition?.value == 'arcane' && spellcastingTypes.includes(f.system?.prepared?.value)
-    ).length > 0;
-const hasOccultTradition =
-    actor.spellcasting.filter(
-        (f) => f.system?.tradition?.value == 'occult' && spellcastingTypes.includes(f.system?.prepared?.value)
-    ).length > 0;
-const hasPrimalTradition =
-    actor.spellcasting.filter(
-        (f) => f.system?.tradition?.value == 'primal' && spellcastingTypes.includes(f.system?.prepared?.value)
-    ).length > 0;
-const hasDivineTradition =
-    actor.spellcasting.filter(
-        (f) => f.system?.tradition?.value == 'divine' && spellcastingTypes.includes(f.system?.prepared?.value)
-    ).length > 0;
-const isPreparedCaster =
-    actor.spellcasting.filter(
-        (f) => spellcastingTraditions.includes(f.system?.tradition.value) && f.system?.prepared?.value === 'prepared'
-    ).length > 0;
-const isSpontaneousCaster =
-    actor.spellcasting.filter(
-        (f) => spellcastingTraditions.includes(f.system?.tradition.value) && f.system?.prepared?.value === 'spontaneous'
-    ).length > 0;
 
-mapper.textBox('arcane tradition', fileName, 3, 64, 41, 10, 10, mapper.checkMark(hasArcaneTradition), mf_10_centered);
-mapper.textBox('Occult tradition', fileName, 3, 72, 41, 10, 10, mapper.checkMark(hasOccultTradition), mf_10_centered);
-mapper.textBox(
-    'primal tradition',
-    fileName,
-    3,
-    64,
-    51,
-    10,
-    10,
-    mapper.checkMark(hasPrimalTradition),
-    mf_10_centered_top
-);
-mapper.textBox(
-    'divine tradition',
-    fileName,
-    3,
-    72,
-    51,
-    10,
-    10,
-    mapper.checkMark(hasDivineTradition),
-    mf_10_centered_top
-);
+const hasArcaneTradition = character.hasArcaneTradition;
+const hasOccultTradition = character.hasOccultTradition;
+const hasPrimalTradition = character.hasPrimalTradition;
+const hasDivineTradition = character.hasDivineTradition;
+ref = 'magical tradition';
+mapper.textBox(ref, fileName, 3, 64, 41, 10, 10, mapper.checkMark(hasArcaneTradition), mf_10_centered);
+mapper.textBox(ref, fileName, 3, 72, 41, 10, 10, mapper.checkMark(hasOccultTradition), mf_10_centered);
+mapper.textBox(ref, fileName, 3, 64, 51, 10, 10, mapper.checkMark(hasPrimalTradition), mf_10_centered_top);
+mapper.textBox(ref, fileName, 3, 72, 51, 10, 10, mapper.checkMark(hasDivineTradition), mf_10_centered_top);
 
-mapper.textBox('prepared caster', fileName, 3, 129, 46, 5, 5, mapper.checkMark(isPreparedCaster), mf_8_centered);
-mapper.textBox('spontaneous caster', fileName, 3, 129, 56, 5, 5, mapper.checkMark(isSpontaneousCaster), mf_8_centered);
+const isPreparedCaster = character.isPreparedCaster;
+const isSpontaneousCaster = character.isSpontaneousCaster;
+ref = 'magic preparation';
+mapper.textBox(ref, fileName, 3, 129, 46, 5, 5, mapper.checkMark(isPreparedCaster), mf_8_centered);
+mapper.textBox(ref, fileName, 3, 129, 56, 5, 5, mapper.checkMark(isSpontaneousCaster), mf_8_centered);
 
-const spellProficiencyModifier = [];
-const spellAttributeModifier = [];
-const spellProficiencyRank = [];
-const spellAttack = [];
-const spellDC = [];
-const spellSlots = [];
-const spellCastingEntries = actor.spellcasting.filter((i) => i.type === 'spellcastingEntry');
-const actorSpellRank = Math.ceil((actor?.level ?? 0) / 2);
-let innateY = 672;
-const innateMaxY = 752;
-let focusY = 514;
-const focusMaxY = 648;
-const spellY = 116;
-let currentSpellY = spellY;
-let currentSpellX = 218;
-const spellMaxY = 671;
-let lastSpellTitle = '';
-let cantrips_y = 176;
-const cantrips_max_y = 444;
-spellCastingEntries
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-    .forEach((sce) => {
-        spellProficiencyModifier.push(
-            sce.statistic.modifiers
-                .filter((i) => i.type === 'proficiency')
-                .map((i) => i.modifier)
-                .reduce((a, b) => a + b, 0)
-        );
-        spellAttributeModifier.push(
-            sce.statistic.modifiers
-                .filter((i) => i.type === 'ability')
-                .map((i) => i.modifier)
-                .reduce((a, b) => a + b, 0)
-        );
-        const sceStatusModifier = sce.statistic.modifiers
-            .filter((i) => i.type === 'status')
-            .map((i) => i.modifier)
-            .reduce((a, b) => a + b, 0);
-        spellProficiencyRank.push(sce.system?.proficiency?.value || 0);
-        spellAttack.push((sce.statistic.mod || 0) - sceStatusModifier);
-        spellDC.push(10 + (sce.statistic.mod || 0) - sceStatusModifier);
-        const cantrips = sce.spells.filter((f) => f.isCantrip);
-        if (cantrips.length > 0) {
-            mapper.textBox('cantrips', fileName, 3, 30, cantrips_y, 169, 12, sce.name, mf_10);
-            cantrips_y = cantrips_y + 12;
-            cantrips
-                .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-                .forEach((s) => {
-                    if (cantrips_y <= cantrips_max_y) {
-                        const spellName = s.name;
-                        const spellActions = pf2eHelper.formatSpellCastingTime(
-                            s.system.time.value,
-                            pf2eHelper.pdfActionIconsGlyphs
-                        );
-                        const spellPrepared = Object.values(sce.system.slots[`slot0`].prepared).filter(
-                            (f) => f.id === s._id
-                        ).length;
-                        mapper.textBox('cantrips', fileName, 3, 30, cantrips_y, 132, 10, spellName, mf_8);
-                        mapper.textBox(
-                            'cantrips',
-                            fileName,
-                            3,
-                            163,
-                            cantrips_y,
-                            24,
-                            10,
-                            spellActions,
-                            action_8_centered
-                        );
-                        mapper.textBox(
-                            'cantrips',
-                            fileName,
-                            3,
-                            192,
-                            cantrips_y,
-                            13,
-                            10,
-                            'O'.repeat(spellPrepared),
-                            mf_8_centered
-                        );
-                    }
-                    cantrips_y = cantrips_y + 10;
-                });
-            cantrips_y = cantrips_y + 5;
-        }
-
-        for (let r = 1; r <= actorSpellRank; r++) {
-            const rankSpells = sce.spells
-                .filter(
-                    (i) =>
-                        !i.isCantrip &&
-                        ((i.type !== undefined && i.rank === r) ||
-                            (sce.isSpontaneous &&
-                                i.system.heightening !== undefined &&
-                                i.system.location?.signature === true &&
-                                ((i.system.heightening.type === 'interval' &&
-                                    i.rank < r &&
-                                    parseInt((r - i.rank) / i.system.heightening.interval) ==
-                                        (r - i.rank) / i.system.heightening.interval) ||
-                                    (i.system.heightening.type === 'fixed' && i.rank < r))) ||
-                            (sce.isPrepared &&
-                                i.system.heightening !== undefined &&
-                                ((i.system.heightening.type === 'interval' &&
-                                    i.rank < r &&
-                                    parseInt((r - i.rank) / i.system.heightening.interval) ==
-                                        (r - i.rank) / i.system.heightening.interval) ||
-                                    (i.system.heightening.type === 'fixed' && i.rank < r))))
-                )
-                .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
-            if (rankSpells.length == 0) {
-                continue;
-            }
-            if (sce.system.prepared.value === 'innate' && innateY <= innateMaxY) {
-                // name, actions, frequency
-                // mapper.textBox('innate spells', fileName, 3, 30, innateY, 116, 10, `${sce.name} - rank ${r}`, mf_8);
-                // innateY = innateY + 10;
-
-                rankSpells.forEach((s) => {
-                    if (innateY <= innateMaxY) {
-                        const spellName = s.name;
-                        const spellActions = pf2eHelper.formatSpellCastingTime(
-                            s.system.time.value,
-                            pf2eHelper.pdfActionIconsGlyphs
-                        );
-                        // const spellFrequency =
-                        mapper.textBox('innate spells', fileName, 3, 30, innateY, 116, 10, spellName, mf_8);
-                        mapper.textBox(
-                            'innate spells',
-                            fileName,
-                            3,
-                            153,
-                            innateY,
-                            25,
-                            10,
-                            spellActions,
-                            action_8_centered
-                        );
-                        // mapper.textBox('innate spells', fileName, 3, 30, innateY, 186, 20, spellFrequency, mf_8);
-                    }
-                    innateY = innateY + 10;
-                });
-                // innateY = innateY + 5;
-            } else if (spellcastingTypes.includes(sce.system.prepared.value)) {
-                // name, actions, rank, Prep
-                // 2 columns
-                spellSlots[r] = (spellSlots[r] || []).concat([sce.system.slots[`slot${r}`].max]);
-
-                if (lastSpellTitle !== sce.name) {
-                    mapper.textBox('spells', fileName, 3, currentSpellX, currentSpellY, 177, 12, `${sce.name}`, mf_10);
-                    currentSpellY = currentSpellY + 12;
-                    lastSpellTitle = sce.name;
-                }
-                rankSpells.forEach((s) => {
-                    if (currentSpellY >= spellMaxY && currentSpellX === 218) {
-                        currentSpellY = spellY;
-                        currentSpellX = 406;
-                    }
-                    if (currentSpellY <= spellMaxY) {
-                        let spellName = s.name;
-                        const spellActions = pf2eHelper.formatSpellCastingTime(
-                            s.system.time.value,
-                            pf2eHelper.pdfActionIconsGlyphs
-                        );
-                        const spellTags = [];
-                        if (
-                            s.system.heightening !== undefined &&
-                            s.system.heightening.type === 'fixed' &&
-                            s.rank != r
-                        ) {
-                            const heightened = r - s.rank;
-                            //spellName = `${spellName} (+${heightened})`;
-                            spellTags.push(`+${heightened}`);
-                        } else if (
-                            s.system.heightening !== undefined &&
-                            s.system.heightening.type === 'interval' &&
-                            s.rank != r
-                        ) {
-                            const heightened = (r - s.rank) / s.system.heightening.interval;
-                            //spellName = `${spellName} (+${heightened})`;
-                            spellTags.push(`+${heightened}`);
-                        }
-
-                        if (s.system.location?.signature === true) {
-                            spellTags.push(`S`);
-                        }
-
-                        if (spellTags.length > 0) {
-                            spellName = spellName + ' (' + spellTags.join(', ') + ')';
-                        }
-
-                        const spellPrepared = Object.values(sce.system.slots[`slot${r}`].prepared).filter(
-                            (i) => i.id === s._id
-                        ).length;
-                        mapper.textBox(
-                            'spell name',
-                            fileName,
-                            3,
-                            currentSpellX,
-                            currentSpellY,
-                            105,
-                            10,
-                            spellName,
-                            mf_8
-                        );
-                        mapper.textBox(
-                            'spell actions',
-                            fileName,
-                            3,
-                            currentSpellX + 107,
-                            currentSpellY,
-                            25,
-                            10,
-                            spellActions,
-                            action_8_centered
-                        );
-                        mapper.textBox(
-                            'spell rank',
-                            fileName,
-                            3,
-                            currentSpellX + 139,
-                            currentSpellY,
-                            16,
-                            10,
-                            r,
-                            mf_8_centered
-                        );
-                        mapper.textBox(
-                            'spell rank',
-                            fileName,
-                            3,
-                            currentSpellX + 162,
-                            currentSpellY,
-                            14,
-                            10,
-                            'O'.repeat(spellPrepared),
-                            mf_8_centered
-                        );
-                    }
-                    currentSpellY = currentSpellY + 10;
-                });
-                currentSpellY = currentSpellY + 5;
-            } else if (sce.system.prepared.value === 'focus' && focusY <= focusMaxY) {
-                // name, actions
-                rankSpells.forEach((s) => {
-                    if (focusY <= focusMaxY) {
-                        const spellName = s.name;
-                        const spellActions = pf2eHelper.formatSpellCastingTime(
-                            s.system.time.value,
-                            pf2eHelper.pdfActionIconsGlyphs
-                        );
-                        mapper.textBox('focus spell name', fileName, 3, 30, focusY, 146, 10, spellName, mf_8);
-                        mapper.textBox(
-                            'focus spell actions',
-                            fileName,
-                            3,
-                            181,
-                            focusY,
-                            25,
-                            10,
-                            spellActions,
-                            action_8_centered
-                        );
-                    }
-                    focusY = focusY + 10;
-                });
-            } else {
-                // unknown!
-            }
-        }
-    });
-const sceIndex = spellProficiencyRank.indexOf(Math.max(...spellProficiencyRank));
+const spellProficiency = character.highestSpellProficiency;
 
 // Spell Attack
-mapper.textBox('spell attack', fileName, 3, 29, 95, 21, 21, spellAttack[sceIndex], mf_15_centered);
+if (typeof spellProficiency !== 'undefined') {
+    ref = 'spell attack';
+    mapper.textBox(ref, fileName, 3, 29, 95, 21, 21, spellProficiency.attack.modifier, mf_15_centered);
 
-mapper.textBox(
-    'spell attack attr modifier',
-    fileName,
-    3,
-    70,
-    101,
-    17,
-    10,
-    spellAttributeModifier[sceIndex],
-    mf_12_centered
-);
-mapper.textBox(
-    'spell attack prof modifier',
-    fileName,
-    3,
-    88,
-    101,
-    17,
-    10,
-    spellProficiencyModifier[sceIndex],
-    mf_12_centered
-);
-mapper.textBox(
-    'spell attack prof rank',
-    fileName,
-    3,
-    57,
-    100,
-    5,
-    5,
-    mapper.checkMark(spellProficiencyRank[sceIndex] >= 1),
-    mf_8_centered
-);
-mapper.textBox(
-    'spell attack prof rank',
-    fileName,
-    3,
-    57,
-    105,
-    5,
-    5,
-    mapper.checkMark(spellProficiencyRank[sceIndex] >= 2),
-    mf_8_centered
-);
-mapper.textBox(
-    'spell attack prof rank',
-    fileName,
-    3,
-    57,
-    111,
-    5,
-    5,
-    mapper.checkMark(spellProficiencyRank[sceIndex] >= 3),
-    mf_8_centered
-);
-mapper.textBox(
-    'spell attack prof rank',
-    fileName,
-    3,
-    57,
-    116,
-    5,
-    5,
-    mapper.checkMark(spellProficiencyRank[sceIndex] >= 4),
-    mf_8_centered
-);
+    mapper.textBox(ref, fileName, 3, 70, 101, 17, 10, spellProficiency.attack.attributeModifier, mf_12_centered);
+    mapper.textBox(ref, fileName, 3, 88, 101, 17, 10, spellProficiency.attack.proficiencyModifier, mf_12_centered);
+    mapper.textBox(ref, fileName, 3, 57, 100, 5, 5, mapper.checkMark(spellProficiency.attack.rank >= 1), mf_8_centered);
+    mapper.textBox(ref, fileName, 3, 57, 105, 5, 5, mapper.checkMark(spellProficiency.attack.rank >= 2), mf_8_centered);
+    mapper.textBox(ref, fileName, 3, 57, 111, 5, 5, mapper.checkMark(spellProficiency.attack.rank >= 3), mf_8_centered);
+    mapper.textBox(ref, fileName, 3, 57, 116, 5, 5, mapper.checkMark(spellProficiency.attack.rank >= 4), mf_8_centered);
 
-mapper.textBox('spell DC', fileName, 3, 114, 95, 21, 21, spellDC[sceIndex], mf_15_centered);
+    ref = 'spell attack';
+    mapper.textBox(ref, fileName, 3, 114, 95, 21, 21, spellProficiency.spell.modifier, mf_15_centered);
 
-mapper.textBox(
-    'spell dc attr modifier',
-    fileName,
-    3,
-    173,
-    101,
-    17,
-    10,
-    spellAttributeModifier[sceIndex],
-    mf_12_centered
-);
-mapper.textBox(
-    'spell dc prof modifier',
-    fileName,
-    3,
-    191,
-    101,
-    17,
-    10,
-    spellProficiencyModifier[sceIndex],
-    mf_12_centered
-);
+    mapper.textBox(ref, fileName, 3, 173, 101, 17, 10, spellProficiency.spell.attributeModifier, mf_12_centered);
+    mapper.textBox(ref, fileName, 3, 191, 101, 17, 10, spellProficiency.spell.proficiencyModifier, mf_12_centered);
 
-mapper.textBox(
-    'spell dc prof rank',
-    fileName,
-    3,
-    142,
-    100,
-    5,
-    5,
-    mapper.checkMark(spellProficiencyRank[sceIndex] >= 1),
-    mf_8_centered
-);
-mapper.textBox(
-    'spell dc prof rank',
-    fileName,
-    3,
-    142,
-    105,
-    5,
-    5,
-    mapper.checkMark(spellProficiencyRank[sceIndex] >= 2),
-    mf_8_centered
-);
-mapper.textBox(
-    'spell dc prof rank',
-    fileName,
-    3,
-    142,
-    111,
-    5,
-    5,
-    mapper.checkMark(spellProficiencyRank[sceIndex] >= 3),
-    mf_8_centered
-);
-mapper.textBox(
-    'spell dc prof rank',
-    fileName,
-    3,
-    142,
-    116,
-    5,
-    5,
-    mapper.checkMark(spellProficiencyRank[sceIndex] >= 4),
-    mf_8_centered
-);
-
+    mapper.textBox(ref, fileName, 3, 142, 100, 5, 5, mapper.checkMark(spellProficiency.spell.rank >= 1), mf_8_centered);
+    mapper.textBox(ref, fileName, 3, 142, 105, 5, 5, mapper.checkMark(spellProficiency.spell.rank >= 2), mf_8_centered);
+    mapper.textBox(ref, fileName, 3, 142, 111, 5, 5, mapper.checkMark(spellProficiency.spell.rank >= 3), mf_8_centered);
+    mapper.textBox(ref, fileName, 3, 142, 116, 5, 5, mapper.checkMark(spellProficiency.spell.rank >= 4), mf_8_centered);
+}
 // cantrips
 // cantrips per day
-const cantripSlots = Math.max(
-    ...actor.spellcasting
-        .filter(
-            (i) =>
-                spellcastingTraditions.includes(i.system?.tradition?.value) &&
-                spellcastingTypes.includes(i.system?.prepared?.value)
-        )
-        .map((i) => i.spells.entry.system.slots.slot0.max)
-);
+let cantripSlots = character.spellSlots
+    .filter((f) => f.rank === 0)
+    .map((m) => m.max)
+    .sort()
+    .slice(-1)
+    .join();
+if (cantripSlots === '0') {
+    cantripSlots = 'U';
+}
 mapper.textBox('cantrips per day', fileName, 3, 90, 142, 24, 15, cantripSlots, mf_12_centered);
 
 // cantrip rank
-const cantripRank = actorSpellRank;
-mapper.textBox('cantrip rank', fileName, 3, 184, 142, 24, 15, cantripRank, mf_12_centered);
+if (cantripSlots !== '') {
+    mapper.textBox('cantrip rank', fileName, 3, 184, 142, 24, 15, character.cantripRank, mf_12_centered);
+}
+// Cantrips
+let cantripsY = 176;
+const cantripsMaxY = 444;
+ref = 'cantrips';
+let sceType;
+const sceCantripCount = pf2eHelper.unique(
+    character.knownSpells.filter((f) => f.isCantrip && !f.isInnateSpell).map((m) => m.type)
+).length;
+let endingWhiteSpace = false;
+character.knownSpells
+    .filter((f) => f.isCantrip && !f.isInnateSpell)
+    .forEach((cantrip) => {
+        let y;
+        if (cantripsY < cantripsMaxY) {
+            y = cantripsY;
+            cantripsY = cantripsY + 10;
+        }
+        if (typeof y !== 'undefined') {
+            if (sceCantripCount > 1 && sceType !== cantrip.type) {
+                if (endingWhiteSpace) {
+                    y = y + 5;
+                    cantripsY = cantripsY + 5;
+                }
+                mapper.textBox(ref, fileName, 3, 30, y, 169, 12, cantrip.type, mf_10);
+                sceType = cantrip.type;
+                y = cantripsY;
+                cantripsY = cantripsY + 10;
+                endingWhiteSpace = true;
+            }
+            mapper.textBox(ref, fileName, 3, 30, y, 132, 10, cantrip.name, mf_8);
+            mapper.textBox(ref, fileName, 3, 163, y, 24, 10, cantrip.glyph, action_8_centered);
+            mapper.textBox(ref, fileName, 3, 192, y, 13, 10, 'O'.repeat(cantrip.prepared), mf_8_centered);
+        }
+    });
 
 // Focus points
 // actor.system.resources.focus.max >= 1
-mapper.textBox(
-    'focus point 1',
-    fileName,
-    3,
-    80,
-    467,
-    12,
-    12,
-    mapper.checkMark(actor.system.resources.focus.max >= 1),
-    mf_10_centered
-);
-mapper.textBox(
-    'focus point 2',
-    fileName,
-    3,
-    93,
-    467,
-    12,
-    12,
-    mapper.checkMark(actor.system.resources.focus.max >= 2),
-    mf_10_centered
-);
-mapper.textBox(
-    'focus point 3',
-    fileName,
-    3,
-    106,
-    467,
-    12,
-    12,
-    mapper.checkMark(actor.system.resources.focus.max >= 3),
-    mf_10_centered
-);
+ref = 'focus points';
+mapper.textBox(ref, fileName, 3, 80, 467, 12, 12, mapper.checkMark(character.focusPoints.max >= 1), mf_10_centered);
+mapper.textBox(ref, fileName, 3, 93, 467, 12, 12, mapper.checkMark(character.focusPoints.max >= 2), mf_10_centered);
+mapper.textBox(ref, fileName, 3, 106, 467, 12, 12, mapper.checkMark(character.focusPoints.max >= 3), mf_10_centered);
 
 // focus rank
-const focusSpellRank = actorSpellRank;
-mapper.textBox('focus spell rank', fileName, 3, 184, 467, 24, 15, focusSpellRank, mf_12_centered);
+mapper.textBox('focus spell rank', fileName, 3, 184, 467, 24, 15, character.focusSpellRank, mf_12_centered);
 
-// Rituals
-const rituals = actor.items.filter((f) => f.system.ritual !== undefined);
+// Focus spells
+let focusY = 514;
+const focusMaxY = 648;
+sceType = undefined;
+const sceFocusCount = pf2eHelper.unique(character.knownSpells.filter((f) => f.isFocusSpell).map((m) => m.type)).length;
+endingWhiteSpace = false;
 
-const ritualY = 707;
-let currentRitualY = ritualY;
-const ritualMaxY = 752;
-let currentRitualX = 218;
-rituals
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-    .forEach((r) => {
-        if (currentRitualY >= ritualMaxY && currentRitualX === 218) {
-            currentRitualY = ritualY;
-            currentRitualX = 406;
+character.knownSpells
+    .filter((f) => f.isFocusSpell)
+    .forEach((spell) => {
+        let y;
+        if (focusY < focusMaxY) {
+            y = focusY;
+            focusY = focusY + 10;
         }
-        if (currentRitualY <= ritualMaxY) {
-            const ritualName = r.name;
-            const ritualRank = r.rank;
-            const ritualCost = r.system.cost.value;
-            mapper.textBox('ritual name', fileName, 3, currentRitualX, currentRitualY, 132, 10, ritualName, mf_8);
-            mapper.textBox(
-                'ritual name',
-                fileName,
-                3,
-                currentRitualX + 137,
-                currentRitualY,
-                19,
-                10,
-                ritualRank,
-                mf_8_centered
-            );
-            mapper.textBox('ritual name', fileName, 3, currentRitualX + 162, currentRitualY, 24, 10, ritualCost, mf_8);
+        if (typeof y !== 'undefined') {
+            if (sceFocusCount > 1 && sceType !== spell.type) {
+                if (endingWhiteSpace) {
+                    y = y + 5;
+                    cantripsY = cantripsY + 5;
+                }
+                mapper.textBox(ref, fileName, 3, 30, y, 169, 12, spell.type, mf_10);
+                sceType = spell.type;
+                y = focusY;
+                focusY = focusY + 10;
+                endingWhiteSpace = true;
+            }
+            mapper.textBox(ref, fileName, 3, 30, y, 146, 10, spell.name, mf_8);
+            mapper.textBox(ref, fileName, 3, 181, y, 25, 10, spell.glyph, action_8_centered);
         }
-        currentRitualY = currentRitualY + 10;
+    });
+
+// Innate spells
+let innateSpellsY = 672;
+const innateSpellsMaxY = 752;
+ref = 'innate spell';
+sceType = undefined;
+const sceInnateSpellCount = pf2eHelper.unique(
+    character.knownSpells.filter((f) => f.isInnateSpell).map((m) => m.type)
+).length;
+endingWhiteSpace = false;
+character.knownSpells
+    .filter((f) => f.isInnateSpell)
+    .forEach((spell) => {
+        let y;
+        if (innateSpellsY < innateSpellsMaxY) {
+            y = innateSpellsY;
+            innateSpellsY = innateSpellsY + 10;
+        }
+        if (typeof y !== 'undefined') {
+            if (sceInnateSpellCount > 1 && sceType !== spell.type) {
+                if (endingWhiteSpace) {
+                    y = y + 5;
+                    innateSpellsY = innateSpellsY + 5;
+                }
+                mapper.textBox(ref, fileName, 3, 30, y, 169, 12, spell.type, mf_10);
+                sceType = spell.type;
+                y = innateSpellsY;
+                innateSpellsY = innateSpellsY + 10;
+                endingWhiteSpace = true;
+            }
+            mapper.textBox(ref, fileName, 3, 30, y, 146, 10, spell.name, mf_8);
+            mapper.textBox(ref, fileName, 3, 153, y, 25, 10, spell.glyph, action_8_centered);
+            // TODO: frequency of innate spells
+            // mapper.textBox(ref, fileName, 3, 186, y, 20, 10, spell.frequency, action_8_centered);
+        }
     });
 
 // Spell Slots
 // Spells per day
-const spellsPerDay = [0, 277, 308, 340, 371, 403, 434, 466, 497, 529, 560];
-spellSlots.forEach((r, i) => {
-    let pdfStyle = mf_12_centered;
-    if (r.length > 2) {
-        pdfStyle = mf_10_centered;
-    } else if (r.length > 6) {
-        pdfStyle = mf_8_centered;
-    } else if (r.length > 4) {
-        pdfStyle = mf_6_centered;
+const spellsPerDayX = [277, 308, 340, 371, 403, 434, 466, 497, 529, 560];
+for (let i = 1; i <= character.maximumSpellRank; i++) {
+    let x;
+    if (spellsPerDayX.length > 0) {
+        x = spellsPerDayX[0];
+        spellsPerDayX.shift();
     }
-    mapper.textBox('focus spell rank', fileName, 3, spellsPerDay[i], 41, 23, 15, r.join('/'), pdfStyle);
+    if (typeof x !== 'undefined') {
+        const rankSlots = character.spellSlots.filter((f) => f.rank === i).map((m) => m.max);
+        let pdfStyle = mf_12_centered;
+        if (rankSlots.length > 2) {
+            pdfStyle = mf_10_centered;
+        } else if (rankSlots.length > 6) {
+            pdfStyle = mf_8_centered;
+        } else if (rankSlots.length > 4) {
+            pdfStyle = mf_6_centered;
+        }
+        mapper.textBox('focus spell rank', fileName, 3, x, 41, 23, 15, rankSlots.join('/'), pdfStyle);
+    }
+}
+
+// Spells
+let spellX = 218;
+const spellMinY = 116;
+let spellY = spellMinY;
+const spellMaxY = 671;
+ref = 'spell';
+sceType = undefined;
+let spellRank;
+const sceSpellCount = pf2eHelper.unique(
+    character.knownSpells.filter((f) => !f.isInnateSpell && !f.isCantrip && !f.isFocusSpell).map((m) => m.type)
+).length;
+endingWhiteSpace = false;
+// TODO: we need to make sure they are sorted by type // rank // name
+character.knownSpells
+    .filter((f) => !f.isInnateSpell && !f.isCantrip && !f.isFocusSpell)
+    .forEach((spell) => {
+        let y;
+        let x = spellX;
+        if (spellY < spellMaxY) {
+            y = spellY;
+            spellY = spellY + 10;
+        }
+        if (typeof y !== 'undefined') {
+            if (sceSpellCount > 1 && sceType !== spell.type) {
+                if (endingWhiteSpace) {
+                    y = y + 5;
+                    spellY = spellY + 5;
+                }
+                mapper.textBox(ref, fileName, 3, 30, y, 169, 12, spell.type, mf_10);
+                sceType = spell.type;
+                y = spellY;
+                spellY = spellY + 10;
+                spellRank = undefined;
+                // endingWhiteSpace = true;
+                endingWhiteSpace = false;
+            }
+            if (spellRank !== spell.rank) {
+                if (endingWhiteSpace) {
+                    y = y + 5;
+                    spellY = spellY + 5;
+                }
+                spellRank = spell.rank;
+                endingWhiteSpace = true;
+            }
+
+            mapper.textBox(ref, fileName, 3, x, y, 105, 10, spell.name, mf_8);
+            mapper.textBox(ref, fileName, 3, x + 107, y, 25, 10, spell.glyph, action_8_centered);
+            mapper.textBox(ref, fileName, 3, x + 139, y, 16, 10, spell.rank, mf_8_centered);
+            mapper.textBox(ref, fileName, 3, x + 162, y, 14, 10, 'O'.repeat(spell.prepared), mf_8_centered);
+            if (spellY >= spellMaxY && spellX === 218) {
+                spellY = spellMinY;
+                spellX = 406;
+            }
+        }
+    });
+
+// Rituals
+const rituals = actor.items.filter((f) => f.system.ritual !== undefined);
+
+const ritualX = 218;
+const ritualMinY = 709;
+let ritualY = ritualMinY;
+const ritualMaxY = 752;
+ref = 'rituals';
+character.knownRituals.forEach((ritual) => {
+    let y;
+    let x = ritualX;
+    if (ritualY < ritualMaxY) {
+        y = ritualY;
+        ritualY = ritualY + 10;
+    }
+    if (typeof y !== 'undefined') {
+        mapper.textBox(ref, fileName, 3, x, y, 132, 10, ritual.name, mf_8);
+        mapper.textBox(ref, fileName, 3, x + 137, y, 19, 10, ritual.rank, mf_8_centered);
+        mapper.textBox(ref, fileName, 3, x + 162, y, 24, 10, ritual.cost, mf_8);
+    }
+    if (ritualY >= ritualMaxY && ritualX === 218) {
+        ritualY = ritualMinY;
+        ritualX = 406;
+    }
 });
 
 export { mapper };
