@@ -221,7 +221,6 @@ export class pdfProvider extends baseProvider {
 
         const pageHeight = pdfPages[page].getHeight();
         const pageWidth = pdfPages[page].getWidth();
-        console.debug(`actor-export | PDF | page dimensions: ${pageHeight} x ${pageWidth} pixels`);
         const textOptions = {
             ...options,
             size: (options.size || this.pdfFontSize) * pageHeight,
@@ -233,6 +232,10 @@ export class pdfProvider extends baseProvider {
             suffix: String(options.suffix || ''),
             prefix: String(options.prefix || ''),
         };
+
+        if (textOptions.debug || this.debugProvider || false) {
+            console.debug(`actor-export | PDF | page dimensions: ${pageHeight} x ${pageWidth} pixels`);
+        }
 
         // TODO: check if this is a standard font.
         const fontName = options.font || this.pdfFontName;
@@ -261,20 +264,30 @@ export class pdfProvider extends baseProvider {
                 multiLineOptions.font = textOptions.font;
             }
             const multiLine = layoutMultilineText(
-                textOptions.prefix + modifiedText + textOptions.suffix,
+                (textOptions.prefix + modifiedText + textOptions.suffix).trim(),
                 multiLineOptions
             );
             textWidth = Math.max(...multiLine.lines.map((i) => i.width));
-            textHeight = multiLine.lines.length * multiLine.lineHeight;
-            if (multiLine.lines.length > 1 && multiLine.lines.length * multiLine.lineHeight > textOptions.height) {
-                modifiedText = multiLine.lines
-                    .slice(0, Math.floor(textOptions.height / multiLine.lineHeight))
-                    .map((i) => i.text)
-                    .join(' ');
-                textHeight = Math.floor(textOptions.height / multiLine.lineHeight) * multiLine.lineHeight;
+            textHeight = 0;
+            modifiedText = '';
+            for (let i = 0; i < multiLine.lines.length; i++) {
+                if (multiLine.lines[i].text.trim() !== '' && textHeight < textOptions.height) {
+                    textHeight = textHeight + multiLine.lineHeight;
+                    modifiedText = modifiedText + multiLine.lines[i].text.trim() + ' ';
+                }
             }
             textLineHeight = multiLine.lineHeight;
             textOptions.maxWidth = textOptions.width;
+            if (textOptions.debug || this.debugProvider || false) {
+                console.debug(
+                    'actor-export | PDF | rawText:',
+                    (textOptions.prefix + modifiedText + textOptions.suffix).trim()
+                );
+                console.debug('actor-export | PDF | multiLine:', multiLine);
+                console.debug('actor-export | PDF | modifiedText:', modifiedText);
+                console.debug('actor-export | PDF | textHeight:', textHeight);
+                console.debug('actor-export | PDF | options:', options);
+            }
         } else {
             // add a single line to the pdf
             // TODO: what if font is undefined?
@@ -327,6 +340,12 @@ export class pdfProvider extends baseProvider {
         // TODO: vertical alignment: middle
 
         if (textOptions.debug || this.debugProvider || false) {
+            console.debug(
+                'actor-export | PDF | real x, y:',
+                pageWidth * x,
+                pageHeight - pageHeight * y - textOptions.height
+            );
+            console.debug('actor-export | PDF | textOptions:', textOptions);
             pdfPages[page].drawRectangle({
                 x: pageWidth * x,
                 y: pageHeight - pageHeight * y - textOptions.height,
@@ -345,7 +364,7 @@ export class pdfProvider extends baseProvider {
                     borderColor: rgb(0, 1, 1),
                 });
             }
-            pdfPages[page].drawText(modifiedText, textOptions);
+            pdfPages[page].drawText(modifiedText.trim(), textOptions);
         }
     }
 
@@ -572,7 +591,9 @@ export class pdfProvider extends baseProvider {
                 );
                 throw Error(error);
             }
-            console.debug(`actor-export | PDF | ${pdfFormFields.length} fields found.`);
+            if (this.debug || false) {
+                console.debug(`actor-export | PDF | ${pdfFormFields.length} fields found.`);
+            }
             for (let i = 0; i < pdfFormFields.length; i++) {
                 const pdfField = pdfFormFields[i];
                 const fieldName = pdfField.getName().trim();
