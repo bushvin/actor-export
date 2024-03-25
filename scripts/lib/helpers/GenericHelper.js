@@ -136,4 +136,14 @@ export class genericHelper {
         }
         return html;
     }
+
+    static unique(array) {
+        const uniqueArray = [];
+        array.forEach((element) => {
+            if (uniqueArray.indexOf(element) === -1) {
+                uniqueArray.push(element);
+            }
+        });
+        return uniqueArray;
+    }
 }
