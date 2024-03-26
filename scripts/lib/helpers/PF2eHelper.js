@@ -516,10 +516,10 @@ class pf2eActor {
      */
     get baseSpeed() {
         try {
-            const speed =
-                this.actor.system.attributes.speed.value +
-                this.actor.system.attributes.speed.totalModifier +
-                this.equippedArmor.speedPenalty;
+            const speed = this.actor.system.attributes.speed.value + this.actor.system.attributes.speed.totalModifier;
+            if (this.hasArmorEquipped) {
+                speed = speed + this.equippedArmor.speedPenalty;
+            }
             if (this.actor.system.attributes.speed.type === 'land') {
                 return speed;
             } else {
