@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.3.5] 2024-03-27
+
+### Fixed
+
+- Players have access to the export function now (thank you ksignorini)
+
 ## [2024.3.4] 2024-03-26
 
 ### Added
