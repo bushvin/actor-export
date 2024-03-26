@@ -9,6 +9,7 @@ import './lib/FileSaver.js';
 class actorExport {
     static ID = 'actor-export';
     static SETTINGS = {
+        ALL_PROVIDERS: 'allProviders',
         ENABLED_PROVIDERS: 'enabledProviders',
         PROVIDER_FILTER: 'exportProviderFilter',
         PROVIDER_CUSTOM: 'exportProviderCustom',
@@ -46,7 +47,7 @@ class actorExport {
     }
 
     /**
-     * The initialization function for themodule
+     * The initialization function for the module
      */
     static init() {
         this.log('info', 'starting');
@@ -68,6 +69,15 @@ class actorExport {
             type: actorExportCustomProvider,
             restricted: true,
             requiresReload: true,
+        });
+
+        game.settings.register(this.ID, this.SETTINGS.ALL_PROVIDERS, {
+            name: `ACTOR-EXPORT.settings.${this.SETTINGS.ALL_PROVIDERS}.name`,
+            hint: `ACTOR-EXPORT.settings.${this.SETTINGS.ALL_PROVIDERS}.hint`,
+            scope: 'world',
+            config: false,
+            type: Array,
+            default: [],
         });
 
         game.settings.register(this.ID, this.SETTINGS.PROVIDER_CUSTOM_CODE, {
@@ -101,17 +111,23 @@ class actorExport {
     }
 
     /**
-     * Returns an array of all providers found in ./providers
+     * Returns an array of all providers found by the GM in ./providers
      * @returns {Array}
      */
     static async providers() {
-        const providers = [];
-        const ls = await FilePicker.browse('data', `modules/${this.ID}/providers`);
-        for (let i = 0; i < ls.dirs.length; i++) {
-            let dir = ls.dirs[i];
-            let response = await fetch(`${dir}/sheet.json`);
-            let json = await response.json();
-            providers.push(this.evalProviderRequirements(json));
+        let providers = [];
+        let ls;
+        if (game.user.isGM) {
+            ls = await FilePicker.browse('data', `modules/${this.ID}/providers`);
+            for (let i = 0; i < ls.dirs.length; i++) {
+                let dir = ls.dirs[i];
+                let response = await fetch(`${dir}/sheet.json`);
+                let json = await response.json();
+                providers.push(this.evalProviderRequirements(json));
+            }
+            await game.settings.set(actorExport.ID, actorExport.SETTINGS.ALL_PROVIDERS, providers);
+        } else {
+            providers = await game.settings.get(actorExport.ID, actorExport.SETTINGS.ALL_PROVIDERS);
         }
         return providers;
     }

@@ -7,6 +7,10 @@
             "actorExportCustomProvider": {
                 "title": "Custom Provider"
             },
+            "allProviders": {
+                "name": "All Providers",
+                "hint": "All Providers"
+            },
             "exportProviderCustom": {
                 "name": "Custom Export Provider",
                 "hint": "Custom Javascript code to generate a single download",
