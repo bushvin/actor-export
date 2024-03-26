@@ -495,7 +495,6 @@ class pf2eActor {
      */
     get equippedArmor() {
         if (this.hasArmorEquipped) {
-            // return this.actor.items.filter((i) => i.type === 'armor' && i.isEquipped)[0];
             const armor = this.actor.items.filter((i) => i.type === 'armor' && i.isEquipped)[0];
             const equippedArmor = {
                 strength: armor.strength,
