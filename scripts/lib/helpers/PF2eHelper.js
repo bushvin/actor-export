@@ -515,7 +515,7 @@ class pf2eActor {
      */
     get baseSpeed() {
         try {
-            const speed = this.actor.system.attributes.speed.value + this.actor.system.attributes.speed.totalModifier;
+            let speed = this.actor.system.attributes.speed.value + this.actor.system.attributes.speed.totalModifier;
             if (this.hasArmorEquipped) {
                 speed = speed + this.equippedArmor.speedPenalty;
             }
@@ -1086,6 +1086,7 @@ class pf2eActor {
                 anathema: this.actor.system.details.biography?.anathema || '',
                 birthplace: this.actor.system.details.biography?.birthPlace || '',
                 dislikes: this.actor.system.details.biography?.dislikes || '',
+                likes: this.actor.system.details.biography?.likes || '',
                 catchphrases: this.actor.system.details.biography?.catchphrases || '',
                 campaignNotes: this.actor.system.details.biography?.campaignNotes || '',
                 allies: this.actor.system.details.biography?.allies || '',
@@ -1598,7 +1599,11 @@ export class pf2eHelper extends genericHelper {
                 return 'TV';
         }
 
-        return source;
+        return source
+            .split(' ')
+            .map((m) => m[0])
+            .join('')
+            .toUpperCase();
     }
 
     /**
