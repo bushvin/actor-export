@@ -105,6 +105,8 @@ const action_8 = {
     lineHeight: 8 / mapper.pageHeight,
     color: '#01579b',
 };
+const action_8_right = { ...action_8, ...{ halign: 'right' } };
+
 const action_8_centered = { ...action_8, ...{ halign: 'center' } };
 const action_8_centered_top = { ...action_8_centered, ...{ valign: 'top' } };
 
@@ -327,7 +329,7 @@ mapper.textBox('languages', fileName, 0, 311, 294, 84, 73, languages, {
 });
 
 // Perception
-const perception = pf2eHelper.quantifyNumber(character.perception.value);
+const perception = pf2eHelper.quantifyNumber(character.perception.modifier);
 mapper.textBox('perception', fileName, 0, 403, 302, 20, 10, perception, mf_12_centered);
 mapper.textBox('perception', fileName, 0, 436, 302, 18, 10, character.perception.attributeModifier, mf_10_centered);
 mapper.textBox('perception', fileName, 0, 455, 302, 17, 10, character.perception.proficiencyModifier, mf_10_centered);
@@ -805,7 +807,7 @@ character.knownSpells
                 endingWhiteSpace = true;
             }
             mapper.textBox(ref, fileName, 3, 30, y, 132, 10, cantrip.name, mf_8);
-            mapper.textBox(ref, fileName, 3, 163, y, 24, 10, cantrip.glyph, action_8_centered);
+            mapper.textBox(ref, fileName, 3, 155, y, 32, 10, cantrip.glyph, action_8_centered);
             mapper.textBox(ref, fileName, 3, 192, y, 13, 10, 'O'.repeat(cantrip.prepared), mf_8_centered);
         }
     });
@@ -955,9 +957,9 @@ character.knownSpells
                 spellRank = spell.rank;
                 endingWhiteSpace = true;
             }
-
+            // 3 + 2 + 5 (-3)
             mapper.textBox(ref, fileName, 3, x, y, 105, 10, spell.name, mf_8);
-            mapper.textBox(ref, fileName, 3, x + 107, y, 25, 10, spell.glyph, action_8_centered);
+            mapper.textBox(ref, fileName, 3, x + 100, y, 32, 10, spell.glyph, action_8_centered);
             mapper.textBox(ref, fileName, 3, x + 139, y, 16, 10, spell.rank, mf_8_centered);
             mapper.textBox(ref, fileName, 3, x + 162, y, 14, 10, 'O'.repeat(spell.prepared), mf_8_centered);
             if (spellY >= spellMaxY && spellX === 218) {
