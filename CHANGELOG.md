@@ -5,12 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.3.1] 2024-03-26
+
+### Added
+
+- Bushvin's Remastered PDF using the new text embedding
+
 ## [2024.3.3] 2024-03-26
 
 ### Added
 
 - actor abstraction classes to simplify actor properties and provide error trapping
-- Bushvin's Remastered PDF using the new text embedding
 
 ### Changed
 
