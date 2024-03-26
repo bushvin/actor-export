@@ -6,9 +6,7 @@
 {{#each files}}
         <div class="form-group" id="field.{{../id}}.{{ uri }}">
             <label for="{{../id}}.{{ uri }}">{{ name }}</label>
-            <div class="form-fields">
                 <input type="checkbox" data-provider="{{../id}}" data-file="{{uri}}" name="{{ uri }}" id="{{../id}}.{{ uri }}" data-dtype="Boolean" {{checked isSelected}} />
-            </div>
             <p class="notes">{{ description }}</p>
         </div>
 {{/each}}
