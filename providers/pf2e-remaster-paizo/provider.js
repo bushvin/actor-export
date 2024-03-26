@@ -683,12 +683,11 @@ character.activities.forEach((a) => {
     }
     if (typeof y !== 'undefined' && a.type === 'action') {
         ref = 'action';
-        const glyph = pf2eHelper.abbreviateSource(a.glyph);
         const traits = pf2eHelper.formatTraits(a.traits);
         const reference = pf2eHelper.abbreviateSource(a.reference);
         const description = a.frequency + '\n' + a.description;
         mapper.textBox(ref, fileName, 2, 30, y, 92, 20, a.name, mf_8_multiline);
-        mapper.textBox(ref, fileName, 2, 124, y, 35, 20, glyph, action_10_centered_top);
+        mapper.textBox(ref, fileName, 2, 124, y, 35, 20, a.glyph, action_10_centered_top);
         mapper.textBox(ref, fileName, 2, 161, y, 116, 30, traits, mf_8_multiline);
         mapper.textBox(ref, fileName, 2, 279, y, 21, 20, reference, mf_8_multiline);
         mapper.textBox(ref, fileName, 2, 30, y + 26, 271, 43, description, mf_6_multiline);
@@ -813,7 +812,6 @@ character.knownSpells
     });
 
 // Focus points
-// actor.system.resources.focus.max >= 1
 ref = 'focus points';
 mapper.textBox(ref, fileName, 3, 80, 467, 12, 12, mapper.checkMark(character.focusPoints.max >= 1), mf_10_centered);
 mapper.textBox(ref, fileName, 3, 93, 467, 12, 12, mapper.checkMark(character.focusPoints.max >= 2), mf_10_centered);
@@ -957,7 +955,6 @@ character.knownSpells
                 spellRank = spell.rank;
                 endingWhiteSpace = true;
             }
-            // 3 + 2 + 5 (-3)
             mapper.textBox(ref, fileName, 3, x, y, 105, 10, spell.name, mf_8);
             mapper.textBox(ref, fileName, 3, x + 100, y, 32, 10, spell.glyph, action_8_centered);
             mapper.textBox(ref, fileName, 3, x + 139, y, 16, 10, spell.rank, mf_8_centered);
