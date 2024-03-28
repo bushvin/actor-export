@@ -52,9 +52,19 @@ class pf2eActor {
      * @type {string}
      */
     get ancestry() {
-        return {
+        const ancestry = {
             name: this.actor.ancestry?.name || 'unknown',
+            description: undefined,
         };
+        try {
+            const a = actor.items.filter((i) => i.type === 'ancestry');
+            if (a.length > 0) {
+                ancestry['description'] = a.system.description?.value;
+            }
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'ancestry', error.message);
+        }
+        return ancestry;
     }
 
     /**
