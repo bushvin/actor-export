@@ -59,7 +59,7 @@ class pf2eActor {
         try {
             const a = actor.items.filter((i) => i.type === 'ancestry');
             if (a.length > 0) {
-                ancestry['description'] = a.system.description?.value;
+                ancestry['description'] = a[0].system.description?.value;
             }
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'ancestry', error.message);
@@ -79,7 +79,7 @@ class pf2eActor {
         try {
             const a = actor.items.filter((i) => i.type === 'heritage');
             if (a.length > 0) {
-                ancestry['description'] = a.system.description?.value;
+                heritage['description'] = a[0].system.description?.value;
             }
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'heritage', error.message);
@@ -700,12 +700,16 @@ class pf2eActor {
                 .filter((i) => i.type === 'feat' && (i.category === 'ancestryfeature' || i.category == 'heritage'))
                 .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
                 .forEach((a) => {
+                    const feature = {
+                        name: a.name,
+                        displayName: a.name,
+                        description: undefined,
+                    };
                     const sub = actor.items.filter((i) => i.flags?.pf2e?.grantedBy?.id === a._id).map((i) => i.name);
-                    if (sub.length === 0) {
-                        ancestryAndHeritageAbilities.push(a.name);
-                    } else {
-                        ancestryAndHeritageAbilities.push(`${a.name} (${sub.join(', ')})`);
+                    if (sub.length > 0) {
+                        feature['displayName'] = `${a.name} (${sub.join(', ')})`;
                     }
+                    ancestryAndHeritageAbilities.push(feature);
                 });
         } catch (error) {
             throw new pf2eActorPropertyError(

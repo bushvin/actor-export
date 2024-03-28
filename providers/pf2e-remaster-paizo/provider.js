@@ -438,7 +438,7 @@ mapper.textBox('class dc', fileName, 0, 372, 746, 18, 10, character.classDC.item
 // Ancestry and General Feats
 // Ancestry and heritage Abilities
 ref = 'Ancestry and heritage Abilities';
-const ancestryAndHeritageAbilities = character.ancestryAndHeritageAbilities;
+const ancestryAndHeritageAbilities = character.ancestryAndHeritageAbilities.map((m) => m.displayName).sort();
 mapper.textBox(ref, fileName, 1, 49, 53, 162, 25, ancestryAndHeritageAbilities.join(', '), mf_8_multiline);
 
 // Ancestry Feats
