@@ -127,7 +127,7 @@ mapper.image(fileName, 2, 29, 39, actor.img, 178, 265);
 /* PAGE 1 */
 mapper.textBox('actor name', fileName, 0, 217, 40, 178, 18, character.name, mf_17);
 mapper.textBox('player name', fileName, 0, 260, 69, 135, 10, character.ownerName, mf_10);
-mapper.textBox('ancestry', fileName, 0, 30, 98, 176, 8, character.ancestry, mf_12);
+mapper.textBox('ancestry', fileName, 0, 30, 98, 176, 8, character.ancestry.name, mf_12);
 mapper.textBox('heritage', fileName, 0, 30, 114, 142, 22, character.heritage, mf_12);
 mapper.textBox('size', fileName, 0, 180, 114, 26, 22, character.size, mf_12);
 

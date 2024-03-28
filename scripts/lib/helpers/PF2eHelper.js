@@ -52,7 +52,9 @@ class pf2eActor {
      * @type {string}
      */
     get ancestry() {
-        return this.actor.ancestry?.name || 'unknown';
+        return {
+            name: this.actor.ancestry?.name || 'unknown',
+        };
     }
 
     /**
