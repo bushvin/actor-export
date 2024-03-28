@@ -1118,6 +1118,7 @@ class pf2eActor {
                         frequency: '',
                         type: a.system.actionType.value,
                         description: a.system.description.value,
+                        actionCount: a.system.actions.value,
                     };
                     activity['glyph'] = pf2eHelper.formatActivity(
                         a.system.actionType.value,
@@ -1449,6 +1450,14 @@ class pf2eActor {
                                     prepared: Object.values(sce.system.slots[`slot${r}`].prepared).filter(
                                         (f) => f.id === s._id
                                     ).length,
+                                    save:
+                                        typeof s.system.defense?.passive !== 'undefined' ||
+                                        typeof s.system.defense?.save !== 'undefined',
+                                    saveStatistic:
+                                        s.system.defense?.passive?.statistic || s.system.defense?.save?.statistic || '',
+                                    saveIsBasic: s.system.defense?.save?.basic || false,
+                                    range: s.system.range?.value || '',
+                                    reference: s.system.publication?.title || s.system.source?.value || '',
                                 };
 
                                 if (spell['heightened'] && s.system.heightening.type === 'fixed') {
@@ -1458,6 +1467,15 @@ class pf2eActor {
                                     spell['heighteningType'] = s.system.heightening.type;
                                     spell['heighteningValue'] = (r - s.rank) / s.system.heightening.interval;
                                 }
+                                if (s.system.area !== null) {
+                                    spell['areaOfEffect'] = `${s.system.area.value}ft ${s.system.area.type}`;
+                                } else {
+                                    spell['areaOfEffect'] = s.system.target?.value || '';
+                                }
+                                if (spell['saveStatistic'].toLowerCase().endsWith('-dc')) {
+                                    spell['saveStatistic'] = spell['saveStatistic'].slice(0, -3);
+                                }
+
                                 knownSpells.push(spell);
                             });
                     }
@@ -1599,6 +1617,13 @@ export class pf2eHelper extends genericHelper {
                 return 'TV';
         }
 
+        if (source.startsWith('Pathfinder #')) {
+            //Pathfinder #188: They Watched the Stars
+            const t = source.split(':');
+            if (t.length > 0) {
+                return 'PF' + t[0].substring(12);
+            }
+        }
         return source
             .split(' ')
             .map((m) => m[0])
