@@ -72,7 +72,20 @@ class pf2eActor {
      * @type {string}
      */
     get heritage() {
-        return this.actor.heritage?.name || 'unknown';
+        const heritage = {
+            name: this.actor.heritage?.name || 'unknown',
+            description: undefined,
+        };
+        try {
+            const a = actor.items.filter((i) => i.type === 'heritage');
+            if (a.length > 0) {
+                ancestry['description'] = a.system.description?.value;
+            }
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'heritage', error.message);
+        }
+
+        return heritage;
     }
 
     /**
