@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024-3.6] 2024-03-29
+
+## Added
+
+- source of the pf2e-remaster-bushvin pf2e-remaster.pdf (pf2e-remaster.svg), created by Inkscape
+
+## Changed
+
+- improve abstraction of FoundryVTT actor (pf2eActor, pf2ePlayer, pf2eNPC)
+- improve the scribeProvider class and related helper with standardized interfaces
+- improved the pf2e-scribe provider
+- improved the pf2e-remaster-bushvin provider
+- improved the pf2e-remaster-paizo provider
+
 ## [2024.3.5] 2024-03-27
 
 ### Fixed
