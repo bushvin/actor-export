@@ -11,6 +11,7 @@ import { pf2eHelper } from '../helpers/PF2eHelper.js';
 /**
  * The base class for all scribe related classes
  * @class
+ * @description This is the base class for all scribe related renderer classes, it provides a couple of shared methods
  */
 class scribeBase {
     constructor() {
@@ -102,6 +103,8 @@ class scribeBase {
  * @param {string} usage the usage text of the item
  * @param {string} description the descrition text of the item
  * @param {number} labelLevel the level of the label of the item
+ * @augments scribeBase
+ * @description This class provides a renderer for the item scribe resource.
  */
 class scribeItem extends scribeBase {
     constructor(name, type, rank, traits, usage, description, labelLevel = 0) {
@@ -169,6 +172,7 @@ class scribeItem extends scribeBase {
  * @class
  * @param {number} level the level of the header (1-6)
  * @param {string} title the title of the header
+ * @augments scribeBase
  */
 class scribeHeader extends scribeBase {
     constructor(level, title) {
@@ -204,6 +208,7 @@ class scribeHeader extends scribeBase {
  * scribe Character strike wrapper
  * @class
  * @param {object} strike The strike to render
+ * @augments scribeBase
  */
 class scribeCharacterStrike extends scribeBase {
     constructor(strike) {
@@ -239,6 +244,7 @@ class scribeCharacterStrike extends scribeBase {
  * scribe Character activity wrapper
  * @class
  * @param {object} activity The activity to render
+ * @augments scribeBase
  */
 class scribeCharacterActivity extends scribeBase {
     constructor(activity) {
@@ -273,6 +279,7 @@ class scribeCharacterActivity extends scribeBase {
  * @class
  * @param {object} feat The feat to render
  * @param {number} labelLevel The label level to associate with the feat
+ * @augments scribeItem
  */
 class scribeCharacterFeat extends scribeItem {
     constructor(feat, labelLevel = 0) {
@@ -308,6 +315,7 @@ class scribeCharacterFeat extends scribeItem {
  * @class
  * @param {object} spell The spell to render
  * @param {number} labelLevel The label level to associate with the spell
+ * @augments scribeItem
  */
 class scribeCharacterSpell extends scribeItem {
     constructor(spell, labelLevel = 0) {
@@ -381,6 +389,7 @@ class scribeCharacterSpell extends scribeItem {
  * @class
  * @param {object} formula The formula to render
  * @param {number} labelLevel The label level to associate with the formula
+ * @augments scribeItem
  */
 class scribeCharacterFormula extends scribeItem {
     constructor(formula, labelLevel = 0) {
@@ -412,6 +421,7 @@ class scribeCharacterFormula extends scribeItem {
  * @class
  * @param {object} formula The ritual to render
  * @param {number} labelLevel The label level to associate with the ritual
+ * @augments scribeItem
  */
 class scribeCharacterRitual extends scribeItem {
     constructor(ritual, labelLevel = 0) {
@@ -490,6 +500,7 @@ class scribeCharacterRitual extends scribeItem {
  * @class
  * @param {object} creature The creature to render
  * @param {number} labelLevel The label level to associate with the creature
+ * @augments scribeItem
  */
 class scribeCreature extends scribeItem {
     constructor(creature, labelLevel = 0) {
@@ -794,9 +805,63 @@ class scribeCreature extends scribeItem {
 }
 
 /**
+ * scribe Head wrapper
+ * @class
+ * @param {string} title The title of the Heading
+ * @param {string} text The text to render with the title
+ * @param {number} labelLevel The label level to associate with the creature, default: 0
+ * @augments scribeBase
+ */
+class scribeHead extends scribeBase {
+    constructor(title, text, labelLevel = 0) {
+        super();
+        this._title = title;
+        this._text = text;
+        this._labelLevel = labelLevel;
+        this._label = this._title;
+    }
+
+    /**
+     * sanitized title
+     * @type {string}
+     */
+    get title() {
+        return this.stripFoundryElements(this.stripHTMLtag(this._title));
+    }
+
+    /**
+     * sanitized text
+     * @type {string}
+     */
+    get text() {
+        return this.stripFoundryElements(this.stripHTMLtag(this._text));
+    }
+
+    /**
+     * Render the scribe object
+     * @returns {string}
+     */
+    async scribify() {
+        const scribify = [];
+        scribify.push('head(');
+        if (this._labelLevel > 0) {
+            scribify.push(`# ${this.title} ${this.label}`);
+        } else {
+            scribify.push(`# ${this.title}`);
+        }
+        scribify.push(`${this.text}\n`);
+        scribify.push('-');
+        scribify.push(')\n');
+
+        return scribify.join('\n');
+    }
+}
+
+/**
  * scribe Text wrapper
  * @class
  * @param {string} text The text to render
+ * @augments scribeBase
  */
 class scribeText extends scribeBase {
     constructor(text) {
@@ -863,19 +928,22 @@ class scribeTable extends scribeBase {
     async scribify() {
         let entry = [];
         if (this._headerRow.length > 0) {
-        }
-        entry.push(this._headerRow.join(' | '));
-        entry.push(Array(this._headerRow.length).fill('---').join(' | '));
-        for (let r = 0; r < this._contentRows.length; r++) {
-            const row = this._contentRows[r];
-            const renderedCells = [];
-            for (let c = 0; c < row.length; c++) {
-                renderedCells.push(await row[c]);
+            if (this._name !== '') {
+                entry.push(`##### ${this._name}`);
             }
-            entry.push(renderedCells.join(' | '));
-        }
-        if (this._footer != '') {
-            entry.push(`.${this._footer}`);
+            entry.push(this._headerRow.join(' | '));
+            entry.push(Array(this._headerRow.length).fill('---').join(' | '));
+            for (let r = 0; r < this._contentRows.length; r++) {
+                const row = this._contentRows[r];
+                const renderedCells = [];
+                for (let c = 0; c < row.length; c++) {
+                    renderedCells.push(await row[c]);
+                }
+                entry.push(renderedCells.join(' | '));
+            }
+            if (this._footer != '') {
+                entry.push(`.${this._footer}`);
+            }
         }
         return entry.join('\n');
     }
@@ -892,8 +960,67 @@ class scribeTable extends scribeBase {
 
 /**
  * @class
+ * A class to generate a title on each page
+ * @param {string} text The text to render
+ * @augments scribeBase
+ */
+class scribeTitle extends scribeBase {
+    constructor(text) {
+        super();
+        this._text = text;
+    }
+
+    /**
+     * sanitized text
+     * @type {string}
+     */
+    get text() {
+        return this.stripFoundryElements(this.stripHTMLtag(this._text));
+    }
+
+    /**
+     * Render the scribe object
+     * @returns {string}
+     */
+    async scribify() {
+        return 'title(\n' + this.text + '\n)\n';
+    }
+}
+
+/**
+ * @class
+ * A class to generate a watermark on each page
+ * @param {string} text The text to render
+ * @augments scribeBase
+ */
+class scribeWatermark extends scribeBase {
+    constructor(text) {
+        super();
+        this._text = text;
+    }
+
+    /**
+     * sanitized text
+     * @type {string}
+     */
+    get text() {
+        return this.stripFoundryElements(this.stripHTMLtag(this._text));
+    }
+
+    /**
+     * Render the scribe object
+     * @returns {string}
+     */
+    async scribify() {
+        return 'watermark(\n' + this.text + '\n)\n';
+    }
+}
+
+/**
+ * @class
  * A class to generate scribe formatted files.
  * @param {Object} actor The Foundry VTT actor object.
+ * @augments baseProvider
  */
 export class scribeProvider extends baseProvider {
     constructor(actor) {
@@ -914,10 +1041,13 @@ export class scribeProvider extends baseProvider {
         scribeCharacterStrike: scribeCharacterStrike,
         scribeCharacterRitual: scribeCharacterRitual,
         scribeCreature: scribeCreature,
+        scribeHead: scribeHead,
         scribeHeader: scribeHeader,
         scribeItem: scribeItem,
         scribeTable: scribeTable,
         scribeText: scribeText,
+        scribeTitle: scribeTitle,
+        scribeWatermark: scribeWatermark,
     };
 
     /**
@@ -940,7 +1070,7 @@ export class scribeProvider extends baseProvider {
         const option = this.overrideFilePath || this.providerFilePath;
         const rendered = [];
         for (let i = 0; i < this.scribeData.length; i++) {
-            if (this.scribeData[i].option === option) {
+            if (this.scribeData[i].option === option || this.scribeData[i].option.toLowerCase() === 'all') {
                 rendered.push(await this.scribeData[i].data.scribify());
             }
         }
