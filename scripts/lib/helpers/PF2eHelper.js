@@ -47,9 +47,14 @@ class pf2eActor {
         }
     }
 
+    /**
+     * actor traits
+     * @type {array}
+     */
     get traits() {
         return Array.from(this.actor.traits);
     }
+
     /**
      * actor ancestry
      * @type {string}
@@ -370,6 +375,10 @@ class pf2eActor {
         }
     }
 
+    /**
+     * actor weaknesses
+     * @type {string}
+     */
     get weaknesses() {
         return this.actor.system.attributes.weaknesses
             .map((m) => m.type + ' ' + m.value)
@@ -539,10 +548,18 @@ class pf2eActor {
         return movement.displayName;
     }
 
+    /**
+     * actor base movement
+     * @type {object}
+     */
     get baseMovement() {
         return this.movement.filter((f) => f.isPrimary)[0];
     }
 
+    /**
+     * actor list of movement
+     * @type {array}
+     */
     get movement() {
         const movement = [];
         const primary = {
@@ -574,6 +591,7 @@ class pf2eActor {
         });
         return movement;
     }
+
     /**
      * actor strikes
      * @type {array}
@@ -1547,9 +1565,6 @@ class pf2eActor {
                                 if (s.system.area !== null) {
                                     spell['area'] = `${s.system.area.value}ft ${s.system.area.type}`;
                                 }
-                                // } else {
-                                //     spell['area'] = s.system.target?.value || '';
-                                // }
                                 if (spell['saveStatistic'].toLowerCase().endsWith('-dc')) {
                                     spell['saveStatistic'] = spell['saveStatistic'].slice(0, -3);
                                 }
@@ -1564,6 +1579,10 @@ class pf2eActor {
         return knownSpells;
     }
 
+    /**
+     * actor know formulas
+     * @type {array}
+     */
     get knownFormulas() {
         return [];
     }
@@ -1608,6 +1627,15 @@ class pf2eActor {
     }
 }
 
+/**
+ * pf2e Actor Property Error
+ * @class
+ * @augments Error
+ * @param {string} moduleName the name of the module the error has occurred in
+ * @param {string} className the name of the class the error has occurred in
+ * @param {string} methodName the name of the method the error has occurred in
+ * @param {string} message the error message
+ */
 class pf2eActorPropertyError extends Error {
     constructor(moduleName, className, methodName, message) {
         const msg = `${moduleName} | ${className}.${methodName} | ${message}`;
@@ -1624,10 +1652,13 @@ class pf2eActorPropertyError extends Error {
         this.name = 'pf2eActorError';
     }
 }
+
 /**
  * pf2e player character class
  * @class
- *
+ * @augments pf2eActor
+ * @param {object} game the Foundry VTT game object
+ * @param {object} actor the Foundry VTT actor object
  */
 class pf2ePlayer extends pf2eActor {
     constructor(game, actor) {
@@ -1646,6 +1677,10 @@ class pf2ePlayer extends pf2eActor {
         return background;
     }
 
+    /**
+     * actor know formulas
+     * @type {array}
+     */
     get knownFormulas() {
         const knownFormulas = [];
         const formulaCost = [
@@ -1685,11 +1720,22 @@ class pf2ePlayer extends pf2eActor {
     }
 }
 
+/**
+ * pf2e player NPC class
+ * @class
+ * @augments pf2eActor
+ * @param {object} game the Foundry VTT game object
+ * @param {object} actor the Foundry VTT actor object
+ */
 class pf2eNPC extends pf2eActor {
     constructor(game, actor) {
         super(game, actor);
     }
 
+    /**
+     * actor ac
+     * @type {object}
+     */
     get ac() {
         const ac = {};
         ac['modifier'] = this.actor.system.attributes.ac.value;
@@ -1697,6 +1743,10 @@ class pf2eNPC extends pf2eActor {
         return ac;
     }
 
+    /**
+     * actor strikes
+     * @type {array}
+     */
     get strikes() {
         const strikes = [];
         try {
@@ -1783,6 +1833,10 @@ class pf2eNPC extends pf2eActor {
         return strikes;
     }
 
+    /**
+     * actor skills
+     * @type {object}
+     */
     get skills() {
         const skills = {};
         try {
@@ -2043,6 +2097,11 @@ export class pf2eHelper extends genericHelper {
         return a.join(', ');
     }
 
+    /**
+     * Format runes as traits
+     * @param {object} runes the runes object associated with a weapon
+     * @returns {array}
+     */
     static runesToTraits(runes) {
         let runeList = [];
         if ((runes.potency || 0) > 0) {
@@ -2227,6 +2286,12 @@ export class pf2eHelper extends genericHelper {
         }
     }
 
+    /**
+     * Determine what type of actor we're dealing with and return an object which can parse all data
+     * @param {object} game the Foundry VTT game object
+     * @param {object} actor the Foundry VTT actor object
+     * @returns {object}
+     */
     static getActorObject(game, actor) {
         if (actor.type === 'character') {
             return new pf2ePlayer(game, actor);

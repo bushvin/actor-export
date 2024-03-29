@@ -8,11 +8,20 @@ import { pf2eHelper } from '../helpers/PF2eHelper.js';
  * @copyright William Leemans 2024
  */
 
+/**
+ * The base class for all scribe related classes
+ * @class
+ */
 class scribeBase {
     constructor() {
         this._label = undefined;
         this._labelLevel = 1;
     }
+
+    /**
+     * formatted label for a link
+     * @type {string}
+     */
     get label() {
         if (typeof this._label === 'undefined') {
             return undefined;
@@ -21,7 +30,15 @@ class scribeBase {
         }
     }
 
+    /**
+     * Strip all Foundry VTT markdown elements
+     * @param {string} value the text to be parsed
+     * @returns {string}
+     */
     stripFoundryElements(value) {
+        if (typeof value !== 'string') {
+            return value;
+        }
         value = value.replace(/@UUID\[[^\]]+\]{([^}]+)}/g, '*$1*');
 
         value = value.replace(/\[\[\/r [^\]]+\]\]{([^}]+)}/g, '$1');
@@ -47,7 +64,16 @@ class scribeBase {
         value = value.replace(/&nbsp;/gi, ' ');
         return value;
     }
+
+    /**
+     * Strip HTML elements
+     * @param {string} value the text to be parsed
+     * @returns {string}
+     */
     stripHTMLtag(value) {
+        if (typeof value !== 'string') {
+            return value;
+        }
         value = pf2eHelper.stripHTMLtag(value, 'br', '', '\n');
         value = pf2eHelper.stripHTMLtag(value, 'hr', '---');
         value = pf2eHelper.stripHTMLtag(value, 'p', '', '\n');
@@ -66,6 +92,17 @@ class scribeBase {
     }
 }
 
+/**
+ * Scribe Item wrapper
+ * @class
+ * @param {string} name the name of the item
+ * @param {string} type the type of the item
+ * @param {number} rank the rank of the item
+ * @param {array} traits the traits of the item
+ * @param {string} usage the usage text of the item
+ * @param {string} description the descrition text of the item
+ * @param {number} labelLevel the level of the label of the item
+ */
 class scribeItem extends scribeBase {
     constructor(name, type, rank, traits, usage, description, labelLevel = 0) {
         super();
@@ -79,13 +116,26 @@ class scribeItem extends scribeBase {
         this._label = this._itemName;
     }
 
+    /**
+     * sanitized usage value
+     * @type {string}
+     */
     get usage() {
         return this.stripFoundryElements(this.stripHTMLtag(this._itemUsage));
     }
 
+    /**
+     * sanitized description text
+     * @type {string}
+     */
     get description() {
         return this.stripFoundryElements(this.stripHTMLtag(this._itemDescription));
     }
+
+    /**
+     * Render the scribe object
+     * @returns {string}
+     */
     async scribify() {
         const scribify = [];
         scribify.push('item(');
@@ -114,8 +164,14 @@ class scribeItem extends scribeBase {
     }
 }
 
+/**
+ * scribe Header wrapper
+ * @class
+ * @param {number} level the level of the header (1-6)
+ * @param {string} title the title of the header
+ */
 class scribeHeader extends scribeBase {
-    constructor(level, title, labelLevel) {
+    constructor(level, title) {
         super();
         this._title = title;
         if (isNaN(Number(level))) {
@@ -129,6 +185,10 @@ class scribeHeader extends scribeBase {
         this._labelLevel = this._level;
     }
 
+    /**
+     * Render the scribe object
+     * @returns {string}
+     */
     async scribify() {
         const scribify = [];
         scribify.push('#'.repeat(this._level));
@@ -140,12 +200,21 @@ class scribeHeader extends scribeBase {
     }
 }
 
+/**
+ * scribe Character strike wrapper
+ * @class
+ * @param {object} strike The strike to render
+ */
 class scribeCharacterStrike extends scribeBase {
     constructor(strike) {
         super();
         this._strike = strike;
     }
 
+    /**
+     * Render the scribe object
+     * @returns {string}
+     */
     async scribify() {
         const scribify = [];
         if (this._strike.isMelee) {
@@ -166,15 +235,27 @@ class scribeCharacterStrike extends scribeBase {
     }
 }
 
+/**
+ * scribe Character activity wrapper
+ * @class
+ * @param {object} activity The activity to render
+ */
 class scribeCharacterActivity extends scribeBase {
     constructor(activity) {
         super();
         this._activity = activity;
     }
 
+    /**
+     * sanitized description text
+     */
     get description() {
         return this.stripFoundryElements(this.stripHTMLtag(this._activity.description));
     }
+    /**
+     * Render the scribe object
+     * @returns {string}
+     */
     async scribify() {
         const scribify = [];
         scribify.push(`**${this._activity.name}**`);
@@ -187,6 +268,12 @@ class scribeCharacterActivity extends scribeBase {
     }
 }
 
+/**
+ * scribe Character feat wrapper
+ * @class
+ * @param {object} feat The feat to render
+ * @param {number} labelLevel The label level to associate with the feat
+ */
 class scribeCharacterFeat extends scribeItem {
     constructor(feat, labelLevel = 0) {
         super();
@@ -194,6 +281,10 @@ class scribeCharacterFeat extends scribeItem {
         this._labelLevel = labelLevel;
     }
 
+    /**
+     * Render the scribe object
+     * @returns {string}
+     */
     async scribify() {
         this._itemName = await this._feat.name;
         this._itemType = 'feat';
@@ -212,12 +303,22 @@ class scribeCharacterFeat extends scribeItem {
     }
 }
 
+/**
+ * scribe Character spell wrapper
+ * @class
+ * @param {object} spell The spell to render
+ * @param {number} labelLevel The label level to associate with the spell
+ */
 class scribeCharacterSpell extends scribeItem {
     constructor(spell, labelLevel = 0) {
         super();
         this._spell = spell;
         this._labelLevel = labelLevel;
     }
+    /**
+     * Render the scribe object
+     * @returns {string}
+     */
     async scribify() {
         const itemActivity = pf2eHelper.formatSpellCastingTime(
             await this._spell.castingTime,
@@ -275,6 +376,12 @@ class scribeCharacterSpell extends scribeItem {
     }
 }
 
+/**
+ * scribe Character formula wrapper
+ * @class
+ * @param {object} formula The formula to render
+ * @param {number} labelLevel The label level to associate with the formula
+ */
 class scribeCharacterFormula extends scribeItem {
     constructor(formula, labelLevel = 0) {
         super();
@@ -282,6 +389,10 @@ class scribeCharacterFormula extends scribeItem {
         this._labelLevel = labelLevel;
     }
 
+    /**
+     * Render the scribe object
+     * @returns {string}
+     */
     async scribify() {
         this._itemName = await this._formula.name;
         this._itemType = 'formula';
@@ -296,6 +407,12 @@ class scribeCharacterFormula extends scribeItem {
     }
 }
 
+/**
+ * scribe Character ritual wrapper
+ * @class
+ * @param {object} formula The ritual to render
+ * @param {number} labelLevel The label level to associate with the ritual
+ */
 class scribeCharacterRitual extends scribeItem {
     constructor(ritual, labelLevel = 0) {
         super();
@@ -303,6 +420,10 @@ class scribeCharacterRitual extends scribeItem {
         this._labelLevel = labelLevel;
     }
 
+    /**
+     * Render the scribe object
+     * @returns {string}
+     */
     async scribify() {
         this._itemName = await this._ritual.name;
         this._itemType = 'ritual';
@@ -364,6 +485,12 @@ class scribeCharacterRitual extends scribeItem {
     }
 }
 
+/**
+ * scribe Creature wrapper
+ * @class
+ * @param {object} creature The creature to render
+ * @param {number} labelLevel The label level to associate with the creature
+ */
 class scribeCreature extends scribeItem {
     constructor(creature, labelLevel = 0) {
         super();
@@ -371,6 +498,10 @@ class scribeCreature extends scribeItem {
         this._labelLevel = labelLevel;
     }
 
+    /**
+     * Generate senses for the creature
+     * @returns {array}
+     */
     async senses() {
         const senses = [];
         senses.push(`**Perception** ${pf2eHelper.quantifyNumber(this._creature.perception.modifier)}`);
@@ -380,6 +511,10 @@ class scribeCreature extends scribeItem {
         return [senses.join('; ')];
     }
 
+    /**
+     * Generate languages for the creature
+     * @returns {array}
+     */
     async languages() {
         if (this._creature.languages !== '') {
             return [`**Languages** ${this._creature.languages}`];
@@ -387,6 +522,10 @@ class scribeCreature extends scribeItem {
         return [];
     }
 
+    /**
+     * Generate skills for the creature
+     * @returns {array}
+     */
     async skills() {
         const skills = [];
         Object.values(this._creature.skills).forEach((s) => {
@@ -401,6 +540,10 @@ class scribeCreature extends scribeItem {
         }
     }
 
+    /**
+     * Generate attributes for the creature
+     * @returns {array}
+     */
     async attributes() {
         const attributes = [];
         Object.values(this._creature.attributes).forEach((a) => {
@@ -409,6 +552,10 @@ class scribeCreature extends scribeItem {
         return [attributes.join('; ')];
     }
 
+    /**
+     * Generate items for the creature
+     * @returns {array}
+     */
     async items() {
         let items = [];
         items = items.concat(this._creature.heldItems.map((m) => m.displayName));
@@ -426,6 +573,10 @@ class scribeCreature extends scribeItem {
         }
     }
 
+    /**
+     * Generate AC and Saving throws for the creature
+     * @returns {array}
+     */
     async acSaves() {
         const acSaves = [];
         acSaves.push(`**AC** ${this._creature.modifier}`);
@@ -435,6 +586,10 @@ class scribeCreature extends scribeItem {
         return [acSaves.join(', ')];
     }
 
+    /**
+     * Generate HP, Immunities, Weaknesses and Resistance for the creature
+     * @returns {array}
+     */
     async hpImmunityWeaknessResistance() {
         const hpImmunityWeaknessResistance = [];
         hpImmunityWeaknessResistance.push(`**HP** ${this._creature.hp.max}`);
@@ -450,6 +605,10 @@ class scribeCreature extends scribeItem {
         return [hpImmunityWeaknessResistance.join('; ')];
     }
 
+    /**
+     * Generate defensive activities for the creature
+     * @returns {array}
+     */
     async defensiveActivities() {
         const defensiveActivities = [];
         this._creature.activities
@@ -468,6 +627,10 @@ class scribeCreature extends scribeItem {
         return defensiveActivities;
     }
 
+    /**
+     * Generate offensive activities for the creature
+     * @returns {array}
+     */
     async offensiveActivities() {
         const offensiveActivities = [];
         this._creature.activities
@@ -487,6 +650,10 @@ class scribeCreature extends scribeItem {
         return offensiveActivities;
     }
 
+    /**
+     * Generate movement for the creature
+     * @returns {array}
+     */
     async movement() {
         const movement = [];
         movement.push(`**Speed** ${this._creature.baseSpeed}`);
@@ -498,6 +665,10 @@ class scribeCreature extends scribeItem {
         return [movement.join(', ')];
     }
 
+    /**
+     * Generate melee strikes for the creature
+     * @returns {array}
+     */
     async melee() {
         const melee = [];
         const strikes = this._creature.strikes.filter((f) => f.isMelee);
@@ -508,6 +679,10 @@ class scribeCreature extends scribeItem {
         return melee;
     }
 
+    /**
+     * Generate ranged strikes for the creature
+     * @returns {array}
+     */
     async ranged() {
         const ranged = [];
         const strikes = this._creature.strikes.filter((f) => f.isRanged);
@@ -518,6 +693,10 @@ class scribeCreature extends scribeItem {
         return ranged;
     }
 
+    /**
+     * Generate spells for the creature
+     * @returns {array}
+     */
     async spells() {
         const spells = {};
         this._creature.knownSpells
@@ -579,6 +758,10 @@ class scribeCreature extends scribeItem {
         return ret;
     }
 
+    /**
+     * Render the scribe object
+     * @returns {string}
+     */
     async scribify() {
         this._itemName = await this._creature.name;
         this._itemType = 'creature';
@@ -610,16 +793,29 @@ class scribeCreature extends scribeItem {
     }
 }
 
+/**
+ * scribe Text wrapper
+ * @class
+ * @param {string} text The text to render
+ */
 class scribeText extends scribeBase {
     constructor(text) {
         super();
         this._text = text;
     }
 
+    /**
+     * sanitized text
+     * @type {string}
+     */
     get text() {
         return this.stripFoundryElements(this.stripHTMLtag(this._text));
     }
 
+    /**
+     * Render the scribe object
+     * @returns {string}
+     */
     async scribify() {
         return String(await this.text).replace(/\n/, '\n\n') + '\n';
     }
@@ -738,7 +934,6 @@ export class scribeProvider extends baseProvider {
     /**
      * Update the file
      * @async
-     * @param {string} sourceFileURI The full path of the file loaded
      * @returns {undefined}
      */
     async updateFile() {
@@ -756,6 +951,7 @@ export class scribeProvider extends baseProvider {
     /**
      * Save the file
      * @async
+     * @returns {undefined}
      */
     async saveFile() {
         if (this.scribeFile !== undefined && this.scribeFile != '') {
