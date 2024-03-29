@@ -8,69 +8,22 @@ import { pf2eHelper } from '../helpers/PF2eHelper.js';
  * @copyright William Leemans 2024
  */
 
-/**
- * @class
- * The base class to format scribe markdown
- * @param {Object} item the raw resource to be scribed
- */
 class scribeBase {
-    constructor(item) {
-        this._item = item;
+    constructor() {
+        this._label = undefined;
+        this._labelLevel = 1;
+    }
+    get label() {
+        if (typeof this._label === 'undefined') {
+            return undefined;
+        } else {
+            return '((' + '+'.repeat(this._labelLevel) + this._label.replace(/\)$/, ') ') + '))';
+        }
     }
 
-    /**
-     * Remove empty lines from a given string
-     * @param {string} value the string value to clean up
-     * @returns {string} the cleaned up string
-     */
-    _cleanup = function (value) {
-        if (typeof value !== 'string') {
-            return value;
-        }
-        return (
-            value
-                .split('\n')
-                .map((i) => i.replace(/^\s+/, ''))
-                .join('\n') + '  \n'
-        );
-    };
-
-    /**
-     * Generate a label/shortcut
-     * @param {string} label the name of the label
-     * @param {number} level the level of indentation for the label
-     * @returns {string} a label/shortcut
-     */
-    _label(label, level) {
-        return '((' + '+'.repeat(level) + label + ' ))';
-    }
-
-    /**
-     * Format given text to replace Foundry commands and HTML with markdown counterparts
-     * @param {string} value the text to be parsed
-     * @param {number} buff_heading buff headings with this many
-     * @returns {string} the formatted text
-     */
-    _parse_description = function (value, buff_heading = 0) {
-        if (typeof value !== 'string') {
-            return value;
-        }
-        const matcher = function (m, p) {
-            return game.i18n.localize(p);
-        };
-        value = value.replace(/@Localize\[([^\]]+)\]/gi, matcher);
-        // let's not remove these for now...
-        // value = value.replace(/@UUID\[[^\]]+\.conditionitems\.[^\]]+\]{([^}]+)}/g, '*$1*');
-        // value = value.replace(/@UUID\[[^\]]+\.feats-srd\.[^\]]+\]{([^}]+)}/g, '*$1*');
-        // value = value.replace(/@UUID\[[^\]]+\.feat-effects\.[^\]]+\]{([^}]+)}/g, '*$1*');
-        // value = value.replace(/@UUID\[[^\]]+\.spells-srd\.[^\]]+\]{([^}]+)}/g, '*$1*');
-        // value = value.replace(/@UUID\[[^\]]+\.actionspf2e\.[^\]]+\]{([^}]+)}/g, '*$1*');
-        // value = value.replace(/@UUID\[[^\]]+\.spell-effects\.[^\]]+\]{([^}]+)}/g, '*$1*');
-        // value = value.replace(/@UUID\[[^\]]+\.classfeatures\.[^\]]+\]{([^}]+)}/g, '*$1*');
-        // value = value.replace(/@UUID\[[^\]]+\.bestiary-ability-glossary-srd\.[^\]]+\]{([^}]+)}/g, '*$1*');
+    stripFoundryElements(value) {
         value = value.replace(/@UUID\[[^\]]+\]{([^}]+)}/g, '*$1*');
 
-        // @UUID[Compendium.pf2e.bestiary-ability-glossary-srd.Item.v61oEQaDdcRpaZ9X]{Aura}
         value = value.replace(/\[\[\/r [^\]]+\]\]{([^}]+)}/g, '$1');
         value = value.replace(/\[\[\/br [^\]]+\]\]{([^}]+)}/g, '$1');
         value = value.replace(/\[\[\/r [0-9]+d[0-9]+\[[^\]]+\]\]\]{([^}]+)}/g, '$1');
@@ -80,6 +33,7 @@ class scribeBase {
         value = value.replace(/@Template\[[^\]]+\]{([^}]+)}/gi, '$1');
         value = value.replace(/@Template\[[^\:]+:([^\|]+)\|[^:]+:([^\]]+)\]/gi, '$1 $2 feet');
         value = value.replace(/@Compendium\[[^\]]+\]{([^}]+)}/g, '*$1*');
+        value = value.replace(/@Localize\[[^\]]+\]/g, '');
 
         /* remove anything not needed */
         value = value.replace(/\[\[\/r[^}]+}/g, '');
@@ -91,74 +45,577 @@ class scribeBase {
         value = value.replace(/@check\[[^\]]+\]/gi, '');
 
         value = value.replace(/&nbsp;/gi, ' ');
-
-        value = pf2eHelper.stripHTMLtag(value, 'br');
-        value = pf2eHelper.stripHTMLtag(value, 'hr', '-');
+        return value;
+    }
+    stripHTMLtag(value) {
+        value = pf2eHelper.stripHTMLtag(value, 'br', '', '\n');
+        value = pf2eHelper.stripHTMLtag(value, 'hr', '---');
         value = pf2eHelper.stripHTMLtag(value, 'p', '', '\n');
-        value = pf2eHelper.stripHTMLtag(value, 'strong', ' **', '**');
-        value = pf2eHelper.stripHTMLtag(value, 'em', ' *', '*');
+        value = pf2eHelper.stripHTMLtag(value, 'strong', '**', '**');
+        value = pf2eHelper.stripHTMLtag(value, 'em', '*', '*');
         value = pf2eHelper.stripHTMLtag(value, 'span');
-        value = pf2eHelper.stripNestedHTMLtag(value, 'ol', 'li', '1. ');
+        value = pf2eHelper.stripNestedHTMLtag(value, 'ol', 'li', '- ');
         value = pf2eHelper.stripHTMLtag(value, 'ol');
         value = pf2eHelper.stripNestedHTMLtag(value, 'ul', 'li', '- ');
         value = pf2eHelper.stripHTMLtag(value, 'ul');
-        buff_heading = buff_heading + 1;
-        value = pf2eHelper.stripHTMLtag(value, 'h1', '#'.repeat(buff_heading) + ' ', '\n');
-        value = pf2eHelper.stripHTMLtag(value, 'h2', '#'.repeat(buff_heading) + ' ', '\n');
-        value = pf2eHelper.stripHTMLtag(value, 'h3', '#'.repeat(buff_heading) + ' ', '\n');
-        value = pf2eHelper.stripHTMLtag(value, 'h4', '#'.repeat(buff_heading) + ' ', '\n');
-        value = pf2eHelper.stripHTMLtag(value, 'h5', '#'.repeat(buff_heading) + ' ', '\n');
-
+        value = pf2eHelper.stripHTMLtag(value, 'h1');
+        value = pf2eHelper.stripHTMLtag(value, 'h2');
+        value = pf2eHelper.stripHTMLtag(value, 'h3');
+        value = pf2eHelper.stripHTMLtag(value, 'h4');
         return value;
-    };
+    }
 }
 
-/**
- * @class
- * A class to format the given object as a scribe item
- * @param {Object} item the raw resource to be scribed
- * @param {number} label_level the level of indentation for the label of the item
- * @extends scribeBase
- */
-class scribeItemEntry extends scribeBase {
-    constructor(item, label_level = 0) {
-        super(item);
-        this._item_title = this._item.name;
-        this._item_label = this._item.name;
-        this._item_type = this._item.type;
-        this._item_rank = this._item.system.level?.value || 0;
-        this._item_traits = this._item.system.traits?.value.concat([this._item.system.traits?.rarity]) || [];
-        this._item_source = this._item.system.publication?.title || '';
-        this._item_description = [];
-        this._section = [];
-        this._label_level = label_level;
+class scribeItem extends scribeBase {
+    constructor(name, type, rank, traits, usage, description, labelLevel = 0) {
+        super();
+        this._itemName = name;
+        this._itemType = type;
+        this._itemRank = rank;
+        this._itemTraits = traits;
+        this._itemUsage = usage;
+        this._itemDescription = description;
+        this._labelLevel = labelLevel;
+        this._label = this._itemName;
     }
 
-    /**
-     * Generate the scribe markdown for an item entry
-     * @returns {string} a formatted scribe item entry
-     */
-    scribify() {
-        let description = this._item_description.join('\n-\n');
-        let traits = pf2eHelper.formatTraits(this._item_traits);
+    get usage() {
+        return this.stripFoundryElements(this.stripHTMLtag(this._itemUsage));
+    }
 
-        let item = 'item(\n';
-        item = item + `# ${this._item_title} ${this._label(this._item_label, this._label_level)}\n`;
-        if (this._item_rank !== '') {
-            item = item + `## ${this._item_type} ${this._item_rank}\n`;
+    get description() {
+        return this.stripFoundryElements(this.stripHTMLtag(this._itemDescription));
+    }
+    async scribify() {
+        const scribify = [];
+        scribify.push('item(');
+        if (this._labelLevel > 0) {
+            scribify.push(`# ${this._itemName} ${this.label}`);
         } else {
-            item = item + `## ${this._item_type}\n`;
+            scribify.push(`# ${this._itemName}`);
         }
-        item = item + '-\n';
-        if (traits !== '') {
-            item = item + `; ${traits}\n`;
+        if (this._itemType !== '' && this._itemRank > 0) {
+            scribify.push(`## ${this._itemType} ${this._itemRank}`);
+        } else if (this.this._itemType !== '') {
+            scribify.push(`## ${this._itemType}`);
         }
-        if (this._item_source.trim() != '') {
-            item = item + `**Source** ${this._item_source}\n\n`;
+        scribify.push('-');
+        if (this._itemTraits.length > 0) {
+            scribify.push('; ' + pf2eHelper.formatTraits(this._itemTraits));
         }
-        item = item + `${description}\n\n`;
-        item = item + ')\n';
-        return this._cleanup(item);
+        if (this.usage !== '') {
+            scribify.push(this.usage);
+            scribify.push('-');
+        }
+        scribify.push(this.description);
+
+        scribify.push(')');
+        return scribify.join('\n');
+    }
+}
+
+class scribeHeader extends scribeBase {
+    constructor(level, title, labelLevel) {
+        super();
+        this._title = title;
+        if (isNaN(Number(level))) {
+            throw new Error('Level needs to be a number');
+        } else if (Number(level) < 1 || Number(level) > 6) {
+            throw new Error('Level needs to be between 1 and 6');
+        } else {
+            this._level = Number(level);
+        }
+        this._label = title;
+        this._labelLevel = this._level;
+    }
+
+    async scribify() {
+        const scribify = [];
+        scribify.push('#'.repeat(this._level));
+        scribify.push(this._title);
+        if (typeof this.label !== undefined) {
+            scribify.push(this.label);
+        }
+        return scribify.join(' ');
+    }
+}
+
+class scribeCharacterStrike extends scribeBase {
+    constructor(strike) {
+        super();
+        this._strike = strike;
+    }
+
+    async scribify() {
+        const scribify = [];
+        if (this._strike.isMelee) {
+            scribify.push('**Melee**');
+        } else if (this._strike.isRanged) {
+            scribify.push('**Ranged**');
+        } else {
+            scribify.push('**Unknown Strike**');
+        }
+        scribify.push(this._strike.label);
+        scribify.push(pf2eHelper.quantifyNumber(this._strike.modifier));
+        if (this._strike.traits.length > 0) {
+            scribify.push('(' + pf2eHelper.formatTraits(this._strike.traits) + ')');
+        }
+        scribify.push('**Damage**');
+        scribify.push(await this._strike.damageFormula);
+        return scribify.join(' ');
+    }
+}
+
+class scribeCharacterActivity extends scribeBase {
+    constructor(activity) {
+        super();
+        this._activity = activity;
+    }
+
+    get description() {
+        return this.stripFoundryElements(this.stripHTMLtag(this._activity.description));
+    }
+    async scribify() {
+        const scribify = [];
+        scribify.push(`**${this._activity.name}**`);
+        scribify.push(
+            pf2eHelper.formatActivity(this._activity.type, this._activity.actionCount, pf2eHelper.scribeActivityGlyphs)
+        );
+        scribify.push(this.description);
+
+        return scribify.join(' ');
+    }
+}
+
+class scribeCharacterFeat extends scribeItem {
+    constructor(feat, labelLevel = 0) {
+        super();
+        this._feat = feat;
+        this._labelLevel = labelLevel;
+    }
+
+    async scribify() {
+        this._itemName = await this._feat.name;
+        this._itemType = 'feat';
+        this._itemRank = await this._feat.level;
+        this._itemTraits = await this._feat.traits;
+        this._itemDescription = await this._feat.description;
+        this._label = this._itemName;
+
+        const usage = [];
+        const itemPrerequisites = this._feat.prerequisites.map((m) => m.value).sort();
+        if (itemPrerequisites.length > 0) {
+            usage.push(`**Prerequisites** ${itemPrerequisites.join('; ')}`);
+        }
+        this._itemUsage = usage.join('\n\n');
+        return await super.scribify();
+    }
+}
+
+class scribeCharacterSpell extends scribeItem {
+    constructor(spell, labelLevel = 0) {
+        super();
+        this._spell = spell;
+        this._labelLevel = labelLevel;
+    }
+    async scribify() {
+        const itemActivity = pf2eHelper.formatSpellCastingTime(
+            await this._spell.castingTime,
+            pf2eHelper.scribeActivityGlyphs
+        );
+        this._label = await this._spell.name;
+        this._itemName = this._label + ' ' + itemActivity;
+        this._itemType = 'spell';
+        this._itemRank = await this._spell.rank;
+        this._itemTraits = await this._spell.traits;
+        this._itemDescription = await this._spell.description;
+
+        const usage = [];
+        usage.push('**Tradition** ' + (await this._spell.tradition));
+        usage.push(`**Cast** ${itemActivity}\n`);
+
+        const rat = [];
+        const itemRange = await this._spell.range;
+        const itemArea = await this._spell.area;
+        const itemTarget = await this._spell.target;
+        if (itemRange !== '') {
+            rat.push(`**Range** ${itemRange}`);
+        }
+        if (itemArea !== '') {
+            rat.push(`**Area** ${itemArea}`);
+        }
+        if (itemTarget !== '') {
+            rat.push(`**Target** ${itemTarget}`);
+        }
+        if (rat.length > 0) {
+            usage.push(rat.join('; '));
+        }
+        const dd = [];
+        const itemDuration = await this._spell.duration;
+        let defense = '';
+        if (this._spell.save) {
+            defense = this._spell.saveIsBasic ? 'Basic ' : '';
+            if (this._spell.saveStatistic === 'ac') {
+                defense = defense + 'AC';
+            } else {
+                defense = defense + this._spell.saveStatistic;
+            }
+            dd.push(`**Defense** ${defense}`);
+        }
+        if (itemDuration !== '') {
+            dd.push(`**Duration** ${itemDuration}`);
+        } else if (this._spell.isSustained) {
+            dd.push(`**Duration** Sustained`);
+        }
+        if (dd.length > 0) {
+            usage.push(dd.join('; '));
+        }
+        this._itemUsage = usage.join('\n\n');
+        return await super.scribify();
+    }
+}
+
+class scribeCharacterFormula extends scribeItem {
+    constructor(formula, labelLevel = 0) {
+        super();
+        this._formula = formula;
+        this._labelLevel = labelLevel;
+    }
+
+    async scribify() {
+        this._itemName = await this._formula.name;
+        this._itemType = 'formula';
+        this._itemRank = await this._formula.level;
+        this._itemTraits = await this._formula.traits;
+        this._itemDescription = await this._formula.description;
+        this._label = this._itemName;
+
+        this._itemUsage = '**Cost** ' + (await this._formula.cost);
+
+        return await super.scribify();
+    }
+}
+
+class scribeCharacterRitual extends scribeItem {
+    constructor(ritual, labelLevel = 0) {
+        super();
+        this._ritual = ritual;
+        this._labelLevel = labelLevel;
+    }
+
+    async scribify() {
+        this._itemName = await this._ritual.name;
+        this._itemType = 'ritual';
+        this._itemRank = await this._ritual.rank;
+        this._itemTraits = await this._ritual.traits;
+        this._itemDescription = await this._ritual.description;
+        this._label = this._itemName;
+
+        const usage = [];
+        const ccs = [];
+        const itemCastingTime = this._ritual.castingTime;
+        const itemCost = this._ritual.cost;
+        const itemSecondaryCasters = this._ritual.secondaryCasters;
+        if (itemCastingTime !== '') {
+            ccs.push(`**Cast** ${itemCastingTime}`);
+        }
+        if (itemCost !== '') {
+            ccs.push(`**Cost** ${itemCost}`);
+        }
+        if (itemSecondaryCasters > 0) {
+            ccs.push(`**Secondary Casters** ${itemSecondaryCasters}`);
+        }
+        if (ccs.length > 0) {
+            usage.push(ccs.join('; '));
+        }
+
+        const ps = [];
+        const itemPrimaryCheck = this._ritual.primaryCheck;
+        const itemSecondaryCheck = this._ritual.secondaryCheck;
+        if (itemPrimaryCheck !== '') {
+            ps.push(`**Primary Check** ${itemPrimaryCheck}`);
+        }
+        if (itemSecondaryCheck !== '') {
+            ps.push(`**Secondary Check** ${itemSecondaryCheck}`);
+        }
+        if (ps.length > 0) {
+            usage.push(ps.join('; ') + '\n');
+        }
+
+        const rat = [];
+        const itemRange = await this._ritual.range;
+        const itemArea = await this._ritual.area;
+        const itemTarget = await this._ritual.target;
+        if (itemRange !== '') {
+            rat.push(`**Range** ${itemRange}`);
+        }
+        if (itemArea !== '') {
+            rat.push(`**Area** ${itemArea}`);
+        }
+        if (itemTarget !== '') {
+            rat.push(`**Target** ${itemTarget}`);
+        }
+        if (rat.length > 0) {
+            usage.push(rat.join('; ') + '\n');
+        }
+        this._itemUsage = usage.join('\n\n');
+
+        return await super.scribify();
+    }
+}
+
+class scribeCreature extends scribeItem {
+    constructor(creature, labelLevel = 0) {
+        super();
+        this._creature = creature;
+        this._labelLevel = labelLevel;
+    }
+
+    async senses() {
+        const senses = [];
+        senses.push(`**Perception** ${pf2eHelper.quantifyNumber(this._creature.perception.modifier)}`);
+        if (this._creature.senses != '') {
+            senses.push(this._creature.senses);
+        }
+        return [senses.join('; ')];
+    }
+
+    async languages() {
+        if (this._creature.languages !== '') {
+            return [`**Languages** ${this._creature.languages}`];
+        }
+        return [];
+    }
+
+    async skills() {
+        const skills = [];
+        Object.values(this._creature.skills).forEach((s) => {
+            if (typeof s.rank === 'undefined' || s.rank > 0) {
+                skills.push(`${s.label} ${pf2eHelper.quantifyNumber(s.modifier)}`);
+            }
+        });
+        if (skills.length > 0) {
+            return ['**Skills** ' + skills.join('; ')];
+        } else {
+            return [];
+        }
+    }
+
+    async attributes() {
+        const attributes = [];
+        Object.values(this._creature.attributes).forEach((a) => {
+            attributes.push('**' + pf2eHelper.capitalize(a.name) + '** ' + pf2eHelper.quantifyNumber(a.modifier));
+        });
+        return [attributes.join('; ')];
+    }
+
+    async items() {
+        let items = [];
+        items = items.concat(this._creature.heldItems.map((m) => m.displayName));
+        items = items.concat(this._creature.consumables.map((m) => m.displayName));
+        items = items.concat(this._creature.wornItems.map((m) => m.displayName));
+        Object.keys(this._creature.coins).forEach((k) => {
+            if (this._creature.coins[k] > 0) {
+                items.push(`${this._creature.coins[k]} ${k}`);
+            }
+        });
+        if (items.length > 0) {
+            return ['**Items** ' + items.sort().join(', ')];
+        } else {
+            return [];
+        }
+    }
+
+    async acSaves() {
+        const acSaves = [];
+        acSaves.push(`**AC** ${this._creature.modifier}`);
+        acSaves.push(`**Fort** ${pf2eHelper.quantifyNumber(this._creature.savingThrows.fortitude.modifier)}`);
+        acSaves.push(`**Ref** ${pf2eHelper.quantifyNumber(this._creature.savingThrows.reflex.modifier)}`);
+        acSaves.push(`**Will** ${pf2eHelper.quantifyNumber(this._creature.savingThrows.will.modifier)}`);
+        return [acSaves.join(', ')];
+    }
+
+    async hpImmunityWeaknessResistance() {
+        const hpImmunityWeaknessResistance = [];
+        hpImmunityWeaknessResistance.push(`**HP** ${this._creature.hp.max}`);
+        if (this._creature.immunities !== '') {
+            hpImmunityWeaknessResistance.push(`**Immunities** ${this._creature.immunities}`);
+        }
+        if (this._creature.weaknesses !== '') {
+            hpImmunityWeaknessResistance.push(`**Weaknesses** ${this._creature.resistance}`);
+        }
+        if (this._creature.resistance !== '') {
+            hpImmunityWeaknessResistance.push(`**Resistances** ${this._creature.resistance}`);
+        }
+        return [hpImmunityWeaknessResistance.join('; ')];
+    }
+
+    async defensiveActivities() {
+        const defensiveActivities = [];
+        this._creature.activities
+            .filter((f) => f.category === 'defensive')
+            .forEach((a) => {
+                const name = a.name;
+                const traits = pf2eHelper.formatTraits(a.traits);
+                const activity = pf2eHelper.formatActivity(a.type, a.actionCount, pf2eHelper.scribeActivityGlyphs);
+                const description = a.description;
+                defensiveActivities.push(
+                    `**${name}** ` +
+                        (activity !== '' ? `${activity} ` : '') +
+                        (traits.length > 0 ? `(${traits}) ` : '' + description)
+                );
+            });
+        return defensiveActivities;
+    }
+
+    async offensiveActivities() {
+        const offensiveActivities = [];
+        this._creature.activities
+            .filter((f) => f.category === 'offensive')
+            .forEach((a) => {
+                const name = a.name;
+                const traits = pf2eHelper.formatTraits(a.traits);
+                const activity = pf2eHelper.formatActivity(a.type, a.actionCount, pf2eHelper.scribeActivityGlyphs);
+                const description = a.description;
+                offensiveActivities.push(
+                    `**${name}** ` +
+                        (activity !== '' ? `${activity} ` : '') +
+                        (traits.length > 0 ? `(${traits}) ` : '') +
+                        description
+                );
+            });
+        return offensiveActivities;
+    }
+
+    async movement() {
+        const movement = [];
+        movement.push(`**Speed** ${this._creature.baseSpeed}`);
+        // TODO special movement
+        this._creature.movement
+            .filter((f) => !f.isPrimary)
+            .forEach((m) => {
+                movement.push(m.displayName);
+            });
+        return [movement.join(', ')];
+    }
+
+    async melee() {
+        const melee = [];
+        const strikes = this._creature.strikes.filter((f) => f.isMelee);
+        for (let i = 0; i < strikes.length; i++) {
+            melee.push(await new scribeCharacterStrike(strikes[i]).scribify());
+        }
+
+        return melee;
+    }
+
+    async ranged() {
+        const ranged = [];
+        const strikes = this._creature.strikes.filter((f) => f.isRanged);
+        for (let i = 0; i < strikes.length; i++) {
+            ranged.push(await new scribeCharacterStrike(strikes[i]).scribify());
+        }
+
+        return ranged;
+    }
+
+    async spells() {
+        const spells = {};
+        this._creature.knownSpells
+            .filter((f) => !f.isCantrip)
+            .forEach((s) => {
+                if (typeof spells[s.type] === 'undefined') {
+                    spells[s.type] = {};
+                }
+
+                if (typeof spells[s.type][s.rank] === 'undefined') {
+                    spells[s.type][s.rank] = [];
+                }
+                if (s.heightened) {
+                    spells[s.type][s.rank].push(`${s.name} (+${s.heighteningValue})`);
+                } else {
+                    spells[s.type][s.rank].push(s.name);
+                }
+            });
+
+        this._creature.knownSpells
+            .filter((f) => f.isCantrip)
+            .forEach((s) => {
+                if (typeof spells[s.type] === 'undefined') {
+                    spells[s.type] = {};
+                }
+
+                if (typeof spells[s.type][0] === 'undefined') {
+                    spells[s.type][0] = [];
+                }
+                if (s.heightened) {
+                    spells[s.type][0].push(`${s.name} (+${s.heighteningValue})`);
+                } else {
+                    spells[s.type][0].push(s.name);
+                }
+            });
+
+        const ret = [];
+        Object.keys(spells)
+            .sort()
+            .forEach((sce) => {
+                const entry = [`**${sce}** `];
+                Object.keys(spells[sce])
+                    .sort()
+                    .reverse()
+                    .forEach((rank) => {
+                        const displayRank = rank === '0' ? 'Cantrips' : pf2eHelper.shortOrdinal(rank);
+                        entry.push(`**${displayRank}** *` + spells[sce][rank].sort().join(', ').toLowerCase() + '*');
+                    });
+                ret.push(entry.join('; '));
+            });
+
+        return ret;
+    }
+
+    async scribify() {
+        this._itemName = await this._creature.name;
+        this._itemType = 'creature';
+        this._itemRank = await this._creature.level;
+        this._itemTraits = await this._creature.traits;
+        this._itemDescription = ''; // TODO
+        this._label = this._itemName;
+
+        let usage = [];
+        usage = usage.concat(await this.senses());
+        usage = usage.concat(await this.languages());
+        usage = usage.concat(await this.skills());
+        usage = usage.concat(await this.attributes());
+        usage = usage.concat(await this.items());
+        usage.push('-');
+        usage = usage.concat(await this.acSaves());
+        usage = usage.concat(await this.hpImmunityWeaknessResistance());
+        usage = usage.concat(await this.defensiveActivities());
+        usage.push('-');
+        usage = usage.concat(await this.movement());
+        usage = usage.concat(await this.melee());
+        usage = usage.concat(await this.ranged());
+        usage = usage.concat(await this.spells());
+        usage = usage.concat(await this.offensiveActivities());
+
+        this._itemUsage = usage.join('\n\n');
+
+        return await super.scribify();
+    }
+}
+
+class scribeText extends scribeBase {
+    constructor(text) {
+        super();
+        this._text = text;
+    }
+
+    get text() {
+        return this.stripFoundryElements(this.stripHTMLtag(this._text));
+    }
+
+    async scribify() {
+        return String(await this.text).replace(/\n/, '\n\n') + '\n';
     }
 }
 
@@ -171,7 +628,7 @@ class scribeItemEntry extends scribeBase {
  * @param {string} footer (optional) The footer to add to the table
  * @extends scribeBase
  */
-class scribeTableEntry extends scribeBase {
+class scribeTable extends scribeBase {
     constructor(name, headerRow = [], contentRows = [], footer = '') {
         super();
         this._name = name;
@@ -185,7 +642,15 @@ class scribeTableEntry extends scribeBase {
      * @param {array} row an array of strings to be used as a row's cell data
      */
     addContentRow(row) {
-        const parsed = row.map((i) => i.replace(/\(/, '\\(').replace(/\)/, '\\)'));
+        const parsed = [];
+        row.forEach((el) => {
+            if (typeof el === 'string') {
+                parsed.push(el.replace(/\(/, '\\(').replace(/\)/, '\\)'));
+            } else {
+                parsed.push(el);
+            }
+        });
+
         this._contentRows.push(parsed);
     }
 
@@ -193,15 +658,20 @@ class scribeTableEntry extends scribeBase {
      * Generate the scribe markdown for a table entry
      * @returns {string} a formatted scribe table entry
      */
-    scribify() {
+    async scribify() {
         let entry = [];
         if (this._headerRow.length > 0) {
         }
         entry.push(this._headerRow.join(' | '));
-        entry.push(this._headerRow.map((i) => '---').join(' | '));
-        this._contentRows.forEach((row) => {
-            entry.push(Object.values(row).join(' | '));
-        });
+        entry.push(Array(this._headerRow.length).fill('---').join(' | '));
+        for (let r = 0; r < this._contentRows.length; r++) {
+            const row = this._contentRows[r];
+            const renderedCells = [];
+            for (let c = 0; c < row.length; c++) {
+                renderedCells.push(await row[c]);
+            }
+            entry.push(renderedCells.join(' | '));
+        }
         if (this._footer != '') {
             entry.push(`.${this._footer}`);
         }
@@ -215,682 +685,6 @@ class scribeTableEntry extends scribeBase {
     setHeaderRow(row) {
         const parsed = row.map((i) => i.replace(/\(/, '\\(').replace(/\)/, '\\)'));
         this._headerRow = parsed;
-    }
-}
-
-/**
- * @class
- * A class to generate a scribe formatted action
- * @param {Object} action the raw resource to be scribed
- * @extends scribeBase
- */
-class scribeAction extends scribeBase {
-    constructor(action) {
-        super();
-        this._action = action;
-    }
-
-    /**
-     * is the activity an action?
-     * @returns {boolean} whether the activity is an action
-     */
-    get isAction() {
-        return this._action.system.actionType?.value === 'action';
-    }
-
-    /**
-     * is the activity a reaction?
-     * @returns {boolean} whether the activity is a reaction
-     */
-    get isReaction() {
-        return this._action.system.actionType?.value === 'reaction';
-    }
-
-    /**
-     * is the activity a free action?
-     * @returns {boolean} whether the activity is a free action
-     */
-    get isFreeAction() {
-        return this._action.system.actionType?.value === 'free';
-    }
-
-    /**
-     * Generate the scribe markdown for a class
-     * @returns {string} a formatted scribe class
-     */
-    scribify() {
-        const ret = [];
-        ret.push(`**${this._action.name}**`);
-        ret.push(
-            pf2eHelper.formatActivity(
-                this._action.system.actionType?.value,
-                this._action.system.actions?.value,
-                pf2eHelper.scribeActivityGlyphs
-            )
-        );
-        ret.push(this._parse_description(this._action.description));
-        return 'item(\n' + ret.join(' ') + '\n)';
-    }
-}
-
-/**
- * @class
- * A class to generate a scribe formatted ancestry
- * @param {Object} item the raw resource to be scribed
- * @param {number} label_level the level of indentation for the label of the item
- * @extends scribeBase
- */
-class scribeAncestry extends scribeBase {
-    constructor(item, label_level = 0) {
-        super(item);
-        this._ancestry_title = '';
-        this._ancestry_type = 'ancestry';
-        this._heritage = [];
-        this._ancestry_traits = [];
-        this._ancestry_description = [];
-        this._ancestry_title = this._item.name;
-        this._ancestry_traits = this._item.system.traits?.value.concat([this._item.system.traits?.rarity]) || [];
-        this._ancestry_description.push(this._parse_description(this._item.system.description?.value || ''));
-        this._item_label = this._item.name;
-        this._label_level = label_level;
-    }
-
-    /**
-     * Add a heritage object
-     * @param {Object} heritage the heritage object to be added to the ancestry
-     */
-    heritage = function (heritage) {
-        this._heritage.push(heritage);
-    };
-
-    /**
-     * Generate the scribe markdown for an ancestry
-     * @returns {string} a formatted scribe ancestry
-     */
-    scribify() {
-        let ret = '';
-        let traits = this._ancestry_traits;
-        this._heritage.forEach((i) => {
-            traits = traits.concat(i.system.traits.value.concat([i.system.traits.rarity]));
-        });
-        traits = pf2eHelper.formatTraits(traits);
-        ret = ret + `# Ancestry: ${this._ancestry_title} ${this._label(this._ancestry_title, this._label_level)}\n`;
-        ret = ret + `-\n`;
-        if (traits !== '') {
-            ret = ret + `; ${traits}\n`;
-        }
-        ret = ret + `${this._ancestry_description.join('\n')}`;
-        if (this._heritage.length > 0) {
-            this._heritage.forEach((i) => {
-                ret = ret + `## Heritage: ${i.name}  ${this._label(i.name, this._label_level + 1)}\n`;
-                ret = ret + `${i.system.description.value}\n`;
-            });
-        }
-        return this._cleanup(ret);
-    }
-}
-
-/**
- * @class
- * A class to generate a scribe formatted background
- * @param {Object} item the raw resource to be scribed
- * @extends scribeItemEntry
- */
-class scribeBackground extends scribeItemEntry {
-    constructor(item) {
-        super(item);
-        this._item_rank = '';
-        this._item_description.push(this._parse_description(this._item.system.description?.value || ''));
-    }
-}
-
-/**
- * @class
- * A class to generate a scribe formatted class
- * @param {Object} item the raw resource to be scribed
- * @param {number} label_level the level of indentation for the label of the item
- * @extends scribeItemEntry
- */
-class scribeClass extends scribeBase {
-    constructor(item, label_level = 0) {
-        super(item);
-        this._class_name = this._item.name;
-        this._class_label = this._item.name;
-        this._class_description = this._item.system.description?.value || '';
-        this._label_level = label_level;
-    }
-
-    /**
-     * Generate the scribe markdown for a class
-     * @returns {string} a formatted scribe class
-     */
-    scribify() {
-        const ret = [];
-        ret.push(`# Class: ${this._class_name} ${this._label(this._class_label, this._label_level)}`);
-
-        const pre = new RegExp(`<span[^>]+style="float:right"[^>]*>`, 'i');
-        const post = new RegExp(`</span>`, 'i');
-        while (true) {
-            let ovalue = this._class_description;
-            this._class_description = this._class_description.replace(pre, ' (');
-            if (ovalue === this._class_description) {
-                break;
-            }
-            this._class_description = this._class_description.replace(post, ')');
-            if (ovalue === this._class_description) {
-                break;
-            }
-        }
-
-        ret.push(this._parse_description(this._class_description, 1));
-
-        return this._cleanup(ret.join('\n'));
-    }
-}
-
-/**
- * @class
- * A class to generate a scribe formatted creature
- * @param {Object} item the raw resource to be scribed
- * @extends scribeItemEntry
- */
-class scribeCreature extends scribeItemEntry {
-    constructor(item) {
-        super(item);
-        if (this._item.type !== 'character') {
-            this._item_type = 'creature';
-        }
-        this._creature_features = [];
-        this._creature_defense = [];
-        this._creature_offense = [];
-        this._item_rank = this._item.level || 0;
-        this._item_traits.push(pf2eHelper.resolveSize(this._item.size || 'medium'));
-
-        // features
-        this.pushSenses(this._creature_features);
-        this.pushLanguages(this._creature_features);
-        this.pushSkills(this._creature_features);
-        this.pushAbilities(this._creature_features);
-        this.pushItems(this._creature_features);
-
-        // defense
-        this.pushAcSaves(this._creature_defense);
-        this.pushHpImmunityWeaknessResistance(this._creature_defense);
-        this.pushDefensiveAbilities(this._creature_defense);
-
-        // offense
-        this.pushMovement(this._creature_offense);
-        this.pushMeleeAttacks(this._creature_offense);
-        this.pushRangedAttacks(this._creature_offense);
-        this.pushSpellcasting(this._creature_offense);
-        this.pushOffensiveAbilities(this._creature_offense);
-
-        this._item_description.push(this._creature_features.join('\n\n'));
-        this._item_description.push(this._creature_defense.join('\n\n'));
-        this._item_description.push(this._creature_offense.join('\n\n'));
-    }
-
-    /**
-     * Generate Ability information
-     * @param {array} push_to the array to push to
-     */
-    pushAbilities(push_to) {
-        let abilities = [];
-        Object.keys(this._item.abilities).forEach((a) => {
-            abilities.push(`**${pf2eHelper.capitalize(a)}** ${pf2eHelper.quantifyNumber(this._item.abilities[a].mod)}`);
-        });
-        push_to.push(abilities.join(', '));
-    }
-
-    /**
-     * Generate AC and Save information
-     * @param {array} push_to the array to push to
-     */
-    pushAcSaves(push_to) {
-        const entry = [];
-        entry.push(`**AC** ${this._item.armorClass.value}`);
-        entry.push(`**Fort** ${pf2eHelper.quantifyNumber(this._item.saves.fortitude.mod)}`);
-        entry.push(`**Ref** ${pf2eHelper.quantifyNumber(this._item.saves.reflex.mod)}`);
-        entry.push(`**Will** ${pf2eHelper.quantifyNumber(this._item.saves.will.mod)}`);
-        push_to.push(entry.join(', '));
-    }
-
-    /**
-     * Generate Defensive Ability information
-     * @param {array} push_to the array to push to
-     */
-    pushDefensiveAbilities(push_to) {
-        this._item.items
-            .filter((i) => i.type === 'action' && i.system.category === 'defensive')
-            .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-            .forEach((a) => {
-                const name = a.name;
-                const traits = pf2eHelper.formatTraits(
-                    a.system.traits.value.concat(a.system.traits.otherTags).concat([a.system.traits.rarity])
-                );
-                let activity = pf2eHelper.formatActivity(
-                    a.system.actionType.value,
-                    a.system.actions.value,
-                    pf2eHelper.scribeActivityGlyphs
-                );
-                const description = this._parse_description(a.system.description.value)
-                    .replace(/-/g, '')
-                    .replace(/\n\s*\n/g, '\n');
-                const item =
-                    `**${name}** ` +
-                    (activity !== '' ? `${activity} ` : '') +
-                    (traits !== '' ? `(${traits}) ` : '') +
-                    description;
-                push_to.push(item);
-            });
-    }
-
-    /**
-     * Generate HP, Immunity and Resistance information
-     * @param {array} push_to the array to push to
-     */
-    pushHpImmunityWeaknessResistance(push_to) {
-        const entry = [];
-        entry.push(`**HP** ${actor.hitPoints.value || 0}`);
-        if (actor.system.attributes.immunities.map((i) => i.label).length > 0) {
-            entry.push('**Immunities** ' + actor.system.attributes.immunities.map((i) => i.label).join(', '));
-        }
-        if (actor.system.attributes.weaknesses.length > 0) {
-            entry.push('**Weaknesses** ' + actor.system.attributes.weaknesses.map((i) => i.label).join(', '));
-        }
-        if (actor.system.attributes.resistances.length > 0) {
-            entry.push('**Resistances** ' + actor.system.attributes.resistances.map((i) => i.label).join(', '));
-        }
-
-        push_to.push(entry.join('; '));
-    }
-
-    /**
-     * Generate Item information
-     * @param {array} push_to the array to push to
-     */
-    pushItems(push_to) {
-        if (this._item.inventory.contents.filter((i) => !i.isAmmo).length > 0) {
-            push_to.push(
-                `**Items** ${this._item.inventory.contents
-                    .filter((i) => !i.isAmmo)
-                    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-                    .map((i) => i.name)
-                    .join(', ')}`
-            );
-        }
-    }
-
-    /**
-     * Generate Language information
-     * @param {array} push_to the array to push to
-     */
-    pushLanguages(push_to) {
-        const languages = this._item.system.details.languages.value.map((i) => `${pf2eHelper.capitalize(i)}`);
-        if (languages.length > 0) {
-            push_to.push(`**Languages** ${languages.join(', ')}`);
-        }
-    }
-
-    /**
-     * Generate Melee Attack information
-     * @param {array} push_to the array to push to
-     */
-    pushMeleeAttacks(push_to) {
-        this._item.system.actions
-            .filter((i) => i.type === 'strike' && i.options.includes('melee'))
-            .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
-            .forEach((strike) => {
-                push_to.push(new scribeStrike(strike, this._item).scribify());
-            });
-    }
-
-    /**
-     * Generate Movement information
-     * @param {array} push_to the array to push to
-     */
-    pushMovement(push_to) {
-        const entry = [];
-        entry.push(`**Speed** ${this._item.system.attributes.speed.total} feet`);
-        this._item.system.attributes.speed.otherSpeeds
-            .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
-            .map((i) => `${i.label} ${i.total} feet`)
-            .forEach((s) => entry.push(s));
-        const details =
-            this._item.system.attributes.speed.details !== '' ? ` (${this._item.system.attributes.speed.details})` : '';
-        push_to.push(entry.join('; ') + details);
-    }
-
-    /**
-     * Generate Offensive Ability information
-     * @param {array} push_to the array to push to
-     */
-    pushOffensiveAbilities(push_to) {
-        this._item.items
-            .filter((i) => i.type === 'action' && i.system.category === 'offensive')
-            .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-            .forEach((a) => {
-                const name = a.name;
-                const traits = pf2eHelper.formatTraits(
-                    a.system.traits.value.concat(a.system.traits.otherTags).concat([a.system.traits.rarity])
-                );
-                let activity = pf2eHelper.formatActivity(
-                    a.system.actionType.value,
-                    a.system.actions.value,
-                    pf2eHelper.scribeActivityGlyphs
-                );
-                const description = this._parse_description(a.system.description.value)
-                    .replace(/-/g, '')
-                    .replace(/\n\s*\n/g, '\n');
-                let item =
-                    `**${name}** ` +
-                    (activity !== '' ? `${activity} ` : '') +
-                    (traits !== '' ? `(${traits}) ` : '') +
-                    description;
-                push_to.push(item);
-            });
-    }
-
-    /**
-     * Generate Ranged Attack information
-     * @param {array} push_to the array to push to
-     */
-    pushRangedAttacks(push_to) {
-        this._item.system.actions
-            .filter((i) => i.type === 'strike' && i.options.includes('ranged'))
-            .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
-            .forEach((strike) => {
-                push_to.push(new scribeStrike(strike, this._item).scribify());
-            });
-    }
-
-    /**
-     * Generate Senses information
-     * @param {array} push_to the array to push to
-     */
-    pushSenses(push_to) {
-        const entry = [];
-        const senses = this._item.system.perception.senses
-            .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
-            .map((i) => i.label);
-        entry.push(`**Perception** ${pf2eHelper.quantifyNumber(this._item.perception.mod)}`);
-        if (senses.length > 0) {
-            entry.push(senses.join(', '));
-        }
-
-        push_to.push(entry.join('; '));
-    }
-
-    /**
-     * Generate Skill information
-     * @param {array} push_to the array to push to
-     */
-    pushSkills(push_to) {
-        const skills = Object.values(this._item.skills)
-            .filter((i) => i.proficient)
-            .map((i) => `${i.label} ${pf2eHelper.quantifyNumber(i.mod)}`)
-            .sort((a, b) => {
-                return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
-            });
-        if (skills.length > 0) {
-            push_to.push(`**Skills** ${skills.join(', ')}`);
-        }
-    }
-    /**
-     * Generate Spellcasting information
-     * @param {array} push_to the array to push to
-     */
-    pushSpellcasting(push_to) {
-        this._item.spellcasting
-            .filter((i) => i.type === 'spellcastingEntry')
-            .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-            .forEach((sce) => {
-                const name = sce.name;
-                const save_dc = sce.statistic.dc.value;
-                const spells = {};
-                sce.spells
-                    .filter((i) => true)
-                    .forEach((s) => {
-                        spells[s.rank] = (spells[s.rank] || []).concat([`*${s.name}*`]);
-                    });
-                let item = `**${name}** DC ${save_dc}`;
-                Object.keys(spells)
-                    .sort()
-                    .reverse()
-                    .forEach((rank) => {
-                        item = `${item}; **${pf2eHelper.shortOrdinal(rank)}** ${spells[rank].sort().join(', ')}`;
-                    });
-                push_to.push(item);
-            });
-    }
-}
-
-/**
- * @class
- * A class to generate a scribe formatted feat
- * @param {Object} item the raw resource to be scribed
- * @param {number} label_level the level of indentation for the label of the item
- * @extends scribeItemEntry
- */
-class scribeFeat extends scribeItemEntry {
-    constructor(item, label_level = 0) {
-        super(item, label_level);
-        // FIXME: use formatActionSomething
-        if (this._item.system.actionType.value === 'reaction') {
-            this._item_title = `${this._item_title} :r:`;
-        }
-        let prerequisites = [];
-        this._item.system.prerequisites.value.forEach((i) => {
-            prerequisites.push(i.value);
-        });
-        if (prerequisites.length > 0) {
-            this._item_description.push(`**Prerequisites** ${prerequisites.join(', ')}`);
-        }
-        this._item_description.push(this._parse_description(this._item.system.description?.value || ''));
-    }
-}
-
-/**
- * @class
- * A class to generate a scribe formatted feature
- * @param {Object} item the raw resource to be scribed
- * @param {number} label_level the level of indentation for the label of the item
- * @extends scribeItemEntry
- */
-class scribeFeature extends scribeItemEntry {
-    constructor(item, label_level = 0) {
-        super(item, label_level);
-        this._item_type = '';
-
-        if (this._item.system.level?.value == 0) {
-            this._item_rank = '';
-        }
-        this._item_description.push(this._parse_description(this._item.system.description?.value || ''));
-    }
-}
-
-/**
- * @class
- * A class to generate a scribe formatted formula
- * @param {Object} item the raw resource to be scribed
- * @param {number} label_level the level of indentation for the label of the item
- * @extends scribeItemEntry
- */
-class scribeFormula extends scribeItemEntry {
-    constructor(item, label_level = 0) {
-        super(item, label_level);
-        this._formula_cost_table = [
-            '5 sp',
-            '1 gp',
-            '2 gp',
-            '3 gp',
-            '5 gp',
-            '8 gp',
-            '13 gp',
-            '18 gp',
-            '25 gp',
-            '35 gp',
-            '50 gp',
-            '70 gp',
-            '100 gp',
-            '150 gp',
-            '225 gp',
-            '325 gp',
-            '500 gp',
-            '750 gp',
-            '1,200 gp',
-            '2,000 gp',
-            '3,500 gp',
-        ];
-        this._item_rank = this._item.level;
-        this._item_type = 'formula';
-        this._item_description.push(`**Cost** ${this._formula_cost_table[this._item.level]}`);
-        this._item_description.push(this._parse_description(this._item.description));
-    }
-}
-
-/**
- * @class
- * A class to generate a scribe formatted Spell
- * @param {Object} item the raw resource to be scribed
- * @param {number} label_level the level of indentation for the label of the item
- * @extends scribeItemEntry
- */
-class scribeSpell extends scribeItemEntry {
-    constructor(item, label_level = 0) {
-        super(item, label_level);
-        let actions = '';
-        let cast = '';
-        actions = pf2eHelper.formatSpellCastingTime(this._item.system.time.value, pf2eHelper.scribeActivityGlyphs);
-        if (actions === this._item.system.time.value) {
-            cast = `**Cast** ${actions}\n`;
-            actions = '';
-        }
-        this._item_title = `${this._item.name} ${actions}`;
-
-        if (this._item.isCantrip) {
-            this._item_type = 'cantrip';
-        } else if (this._item.isFocusSpell) {
-            this._item_type = 'focus';
-        } else {
-            this._item_type = 'spell';
-        }
-
-        let first = [];
-        if (this._item.system.traits.traditions.length > 0) {
-            first.push(`**Tradition** ${this._item.system.traits.traditions.join(', ')}\n`);
-        }
-        if (cast !== '') {
-            first.push(cast);
-        }
-
-        /* Range, Area, Targets */
-        let rat = [];
-        if (!(typeof this._item.system.range === 'object' && !this._item.system.range)) {
-            if (this._item.system.range.value !== '') {
-                rat.push(`**Range** ${this._item.system.range.value}`);
-            }
-        }
-        if (!(typeof this._item.system.area === 'object' && !this._item.system.area)) {
-            if (this._item.system.area.value !== '') {
-                rat.push(`**Area** ${this._item.system.area.value}ft ${this._item.system.area.type}`);
-            }
-        }
-        if (
-            !(typeof this._item.system.target === 'object' && !this._item.system.target) &&
-            this._item.system.target != ''
-        ) {
-            if (this._item.system.target.value !== '') {
-                rat.push(`**Targets** ${this._item.system.target.value}`);
-            }
-        }
-        if (rat.length > 0) {
-            first.push(rat.join('; ') + '\n');
-        }
-
-        /* Defense, Duration */
-        let dd = [];
-        if (this._item.system.defense?.passive !== undefined) {
-            if (this._item.system.defense.passive.statistic !== '') {
-                dd.push(`**Defense** ${this._item.system.defense.passive.statistic}`);
-            }
-        } else if (this._item.system.defense?.save !== undefined) {
-            if (this._item.system.defense.save.statistic !== '') {
-                dd.push(
-                    '**Defense** ' +
-                        (this._item.system.defense.save.basic ? 'Basic ' : '') +
-                        this._item.system.defense.save.statistic
-                );
-            }
-        }
-        if (!(typeof this._item.system.duration === 'object' && !this._item.system.duration)) {
-            if (this._item.system.duration.value != '') {
-                let duration = `**Duration** ${this._item.system.duration.value}`;
-                if (this._item.system.duration.sustained) {
-                    duration = `${duration} (Sustained)`;
-                }
-                dd.push(duration);
-            }
-        }
-        if (dd.length > 0) {
-            first.push(dd.join('; ') + '\n');
-        }
-
-        this._item_description.push(first.join('\n'));
-
-        this._item_description.push(this._parse_description(this._item.system.description.value));
-    }
-}
-
-/**
- * @class
- * A class to generate a scribe formatted Strike
- * @param {Object} strike the raw resource to be scribed
- * @extends scribeBase
- */
-class scribeStrike extends scribeBase {
-    constructor(strike, actor) {
-        super();
-        this._strike = strike;
-        this._actor = actor;
-    }
-
-    /**
-     * is the strike a melee strike?
-     * @returns {boolean} whether the strike is a melee strike
-     */
-    get isMelee() {
-        return this._strike.options.includes('melee');
-    }
-
-    /**
-     * is the strike a ranged strike?
-     * @returns {boolean} whether the strike is a ranged strike
-     */
-    get isRanged() {
-        return this._strike.options.includes('ranged');
-    }
-
-    /**
-     * Generate the scribe markdown for a class
-     * @returns {string} a formatted scribe class
-     */
-    scribify() {
-        const ret = [];
-        if (this.isMelee) {
-            ret.push('**Melee**');
-        } else if (this.isRanged) {
-            ret.push('**Ranged**');
-        }
-        ret.push(this._strike.label);
-        ret.push(pf2eHelper.quantifyNumber(this._strike.totalModifier));
-        if (this._strike.item.system.traits.value.length > 0) {
-            ret.push('(' + pf2eHelper.formatTraits(this._strike.item.system.traits.value) + ')');
-        }
-        ret.push('**Damage**');
-        ret.push(pf2eHelper.damageFormula(this._strike, this._actor));
-
-        return ret.join(' ');
     }
 }
 
@@ -911,18 +705,17 @@ export class scribeProvider extends baseProvider {
      * @static
      */
     static class = {
-        scribeAction: scribeAction,
-        scribeAncestry: scribeAncestry,
-        scribeBackground: scribeBackground,
-        scribeClass: scribeClass,
+        scribeCharacterActivity: scribeCharacterActivity,
+        scribeCharacterFeat: scribeCharacterFeat,
+        scribeCharacterFormula: scribeCharacterFormula,
+        scribeCharacterSpell: scribeCharacterSpell,
+        scribeCharacterStrike: scribeCharacterStrike,
+        scribeCharacterRitual: scribeCharacterRitual,
         scribeCreature: scribeCreature,
-        scribeItemEntry: scribeItemEntry,
-        scribeTableEntry: scribeTableEntry,
-        scribeFeat: scribeFeat,
-        scribeFeature: scribeFeature,
-        scribeFormula: scribeFormula,
-        scribeSpell: scribeSpell,
-        scribeStrike: scribeStrike,
+        scribeHeader: scribeHeader,
+        scribeItem: scribeItem,
+        scribeTable: scribeTable,
+        scribeText: scribeText,
     };
 
     /**
@@ -944,7 +737,13 @@ export class scribeProvider extends baseProvider {
      */
     async updateFile() {
         const option = this.overrideFilePath || this.providerFilePath;
-        this.scribeFile = this.getScribeData(option);
+        const rendered = [];
+        for (let i = 0; i < this.scribeData.length; i++) {
+            if (this.scribeData[i].option === option) {
+                rendered.push(await this.scribeData[i].data.scribify());
+            }
+        }
+        this.scribeFile = rendered.join('\n');
         return;
     }
 
@@ -953,9 +752,6 @@ export class scribeProvider extends baseProvider {
      * @async
      */
     async saveFile() {
-        console.log('saveFile');
-        console.log('this.scribeFile:', this.scribeFile);
-        console.log('this.scribeData', this.scribeData);
         if (this.scribeFile !== undefined && this.scribeFile != '') {
             saveDataToFile(
                 this.scribeFile,

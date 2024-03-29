@@ -47,6 +47,9 @@ class pf2eActor {
         }
     }
 
+    get traits() {
+        return Array.from(this.actor.traits);
+    }
     /**
      * actor ancestry
      * @type {string}
@@ -54,16 +57,8 @@ class pf2eActor {
     get ancestry() {
         const ancestry = {
             name: this.actor.ancestry?.name || 'unknown',
-            description: undefined,
+            description: actor.ancestry?.system.description.value,
         };
-        try {
-            const a = actor.items.filter((i) => i.type === 'ancestry');
-            if (a.length > 0) {
-                ancestry['description'] = a[0].system.description?.value;
-            }
-        } catch (error) {
-            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'ancestry', error.message);
-        }
         return ancestry;
     }
 
@@ -74,16 +69,8 @@ class pf2eActor {
     get heritage() {
         const heritage = {
             name: this.actor.heritage?.name || 'unknown',
-            description: undefined,
+            description: this.actor.heritage?.system.description.value,
         };
-        try {
-            const a = actor.items.filter((i) => i.type === 'heritage');
-            if (a.length > 0) {
-                heritage['description'] = a[0].system.description?.value;
-            }
-        } catch (error) {
-            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'heritage', error.message);
-        }
 
         return heritage;
     }
@@ -98,10 +85,13 @@ class pf2eActor {
 
     /**
      * actor background
-     * @type {string}
+     * @type {Object}
      */
     get background() {
-        return this.actor.background?.name || 'unknown';
+        return {
+            name: '',
+            description: '',
+        };
     }
 
     /**
@@ -109,14 +99,12 @@ class pf2eActor {
      * @type {string}
      */
     get class() {
-        return this.actor.class?.name || 'unkown';
-    }
-
-    /**
-     * actor subclass
-     * @type {string}
-     */
-    get subClass() {
+        const classInfo = {
+            name: this.actor.class?.name || 'unknown',
+            description: actor.class?.system.description.value,
+            subClass: '',
+            id: this.actor.class?._id,
+        };
         const subClassFeatures = [
             'research-field', // alchemist
             'instinct', // barbarian
@@ -148,10 +136,11 @@ class pf2eActor {
                             subClass.push(s.name);
                         });
                 });
+            classInfo['subClass'] = subClass.join('/');
         } catch (error) {
-            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'subClass', error.message);
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'class', error.message);
         }
-        return subClass.join('/');
+        return classInfo;
     }
 
     /**
@@ -357,8 +346,8 @@ class pf2eActor {
      */
     get immunities() {
         try {
-            return this.actor.system.attributes.resistances
-                .map((i) => i.type + ' ' + i.value)
+            return this.actor.system.attributes.immunities
+                .map((i) => i.type)
                 .sort()
                 .join(', ');
         } catch (error) {
@@ -372,13 +361,20 @@ class pf2eActor {
      */
     get resistance() {
         try {
-            return this.actor.system.attributes.immunities
-                .map((i) => i.type)
+            return this.actor.system.attributes.resistances
+                .map((i) => i.type + ' ' + i.value)
                 .sort()
                 .join(', ');
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'resistance', error.message);
         }
+    }
+
+    get weaknesses() {
+        return this.actor.system.attributes.weaknesses
+            .map((m) => m.type + ' ' + m.value)
+            .sort()
+            .join(', ');
     }
 
     /**
@@ -539,21 +535,45 @@ class pf2eActor {
      * @type {string}
      */
     get baseSpeed() {
-        try {
-            let speed = this.actor.system.attributes.speed.value + this.actor.system.attributes.speed.totalModifier;
-            if (this.hasArmorEquipped) {
-                speed = speed + this.equippedArmor.speedPenalty;
-            }
-            if (this.actor.system.attributes.speed.type === 'land') {
-                return speed;
-            } else {
-                return `${speed} ${actor.system.attributes.speed.type}`;
-            }
-        } catch (error) {
-            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'baseSpeed', error.message);
-        }
+        const movement = this.movement.filter((f) => f.isPrimary)[0];
+        return movement.displayName;
     }
 
+    get baseMovement() {
+        return this.movement.filter((f) => f.isPrimary)[0];
+    }
+
+    get movement() {
+        const movement = [];
+        const primary = {
+            label: this.actor.system.attributes.speed.label,
+            type: this.actor.system.attributes.speed.type,
+            value: this.actor.system.attributes.speed.total,
+            isPrimary: true,
+        };
+        if (this.actor.system.attributes.speed.slug === 'land-speed') {
+            primary['displayName'] = this.actor.system.attributes.speed.total + ' feet';
+        } else {
+            primary['displayName'] =
+                this.actor.system.attributes.speed.label + ' ' + this.actor.system.attributes.speed.total + ' feet';
+        }
+        movement.push(primary);
+        this.actor.system.attributes.speed.otherSpeeds.forEach((m) => {
+            const move = {
+                label: m.label,
+                type: m.type,
+                value: m.total,
+                isPrimary: false,
+            };
+            if (m.slug === 'land-speed') {
+                move['displayName'] = m.total + ' feet';
+            } else {
+                move['displayName'] = m.label + ' ' + m.total + ' feet';
+            }
+            movement.push(move);
+        });
+        return movement;
+    }
     /**
      * actor strikes
      * @type {array}
@@ -569,7 +589,9 @@ class pf2eActor {
                 .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
                 .forEach((strike) => {
                     rawStrikes.push(strike);
-                    rawStrikes = rawStrikes.concat(strike.altUsages);
+                    if (typeof strike.altUsages !== 'undefined') {
+                        rawStrikes = rawStrikes.concat(strike.altUsages);
+                    }
                 });
             for (let i = 0; i < rawStrikes.length; i++) {
                 const rawStrike = rawStrikes[i];
@@ -703,7 +725,7 @@ class pf2eActor {
                     const feature = {
                         name: a.name,
                         displayName: a.name,
-                        description: undefined,
+                        description: a.system.description?.value,
                     };
                     const sub = actor.items.filter((i) => i.flags?.pf2e?.grantedBy?.id === a._id).map((i) => i.name);
                     if (sub.length > 0) {
@@ -744,6 +766,9 @@ class pf2eActor {
                         const feat = {
                             level: i,
                             name: f.name,
+                            description: f.system.description.value,
+                            traits: [f.system.traits.rarity].concat(f.system.traits.value),
+                            prerequisites: f.system.prerequisites.value,
                         };
                         if (sub.length > 0) {
                             feat['name'] = `${f.name} (${sub.join(', ')})`;
@@ -765,7 +790,19 @@ class pf2eActor {
         const backgroundSkillFeats = [];
         try {
             Object.keys(this.actor.background?.system.items || []).forEach((b) => {
-                backgroundSkillFeats.push(this.actor.background.system.items[b].name);
+                const feat = {
+                    name: this.actor.background.system.items[b].name,
+                    level: this.actor.background.system.items[b].level,
+                    traits: [],
+                    description: '',
+                };
+                const i = this.actor.items.filter((f) => f.type === 'feat' && f.name === feat['name']);
+                if (i.length > 0) {
+                    feat['description'] = i[0].system.description.value;
+                    feat['traits'] = [i[0].system.traits.rarity].concat(i[0].system.traits.value);
+                    feat['prerequisites'] = i[0].system.prerequisites.value;
+                }
+                backgroundSkillFeats.push(feat);
             });
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'backgroundSkillFeats', error.message);
@@ -785,8 +822,11 @@ class pf2eActor {
                     .filter((f) => f.type === 'feat' && f.system.location === `skill-${i}`)
                     .forEach((f) => {
                         skillFeats.push({
-                            level: i,
                             name: f.name,
+                            level: i,
+                            description: f.system.description.value,
+                            traits: [f.system.traits.rarity].concat(f.system.traits.value),
+                            prerequisites: f.system.prerequisites.value,
                         });
                     });
             }
@@ -810,6 +850,9 @@ class pf2eActor {
                         generalFeats.push({
                             level: i,
                             name: f.name,
+                            description: f.system.description.value,
+                            prerequisites: f.system.prerequisites.value,
+                            traits: [f.system.traits.rarity].concat(f.system.traits.value),
                         });
                     });
             }
@@ -856,6 +899,9 @@ class pf2eActor {
                     classFeats.push({
                         level: Number(feat.system.location.split('-').at(-1)),
                         name: feat.name,
+                        description: feat.system.description.value,
+                        prerequisites: feat.system.prerequisites.value,
+                        traits: [feat.system.traits.rarity].concat(feat.system.traits.value),
                     });
                 });
         } catch (error) {
@@ -874,7 +920,7 @@ class pf2eActor {
             this.actor.items
                 .filter(
                     (f) =>
-                        f.type === 'feat' && f.system.category === 'classfeature' && f.system.location === this.classId
+                        f.type === 'feat' && f.system.category === 'classfeature' && f.system.location === this.class.id
                 )
                 .forEach((f) => {
                     const subFeatures = this.actor.items
@@ -883,7 +929,13 @@ class pf2eActor {
                     const feature = {
                         level: f.system.level.value,
                         name: f.name,
+                        traits: [f.system.traits.rarity].concat(f.system.traits.value),
+                        frequency: '',
+                        description: f.system.description?.value || '',
                     };
+                    if (f.frequency?.max !== undefined && f.frequency?.per !== undefined) {
+                        feature['frequency'] = `${f.frequency.max}/` + pf2eHelper.frequencyToHuman(f.frequency.per);
+                    }
                     if (subFeatures.length > 0 && subFeatures.join(', ') !== f.name) {
                         feature['name'] = `${f.name} (${subFeatures.join(', ')})`;
                     }
@@ -893,18 +945,6 @@ class pf2eActor {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'classFeatures', error.message);
         }
         return classFeatures;
-    }
-
-    /**
-     * actor class Id
-     * @type {array}
-     */
-    get classId() {
-        if (typeof this.actor.class?._id !== 'undefined') {
-            return this.actor.class?._id;
-        } else {
-            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'classId', 'Class Id could not be detected');
-        }
     }
 
     /**
@@ -1148,6 +1188,7 @@ class pf2eActor {
                         type: a.system.actionType.value,
                         description: a.system.description.value,
                         actionCount: a.system.actions.value,
+                        category: a.system.category,
                     };
                     activity['glyph'] = pf2eHelper.formatActivity(
                         a.system.actionType.value,
@@ -1487,6 +1528,13 @@ class pf2eActor {
                                     saveIsBasic: s.system.defense?.save?.basic || false,
                                     range: s.system.range?.value || '',
                                     reference: s.system.publication?.title || s.system.source?.value || '',
+                                    tradition: sce.system?.tradition?.value,
+                                    traits: [s.system.traits.rarity].concat(s.system.traits.value),
+                                    description: s.system.description.value,
+                                    duration: s.system.duration?.value || '',
+                                    isSustained: s.system.duration?.sustained || false,
+                                    target: s.system.target?.value || '',
+                                    area: '',
                                 };
 
                                 if (spell['heightened'] && s.system.heightening.type === 'fixed') {
@@ -1497,10 +1545,11 @@ class pf2eActor {
                                     spell['heighteningValue'] = (r - s.rank) / s.system.heightening.interval;
                                 }
                                 if (s.system.area !== null) {
-                                    spell['areaOfEffect'] = `${s.system.area.value}ft ${s.system.area.type}`;
-                                } else {
-                                    spell['areaOfEffect'] = s.system.target?.value || '';
+                                    spell['area'] = `${s.system.area.value}ft ${s.system.area.type}`;
                                 }
+                                // } else {
+                                //     spell['area'] = s.system.target?.value || '';
+                                // }
                                 if (spell['saveStatistic'].toLowerCase().endsWith('-dc')) {
                                     spell['saveStatistic'] = spell['saveStatistic'].slice(0, -3);
                                 }
@@ -1515,6 +1564,10 @@ class pf2eActor {
         return knownSpells;
     }
 
+    get knownFormulas() {
+        return [];
+    }
+
     /**
      * actor known rituals
      * @type {array}
@@ -1526,11 +1579,27 @@ class pf2eActor {
                 .filter((f) => f.isRitual)
                 .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
                 .forEach((r) => {
-                    knownRituals.push({
+                    const ritual = {
                         name: r.name,
-                        rank: r.rank,
+                        rank: r.system.level.value,
+                        castingTime: r.system.time.value,
                         cost: r.system.cost.value,
-                    });
+                        traits: [r.system.traits.rarity].concat(r.system.traits.value),
+                        description: r.system.description.value,
+                        duration: r.system.duration?.value || '',
+                        isSustained: r.system.duration?.sustained || false,
+                        target: r.system.target?.value || '',
+                        range: r.system.range?.value || '',
+                        area: '',
+                        primaryCheck: r.system.ritual.primary?.check,
+                        secondaryCheck: r.system.ritual.secondary?.check,
+                        secondaryCasters: r.system.ritual.secondary?.casters || 0,
+                    };
+                    if (r.system.area !== null) {
+                        ritual['area'] = `${r.system.area.value}ft ${r.system.area.type}`;
+                    }
+
+                    knownRituals.push(ritual);
                 });
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'knownRituals', error.message);
@@ -1564,7 +1633,175 @@ class pf2ePlayer extends pf2eActor {
     constructor(game, actor) {
         super(game, actor);
     }
+
+    /**
+     * actor background
+     * @type {Object}
+     */
+    get background() {
+        const background = {
+            name: this.actor.background?.name || 'unknown',
+            description: this.actor.background.system.description.value,
+        };
+        return background;
+    }
+
+    get knownFormulas() {
+        const knownFormulas = [];
+        const formulaCost = [
+            '5 sp',
+            '1 gp',
+            '2 gp',
+            '3 gp',
+            '5 gp',
+            '8 gp',
+            '13 gp',
+            '18 gp',
+            '25 gp',
+            '35 gp',
+            '50 gp',
+            '70 gp',
+            '100 gp',
+            '150 gp',
+            '225 gp',
+            '325 gp',
+            '500 gp',
+            '750 gp',
+            '1,200 gp',
+            '2,000 gp',
+            '3,500 gp',
+        ];
+        actor.system.crafting.formulas.forEach((f) => {
+            const el = fromUuidSync(f.uuid);
+            knownFormulas.push({
+                name: el.name,
+                level: el.system.level.value,
+                description: el.system.description.value,
+                traits: [el.system.traits.rarity].concat(el.system.traits.value),
+                cost: formulaCost[el.system.level.value],
+            });
+        });
+        return knownFormulas;
+    }
 }
+
+class pf2eNPC extends pf2eActor {
+    constructor(game, actor) {
+        super(game, actor);
+    }
+
+    get ac() {
+        const ac = {};
+        ac['modifier'] = this.actor.system.attributes.ac.value;
+
+        return ac;
+    }
+
+    get strikes() {
+        const strikes = [];
+        try {
+            let rawStrikes = [];
+            this.actor.system.actions
+                .filter((i) => i.type === 'strike' && (i.options?.includes('melee') || i.options?.includes('ranged')))
+                .sort((a, b) => (a.ready > b.ready ? 1 : a.ready < b.ready ? -1 : 0))
+                .reverse()
+                .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
+                .forEach((strike) => {
+                    rawStrikes.push(strike);
+                    if (typeof strike.altUsages !== 'undefined') {
+                        rawStrikes = rawStrikes.concat(strike.altUsages);
+                    }
+                });
+            for (let i = 0; i < rawStrikes.length; i++) {
+                const rawStrike = rawStrikes[i];
+                const strModifier = rawStrike.modifiers
+                    .filter((i) => i.type === 'ability' && i.slug === 'str' && i.enabled)
+                    .map((i) => i.modifier)
+                    .reduce((a, b) => a + b, 0);
+                const dexModifier = rawStrike.modifiers
+                    .filter((i) => i.type === 'ability' && i.slug === 'dex' && i.enabled)
+                    .map((i) => i.modifier)
+                    .reduce((a, b) => a + b, 0);
+                const strike = {
+                    label: rawStrike.label,
+                    readied: rawStrike.ready,
+                    isMelee: rawStrike.options.includes('melee'),
+                    isRanged: rawStrike.options.includes('ranged'),
+                    hasFinesse: rawStrike.item.system.traits.value.includes('finesse'),
+                    statusModifier: rawStrike.modifiers
+                        .filter((i) => i.type === 'status' && i.enabled)
+                        .map((i) => i.modifier)
+                        .reduce((a, b) => a + b, 0),
+                    proficiencyModifier: rawStrike.modifiers
+                        .filter((i) => i.type === 'proficiency' && i.enabled)
+                        .map((i) => i.modifier)
+                        .reduce((a, b) => a + b, 0),
+                    itemModifier: rawStrike.modifiers
+                        .filter((i) => i.type === 'item' && i.enabled)
+                        .map((i) => i.modifier)
+                        .reduce((a, b) => a + b, 0),
+                    traits: pf2eHelper
+                        .runesToTraits(rawStrike.item.system.runes)
+                        .concat(rawStrike.item.system.traits.value)
+                        .sort(),
+                };
+                const damageRoll = rawStrike.item.system.damageRolls[Object.keys(rawStrike.item.system.damageRolls)[0]];
+                strike['hasBludgeoningDamage'] =
+                    damageRoll.damageType === 'bludgeoning' ||
+                    rawStrike.item.system.traits.value.includes('versatile-b') ||
+                    false;
+                strike['hasPiercingDamage'] =
+                    damageRoll.damageType === 'piercing' ||
+                    rawStrike.item.system.traits.value.includes('versatile-p') ||
+                    false;
+                strike['hasSlashingDamage'] =
+                    damageRoll.damageType === 'slashing' ||
+                    rawStrike.item.system.traits.value.includes('versatile-s') ||
+                    false;
+                strike['damageFormula'] = damageRoll.damage;
+                if (strike.isRanged && typeof rawStrike.item.system.range !== 'undefined') {
+                    strike['traits'].push(`range-${rawStrike.item.system.range}`);
+                    strike['traits'].sort();
+                }
+                strike['modifier'] = rawStrike.totalModifier - strike.statusModifier;
+
+                if (strike.isRanged) {
+                    strike['attributeModifier'] = dexModifier;
+                    strike['attributeName'] = 'dex';
+                } else if (strike.isMelee && strike.hasFinesse && dexModifier > strModifier) {
+                    strike['attributeModifier'] = dexModifier;
+                    strike['attributeName'] = 'dex';
+                } else {
+                    strike['attributeModifier'] = strModifier;
+                    strike['attributeName'] = 'str';
+                }
+                strikes.push(strike);
+            }
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'strikes', error.message);
+        }
+        return strikes;
+    }
+
+    get skills() {
+        const skills = {};
+        try {
+            this.actor.items
+                .filter((f) => f.type === 'lore')
+                .forEach((s) => {
+                    const slug = s.name.toLowerCase().replace(/\s+/g, '-');
+                    skills[slug] = {
+                        label: s.name,
+                        modifier: s.system.mod.value,
+                    };
+                });
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eNPC', 'skills', error.message);
+        }
+        return skills;
+    }
+}
+
 /**
  * @class
  * @augments genericHelper
@@ -1865,6 +2102,8 @@ export class pf2eHelper extends genericHelper {
             return 'Versatile ' + tTrait.split('-').pop().toUpperCase();
         } else if (tTrait.startsWith('range-')) {
             return 'Range ' + tTrait.split('-').pop();
+        } else if (tTrait.startsWith('reach-')) {
+            return 'Reach ' + tTrait.split('-').pop();
         } else if (tTrait.startsWith('deadly-')) {
             return 'Deadly ' + tTrait.split('-').pop();
         } else if (tTrait.startsWith('volley-')) {
@@ -1991,6 +2230,10 @@ export class pf2eHelper extends genericHelper {
     static getActorObject(game, actor) {
         if (actor.type === 'character') {
             return new pf2ePlayer(game, actor);
+        } else if (actor.type === 'npc') {
+            return new pf2eNPC(game, actor);
+        } else {
+            throw new Error('Could not find actor type: ' + actor.type);
         }
     }
 

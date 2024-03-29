@@ -47,10 +47,12 @@ export class baseProvider {
         value = helper.stripHTMLtag(value, 'ol');
         value = helper.stripNestedHTMLtag(value, 'ul', 'li', '- ');
         value = helper.stripHTMLtag(value, 'ul');
-        value = helper.stripHTMLtag(value, 'h1');
-        value = helper.stripHTMLtag(value, 'h2');
-        value = helper.stripHTMLtag(value, 'h3');
-        value = helper.stripHTMLtag(value, 'h4');
+        value = helper.stripHTMLtag(value, 'h1', '#');
+        value = helper.stripHTMLtag(value, 'h2', '##');
+        value = helper.stripHTMLtag(value, 'h3', '###');
+        value = helper.stripHTMLtag(value, 'h4', '####');
+        value = helper.stripHTMLtag(value, 'h5', '#####');
+        value = helper.stripHTMLtag(value, 'h6', '######');
         return value;
     }
 

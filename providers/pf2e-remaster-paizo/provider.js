@@ -132,12 +132,12 @@ mapper.textBox('heritage', fileName, 0, 30, 114, 142, 22, character.heritage.nam
 mapper.textBox('size', fileName, 0, 180, 114, 26, 22, character.size, mf_12);
 
 // Background
-mapper.textBox('background', fileName, 0, 217, 98, 178, 8, character.background, mf_12);
+mapper.textBox('background', fileName, 0, 217, 98, 178, 8, character.background.name, mf_12);
 /* TODO: background notes */
 
 // Class
-mapper.textBox('class', fileName, 0, 406, 98, 176, 8, character.class, mf_12);
-mapper.textBox('class notes', fileName, 0, 406, 114, 176, 22, character.subClass, mf_12);
+mapper.textBox('class', fileName, 0, 406, 98, 176, 8, character.class.name, mf_12);
+mapper.textBox('class notes', fileName, 0, 406, 114, 176, 22, character.class.subClass, mf_12);
 
 // level
 mapper.textBox('level', fileName, 0, 412, 50, 19, 19, character.level, mf_15_centered);
@@ -275,7 +275,7 @@ Object.values(character.skills).forEach((skill) => {
         skill_y.shift();
     }
     ref = `${skill.label} skill`;
-    mapper.textBox(ref, fileName, 0, 95, y, 32, 18, skill.modifier, mf_15_centered);
+    mapper.textBox(ref, fileName, 0, 95, y, 32, 18, pf2eHelper.quantifyNumber(skill.modifier), mf_15_centered);
     mapper.textBox(ref, fileName, 0, 146, y + 1, 19, 12, skill.attributeModifier, mf_12_centered);
     mapper.textBox(ref, fileName, 0, 166, y + 1, 19, 12, skill.proficiencyModifier, mf_12_centered);
     mapper.textBox(ref, fileName, 0, 187, y + 1, 19, 12, skill.itemModifier, mf_12_centered);
@@ -343,15 +343,13 @@ mapper.textBox('perception', fileName, 0, 424, 313, 5, 5, mapper.checkMark(pRank
 mapper.textBox('senses notes', fileName, 0, 405, 327, 84, 40, character.senses, mf_8_multiline);
 
 // speed
-mapper.textBox('speed', fileName, 0, 498, 298, 50, 14, character.baseSpeed, mf_12_centered);
+mapper.textBox('speed', fileName, 0, 498, 298, 50, 14, character.baseMovement.value, mf_12_centered);
 
-const special_movement =
-    actor.system.attributes.speed.otherSpeeds.map((i) => ' ' + i.label + ' ' + i.value).join(', ') +
-    ' \n' +
-    actor.system.attributes.speed.modifiers.map(
-        (i) => ' ' + (i.slug ? i.slug : i.label) + ' ' + (i.modifier < 0 ? '' : '+') + i.modifier
-    );
-mapper.textBox('special movement', fileName, 0, 499, 327, 84, 40, special_movement, {
+const specialMovement = character.movement
+    .filter((f) => !f.isPrimary)
+    .map((m) => m.displayName)
+    .join(', ');
+mapper.textBox('special movement', fileName, 0, 499, 327, 84, 40, specialMovement, {
     ...mf_8,
     ...{ valign: 'top', multiline: true },
 });
@@ -458,7 +456,8 @@ pf2eHelper
 
 // Background Skill Feats
 ref = 'background skill feats';
-mapper.textBox(ref, fileName, 1, 49, 123, 162, 43, character.backgroundSkillFeats.join(', '), mf_8_multiline);
+const backgroundSkillFeats = character.backgroundSkillFeats.map((m) => m.name);
+mapper.textBox(ref, fileName, 1, 49, 123, 162, 43, backgroundSkillFeats.join(', '), mf_8_multiline);
 
 // Skill feats
 const skill_feats_y = [176, 239, 302, 365, 428, 491, 554, 617, 680, 742];
@@ -967,8 +966,6 @@ character.knownSpells
     });
 
 // Rituals
-const rituals = actor.items.filter((f) => f.system.ritual !== undefined);
-
 const ritualX = 218;
 const ritualMinY = 709;
 let ritualY = ritualMinY;
