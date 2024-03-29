@@ -490,7 +490,6 @@ class scribeCreature extends scribeItem {
     async movement() {
         const movement = [];
         movement.push(`**Speed** ${this._creature.baseSpeed}`);
-        // TODO special movement
         this._creature.movement
             .filter((f) => !f.isPrimary)
             .forEach((m) => {
@@ -559,12 +558,19 @@ class scribeCreature extends scribeItem {
         Object.keys(spells)
             .sort()
             .forEach((sce) => {
-                const entry = [`**${sce}** `];
+                console.log('spellProficiency', this._creature.spellProficiency);
+                const spellProficiency = this._creature.spellProficiency.filter((f) => f.name === sce)[0];
+                const entry = [
+                    `**${sce}** DC ${spellProficiency.spell.modifier}, attack ${pf2eHelper.quantifyNumber(spellProficiency.attack.modifier)}`,
+                ];
                 Object.keys(spells[sce])
                     .sort()
                     .reverse()
                     .forEach((rank) => {
-                        const displayRank = rank === '0' ? 'Cantrips' : pf2eHelper.shortOrdinal(rank);
+                        const displayRank =
+                            rank === '0'
+                                ? 'Cantrips (' + pf2eHelper.shortOrdinal(this._creature.maximumSpellRank) + ')'
+                                : pf2eHelper.shortOrdinal(rank);
                         entry.push(`**${displayRank}** *` + spells[sce][rank].sort().join(', ').toLowerCase() + '*');
                     });
                 ret.push(entry.join('; '));
