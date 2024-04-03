@@ -1,5 +1,8 @@
 # Pathfinder 2nd Edition Remastered
 
+| :exclamation:  This provider is deprecated and will be removed 2024-05-01, please use any of the other providers  |
+|-----------------------------------------|
+
 This provider renders the Paizo PF2e Remaster Charactersheet, albeit with a couple of modifications, and an extra set of pages for those with lots of spells, items, formulas, strike actions, ...
 
 ## Known working PDF viewers
