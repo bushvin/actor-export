@@ -407,7 +407,11 @@ class pf2eActor {
                 .sort((a, b) => (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0))
                 .forEach((skill) => {
                     skills[skill.slug] = {};
-                    skills[skill.slug]['label'] = skill.label;
+                    if (skill.lore && skill.label.trim().toLowerCase().endsWith('lore')) {
+                        skills[skill.slug]['label'] = skill.label.trim().slice(0, -4).trim();
+                    } else {
+                        skills[skill.slug]['label'] = skill.label.trim();
+                    }
                     skills[skill.slug]['isLore'] = skill.lore;
                     skills[skill.slug]['attributeModifier'] = skill.attributeModifier.modifier || '0';
                     skills[skill.slug]['statusModifier'] = skill.modifiers
