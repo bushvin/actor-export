@@ -5,7 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
-## [2024-3.6] 2024-03-29
+## [2024.4.1] 2024-04-03
+
+### Added
+
+- Deprecation message for pf2e-remaster (the original). The provider will be removed 2024-05-01.
+- Wiki for pf2e-remaster-bushvin
+- Wiki for pf2e-remaster-paizo
+
+### Changed
+
+- pf2eHelper: 'lore' is removed from the end of lore skill labels.
+
+### Fixed
+
+- pf2e-remaster-bushvin: quantify attributes and skills
+- pf2e-remaster-paizo: quantify attributes
+
+## [2024.3.6] 2024-03-29
 
 ## Added
 
