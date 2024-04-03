@@ -19,13 +19,13 @@
     "files": [
         {
             "uri": "pf2e-remastered.pdf",
-            "name": "PF2e Remaster Character Sheet by Paizo",
-            "description": "The standard Paizo pf2e remaster player character sheet with a couple of tweaks"
+            "name": "PF2e Remaster Character Sheet by Paizo (Deprecated)",
+            "description": "Please use any of the other providers. This sheet will be removed 2024-05-01."
         },
         {
             "uri": "pf2e-remastered-extra.pdf",
-            "name": "PF2e Remaster Character Extra Sheet",
-            "description": "A player sheet containing additional formulas, items, spells, strikes, ..."
+            "name": "PF2e Remaster Character Extra Sheet (Deprecated)",
+            "description": "Please use any of the other providers. This sheet will be removed 2024-05-01."
         }
     ]
 }
