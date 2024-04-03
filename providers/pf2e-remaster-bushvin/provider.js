@@ -152,7 +152,7 @@ mapper.textBox('heropoint', fileName, 0, 556, 36, 9, 16, mapper.checkMark(charac
 const attr_x = [29, 123, 217, 311, 405, 499];
 Object.values(character.attributes).forEach((a, i) => {
     ref = `${a.name} attribute`;
-    mapper.textBox(ref, fileName, 0, attr_x[i], 150, 21, 19, a.modifier, mf_15_centered);
+    mapper.textBox(ref, fileName, 0, attr_x[i], 150, 21, 19, pf2eHelper.quantifyNumber(a.modifier), mf_15_centered);
     ref = `${a.name} attribute boost`;
     const checkMark = mapper.checkMark(a.isPartialBoost);
     mapper.textBox(ref, fileName, 0, attr_x[i] + 27, 168, 5, 5, checkMark, mf_12_centered);
@@ -275,7 +275,7 @@ Object.values(character.skills).forEach((skill) => {
         skill_y.shift();
     }
     ref = `${skill.label} skill`;
-    mapper.textBox(ref, fileName, 0, 95, y, 32, 18, skill.modifier, mf_15_centered);
+    mapper.textBox(ref, fileName, 0, 95, y, 32, 18, pf2eHelper.quantifyNumber(skill.modifier), mf_15_centered);
     mapper.textBox(ref, fileName, 0, 146, y + 1, 19, 12, skill.attributeModifier, mf_12_centered);
     mapper.textBox(ref, fileName, 0, 166, y + 1, 19, 12, skill.proficiencyModifier, mf_12_centered);
     mapper.textBox(ref, fileName, 0, 187, y + 1, 19, 12, skill.itemModifier, mf_12_centered);
