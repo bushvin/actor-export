@@ -590,7 +590,7 @@ class scribeCreature extends scribeItem {
      */
     async acSaves() {
         const acSaves = [];
-        acSaves.push(`**AC** ${this._creature.modifier}`);
+        acSaves.push(`**AC** ${this._creature.ac.modifier}`);
         acSaves.push(`**Fort** ${pf2eHelper.quantifyNumber(this._creature.savingThrows.fortitude.modifier)}`);
         acSaves.push(`**Ref** ${pf2eHelper.quantifyNumber(this._creature.savingThrows.reflex.modifier)}`);
         acSaves.push(`**Will** ${pf2eHelper.quantifyNumber(this._creature.savingThrows.will.modifier)}`);
