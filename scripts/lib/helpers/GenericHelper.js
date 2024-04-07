@@ -137,6 +137,11 @@ export class genericHelper {
         return html;
     }
 
+    /**
+     * Return an array with unique elements
+     * @param {array} array the array to parse
+     * @returns {array}
+     */
     static unique(array) {
         const uniqueArray = [];
         array.forEach((element) => {
@@ -145,5 +150,19 @@ export class genericHelper {
             }
         });
         return uniqueArray;
+    }
+
+    /**
+     * Return a checkmark based on the outcome of the provided logical value
+     * @param {boolean} value the value to evaulate
+     * @param {string} checked character to use when checked (default: x)
+     * @param {string} unchecked character to use when unchecked (default: empty string)
+     * @returns {string}
+     */
+    static evalCheckMark(value, checked = 'x', unchecked = '') {
+        if (value === true) {
+            return checked;
+        }
+        return unchecked;
     }
 }
