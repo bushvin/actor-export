@@ -336,6 +336,8 @@ export class pdfProvider extends baseProvider {
         textOptions.y = pageHeight - pageHeight * y - textOptions.height;
         if ((textOptions.valign || 'bottom') === 'top') {
             textOptions.y = textOptions.y + textOptions.height - textLineHeight;
+        } else if ((textOptions.valign || 'bottom') === 'middle') {
+            textOptions.y = textOptions.y + (textOptions.height - textLineHeight) / 2;
         }
         // TODO: vertical alignment: middle
 
