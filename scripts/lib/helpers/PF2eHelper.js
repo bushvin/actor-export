@@ -1653,7 +1653,7 @@ class pf2eActorPropertyError extends Error {
             console.error('pf2eActorPropertyError', msg);
         }
         super(msg);
-        this.name = 'pf2eActorError';
+        this.name = 'pf2eActorPropertyError';
     }
 }
 
