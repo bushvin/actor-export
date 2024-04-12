@@ -7,7 +7,7 @@
    width="816"
    height="1056"
    viewBox="0 0 816 1056"
-   sodipodi:docname="RemasterPlayerCoreCharacterSheet.svg"
+   sodipodi:docname="pf2e-remastered.svg"
    inkscape:version="1.3.2 (091e20ef0f, 2023-11-25)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -2425,15 +2425,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="0.76434533"
-     inkscape:cx="2380.4685"
-     inkscape:cy="775.17318"
+     inkscape:zoom="4.3274589"
+     inkscape:cx="721.43955"
+     inkscape:cy="1008.0974"
      inkscape:window-width="1920"
-     inkscape:window-height="1044"
+     inkscape:window-height="1018"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g912"
+     inkscape:current-layer="g1"
      showguides="true">
     <inkscape:page
        x="0"
@@ -3135,55 +3135,6 @@
          y="0"
          sodipodi:role="line"
          id="tspan88">Action Icons</tspan></text>
-    <text
-       id="text89"
-       xml:space="preserve"
-       transform="matrix(1.3333333,0,0,1.3333333,663,972.1812)"><tspan
-         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7px;font-family:Pathfinder2eActions;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         x="0"
-         y="0"
-         id="tspan89">[one-action]</tspan><tspan
-         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7px;font-family:'Good OT';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         x="7 8.6870003 12.131 13.741 17.304001 20.740999 22.393 25.577999 27.264999 31.43 34.418999 36.729 38.339001 41.699001"
-         y="0"
-         sodipodi:role="line"
-         id="tspan90"> Single Action</tspan><tspan
-         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7px;font-family:Pathfinder2eActions;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         x="0"
-         y="9.0019999"
-         id="tspan91">[two-actions]</tspan><tspan
-         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7px;font-family:'Good OT';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         x="10.934 12.621 15.582 20.545 23.905001 25.669001 29.834 32.823002 35.132999 36.743 40.103001 43.666 45.353001 49.5173 52.506302 54.816299 56.4263 59.8493 61.459301 63.769299"
-         y="9.0019999"
-         sodipodi:role="line"
-         id="tspan92"> Two-Action Activity</tspan><tspan
-         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7px;font-family:Pathfinder2eActions;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         x="0"
-         y="18.004"
-         id="tspan93">[three-actions]</tspan><tspan
-         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7px;font-family:'Good OT';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         x="14.546 16.233 19.621 23.219 25.577999 28.763 31.948 33.712002 37.876999 40.866001 43.175999 44.785999 48.146 51.709 53.396 57.560299 60.549301 62.859299 64.469299 67.892303 69.502296 71.812302"
-         y="18.004"
-         sodipodi:role="line"
-         id="tspan94"> Three-Action Activity</tspan><tspan
-         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7px;font-family:Pathfinder2eActions;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         x="0"
-         y="27.006001"
-         id="tspan95">[free-action]</tspan><tspan
-         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7px;font-family:'Good OT';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         x="7 8.6870003 12.096 14.455 17.639999 20.825001 22.511999 26.677 29.666 31.976 33.585999 36.945999"
-         y="27.006001"
-         sodipodi:role="line"
-         id="tspan96"> Free Action</tspan><tspan
-         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7px;font-family:Pathfinder2eActions;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         x="0"
-         y="36.007999"
-         id="tspan97">[reaction]</tspan><tspan
-         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7px;font-family:'Good OT';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         x="7 8.6870003 12.572 15.757 18.962999 21.952 24.261999 25.872 29.232"
-         y="36.007999"
-         sodipodi:role="line"
-         id="tspan98"> Reaction</tspan></text>
     <text
        id="text98"
        xml:space="preserve"
@@ -6907,6 +6858,86 @@
          x="0"
          y="16.695"
          id="tspan738">L</tspan></text>
+    <path
+       id="path89"
+       d="m 672.3125,968.10187 -4.67188,-4.67187 -2.25,2.25 2.42188,2.42187 -2.42188,2.40625 2.25,2.25 z m -7.625,-1.67187 -1.67188,1.67187 1.67188,1.67188 1.67187,-1.67188 z m 0,0"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.33333"
+       aria-label="[" />
+    <text
+       id="text89"
+       xml:space="preserve"
+       x="674.58264"
+       y="972.18152"
+       style="font-size:16px;stroke-width:1.33333"><tspan
+         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.33333px;font-family:'Good OT';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.33333"
+         x="674.58264 679.17468 681.32135 686.07202 690.65466 692.85736 697.104 699.35333 704.90668 708.89203 711.97198 714.11865 718.59869"
+         y="972.18152"
+         sodipodi:role="line"
+         id="tspan89">Single Action</tspan></text>
+    <path
+       id="path90"
+       d="m 672.28125,980.10578 -4.65625,-4.65625 -2.25,2.25 2.40625,2.40625 -2.40625,2.40625 2.25,2.25 z m -7.60938,-1.67187 -1.67187,1.67187 1.67187,1.67188 1.65625,-1.67188 z m 12.90625,1.59375 -4.07812,-4.07813 -1.98438,1.96875 2.10938,2.10938 -2.10938,2.10937 1.98438,1.98438 z m 0,0"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.33333"
+       aria-label="[" />
+    <text
+       id="text90"
+       xml:space="preserve"
+       x="679.828"
+       y="984.18414"
+       style="font-size:16px;stroke-width:1.33333"><tspan
+         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.33333px;font-family:'Good OT';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.33333"
+         x="679.828 683.776 690.39331 694.87335 697.22534 702.77869 706.76398 709.84399 711.99066 716.47064 721.22131 723.47064 729.02307 733.00842 736.08838 738.23505 742.79907 744.94574 748.02576"
+         y="984.18414"
+         sodipodi:role="line"
+         id="tspan90">Two-Action Activity</tspan></text>
+    <path
+       id="path91"
+       d="m 672.34375,992.10968 -4.67188,-4.67187 -2.25,2.25 2.42188,2.42187 -2.42188,2.40625 2.25,2.25 z m 10,-0.0937 -3.28125,-3.28125 -1.59375,1.59375 1.70312,1.6875 -1.70312,1.70313 1.59375,1.57812 z m -17.625,-1.57812 -1.67188,1.67187 1.67188,1.67188 1.65625,-1.67188 z m 13,1.59375 -4.09375,-4.09375 -1.98438,1.98437 2.125,2.10938 -2.125,2.125 1.98438,1.98437 z m 0,0"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.33333"
+       aria-label="[" />
+    <text
+       id="text91"
+       xml:space="preserve"
+       x="684.64398"
+       y="996.18683"
+       style="font-size:16px;stroke-width:1.33333"><tspan
+         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.33333px;font-family:'Good OT';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.33333"
+         x="684.64398 689.16132 693.95868 697.104 701.35065 705.59735 707.94934 713.50269 717.48798 720.56799 722.71466 727.19464 731.94531 734.19464 739.74707 743.73242 746.81238 748.95905 753.52307 755.66974 758.74976"
+         y="996.18683"
+         sodipodi:role="line"
+         id="tspan91">Three-Action Activity</tspan></text>
+    <path
+       id="path92"
+       d="m 667.70312,999.43781 -2.26562,2.28129 -2.4375,2.4375 4.64062,4.6093 4.6875,-4.6875 z m -2.98437,4.51559 0.98437,-0.9843 1,0.9843 -1,1 z m 2.82812,3.4688 -1.03125,-1.0313 2.28125,-2.2812 -2.21875,-2.25 1.125,-1.125 3.26563,3.2656 z m 0,0"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.33333"
+       aria-label="[" />
+    <text
+       id="text92"
+       xml:space="preserve"
+       x="674.58264"
+       y="1008.1895"
+       style="font-size:16px;stroke-width:1.33333"><tspan
+         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.33333px;font-family:'Good OT';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.33333"
+         x="674.58264 679.12799 682.27332 686.52002 690.76666 693.01599 698.56934 702.55469 705.63464 707.78131 712.26135"
+         y="1008.1895"
+         sodipodi:role="line"
+         id="tspan92">Free Action</tspan></text>
+    <path
+       id="path93"
+       d="m 672.23437,1014.8792 c -0.14843,-0.4257 -0.39843,-0.8164 -0.75,-1.1718 -0.36718,-0.3438 -0.80468,-0.625 -1.3125,-0.8438 -0.51171,-0.2265 -1.07031,-0.3789 -1.67187,-0.4531 -0.61719,-0.094 -1.24609,-0.094 -1.89063,0 -0.46093,0.074 -0.88671,0.1836 -1.28125,0.3281 -0.39843,0.1485 -0.75,0.3242 -1.0625,0.5313 -0.30468,0.1992 -0.5625,0.4297 -0.78125,0.6875 -0.21875,0.2617 -0.38281,0.5312 -0.48437,0.8125 0.125,-0.1563 0.27344,-0.3008 0.45312,-0.4375 0.17579,-0.1328 0.36719,-0.2539 0.57813,-0.3594 0.21875,-0.1133 0.45312,-0.2109 0.70312,-0.2969 0.25782,-0.07 0.53125,-0.1328 0.8125,-0.1875 0.50782,-0.07 1.00782,-0.07 1.5,0 0.5,0.062 0.95313,0.1875 1.35938,0.375 0.40625,0.1797 0.75391,0.4063 1.04687,0.6875 0.28907,0.2735 0.49219,0.586 0.60938,0.9375 0.10156,0.3438 0.10937,0.6836 0.0156,1.0156 -0.10547,0.3438 -0.29297,0.6563 -0.5625,0.9375 -0.26172,0.2735 -0.59375,0.5079 -1,0.7032 -0.40625,0.1875 -0.8711,0.3203 -1.39063,0.3906 -0.16797,0.031 -0.33594,0.055 -0.5,0.062 -0.16797,0.012 -0.33594,0.012 -0.5,0 0.38281,0.086 0.78516,0.1367 1.20313,0.1562 0.41406,0.024 0.83203,0 1.25,-0.062 0.64453,-0.094 1.22265,-0.2656 1.73437,-0.5156 0.50781,-0.2383 0.92578,-0.5312 1.25,-0.875 0.33203,-0.3437 0.5625,-0.7226 0.6875,-1.1406 0.11328,-0.4141 0.10937,-0.8438 -0.0156,-1.2813 z m -7.84375,4.0625 4.45313,0.9375 -1,-1.3593 0.51562,-1.9532 z m 0,0"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.33333"
+       aria-label="[" />
+    <text
+       id="text93"
+       xml:space="preserve"
+       x="674.58264"
+       y="1020.1922"
+       style="font-size:16px;stroke-width:1.33333"><tspan
+         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.33333px;font-family:'Good OT';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.33333"
+         x="674.58264 679.7627 684.00934 688.284 692.26935 695.34937 697.49597 701.97601"
+         y="1020.1922"
+         sodipodi:role="line"
+         id="tspan93">Reaction</tspan></text>
   </g>
   <g
      id="g738"
