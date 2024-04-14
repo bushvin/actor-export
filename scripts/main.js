@@ -360,7 +360,11 @@ class actorExportDialog extends FormApplication {
                             );
                         } else {
                             try {
-                                module.mapper.download(
+                                const mapper = Object.assign(
+                                    Object.create(Object.getPrototypeOf(module.mapper)),
+                                    module.mapper
+                                );
+                                mapper.download(
                                     actorExport.providerPath(providerId),
                                     undefined,
                                     undefined,
@@ -425,7 +429,11 @@ class actorExportDialog extends FormApplication {
                                     .split('/')
                                     .pop()}`;
                                 try {
-                                    module.mapper.download(
+                                    const mapper = Object.assign(
+                                        Object.create(Object.getPrototypeOf(module.mapper)),
+                                        module.mapper
+                                    );
+                                    mapper.download(
                                         actorExport.providerPath(providerId),
                                         fileInfo[0].uri,
                                         destinationFileName,
