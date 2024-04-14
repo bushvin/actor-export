@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.4.3] 2024-04-14
+
+### Fixed
+
+- selecting multiple sheets from the same provider will render all of them
+
 ## [2024.4.2] 2024-04-12
 
 ### Added
@@ -17,7 +23,7 @@ and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 - ScribeProvider module scribeCreature.acSaves AC modifier
 - PF2eHelper fix pf2eActorPropertyError name
 - PDFProvider vertical middle alignment of textBox contents
-- pf2e-remaster-bushvin pf2e-remaster.pdf Action Icons fix
+- pf2e-remaster-bushvin pf2e-remaster.pdf Action Icons fix (thank you @spookymonster)
 
 ## [2024.4.1] 2024-04-03
 
