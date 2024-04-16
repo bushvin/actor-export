@@ -269,7 +269,11 @@ Object.values(character.skills).forEach((skill) => {
         if (skill.label.length > 14) {
             pdfLabelStyle = { ...mf_10, ...{ halign: 'right' } };
         }
-        mapper.textBox(ref, fileName, 0, 0, y - 3, 68, 18, skill.label, pdfLabelStyle);
+        let skillName = skill.label;
+        if (skillName.toLowerCase().endsWith('lore')) {
+            skillName = skillName.trim().slice(0, -4).trim();
+        }
+        mapper.textBox(ref, fileName, 0, 0, y - 3, 68, 18, skillName, pdfLabelStyle);
     } else {
         y = skill_y[0];
         skill_y.shift();

@@ -408,7 +408,7 @@ class pf2eActor {
                 .forEach((skill) => {
                     skills[skill.slug] = {};
                     if (skill.lore && skill.label.trim().toLowerCase().endsWith('lore')) {
-                        skills[skill.slug]['label'] = skill.label.trim().slice(0, -4).trim();
+                        skills[skill.slug]['label'] = skill.label.trim().trim();
                     } else {
                         skills[skill.slug]['label'] = skill.label.trim();
                     }
