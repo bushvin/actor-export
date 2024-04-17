@@ -408,7 +408,7 @@ class pf2eActor {
                 .forEach((skill) => {
                     skills[skill.slug] = {};
                     if (skill.lore && skill.label.trim().toLowerCase().endsWith('lore')) {
-                        skills[skill.slug]['label'] = skill.label.trim().trim();
+                        skills[skill.slug]['label'] = skill.label.trim().slice(0, -4).trim();
                     } else {
                         skills[skill.slug]['label'] = skill.label.trim();
                     }
@@ -970,36 +970,92 @@ class pf2eActor {
     }
 
     /**
+     * all actor items
+     * @type {array}
+     */
+    get items() {
+        const items = this._items();
+        return items;
+    }
+
+    /**
+     * Enumerate actor items in a container
+     * @param {null|string} containerId the id of the container to get the items from (null for the root)
+     * @param {number} level a number indicating the level of depth the item is in
+     * @returns {array}
+     */
+    _items(containerId = null, level = 0) {
+        const _items = [];
+        try {
+            this.actor.inventory.contents
+                .filter((f) => f.system.containerId === containerId)
+                .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+                .forEach((i) => {
+                    const item = this._rawItem(i);
+                    item['containerLevel'] = level;
+                    item['items'] = this._items(i._id, level + 1);
+                    _items.push(item);
+                });
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', '_items', error.message);
+        }
+        return _items;
+    }
+
+    /**
+     * parse an item into the requested format
+     * @param {object} item the item to parse
+     * @returns {object}
+     */
+    _rawItem(item) {
+        const rawItem = {
+            name: item.name,
+            displayName: (item.system.quantity > 1 ? `${item.system.quantity} ` : '') + item.name,
+            quantity: item.system.quantity,
+            isMagical: item.isMagical,
+            isInvested: item.isInvested,
+            bulk: item.system.bulk.value,
+            type: item.type,
+            stackGroup: item.system.stackGroup,
+            carryType: item.system.equipped.carryType,
+            level: item.system.level.value,
+            price: this._calculatePrice(item.system.price),
+            traits: [item.system.traits.rarity].concat(item.system.traits.value),
+            description: item.system.description.value,
+            items: [],
+            containerId: item.system.containerId,
+            // activation?
+        };
+        return rawItem;
+    }
+
+    /**
+     * return a flat list of items
+     * @param {array} itemList list of items to parse
+     * @returns {array}
+     */
+    flatItems(itemList = this.items) {
+        const flatItems = [];
+        itemList.forEach((item) => {
+            flatItems.push(item);
+            this.flatItems(item.items).forEach((childItem) => {
+                if (flatItems.map((m) => m.name).indexOf(childItem.name) < 0) {
+                    flatItems.push(childItem);
+                }
+            });
+        });
+        return flatItems;
+    }
+
+    /**
      * actor held items
      * @type {array}
      */
     get heldItems() {
-        const heldItems = [];
-        try {
-            this.actor.inventory.contents
-                .filter(
-                    (f) =>
-                        f.system.containerId === null &&
-                        f.system.stackGroup !== 'coins' &&
-                        f.type !== 'consumable' &&
-                        f.type !== 'treasure' &&
-                        f.system.equipped.carryType === 'held'
-                )
-                .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-                .forEach((item) => {
-                    heldItems.push({
-                        name: item.name,
-                        displayName: (item.system.quantity > 1 ? `${item.system.quantity} ` : '') + item.name,
-                        quantity: item.system.quantity,
-                        isMagical: item.isMagical,
-                        isInvested: item.isInvested,
-                        bulk: item.system.bulk.value,
-                    });
-                });
-        } catch (error) {
-            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'heldItems', error.message);
-        }
-        return heldItems;
+        return this.items.filter(
+            (f) =>
+                f.stackGroup !== 'coins' && f.type !== 'consumable' && f.type !== 'treasure' && f.carryType === 'held'
+        );
     }
 
     /**
@@ -1007,27 +1063,7 @@ class pf2eActor {
      * @type {array}
      */
     get consumables() {
-        const consumables = [];
-        try {
-            this.actor.inventory.contents
-                .filter(
-                    (f) => f.system.containerId === null && f.system.stackGroup !== 'coins' && f.type === 'consumable'
-                )
-                .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-                .forEach((item) => {
-                    consumables.push({
-                        name: item.name,
-                        displayName: (item.system.quantity > 1 ? `${item.system.quantity} ` : '') + item.name,
-                        quantity: item.system.quantity,
-                        isMagical: item.isMagical,
-                        isInvested: item.isInvested,
-                        bulk: item.system.bulk.value,
-                    });
-                });
-        } catch (error) {
-            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'consumables', error.message);
-        }
-        return consumables;
+        return this.items.filter((f) => f.stackGroup !== 'coins' && f.type === 'consumable');
     }
 
     /**
@@ -1035,49 +1071,10 @@ class pf2eActor {
      * @type {array}
      */
     get wornItems() {
-        const wornItems = [];
-        try {
-            this.actor.inventory.contents
-                .filter(
-                    (f) =>
-                        f.system.containerId === null &&
-                        f.system.stackGroup !== 'coins' &&
-                        f.type !== 'consumable' &&
-                        f.type !== 'treasure' &&
-                        f.system.equipped.carryType !== 'held' &&
-                        f.system.equipped.carryType === 'worn'
-                )
-                .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-                .forEach((item) => {
-                    const wornItem = {
-                        name: item.name,
-                        displayName: (item.system.quantity > 1 ? `${item.system.quantity} ` : '') + item.name,
-                        quantity: item.system.quantity,
-                        isMagical: item.isMagical,
-                        isInvested: item.isInvested,
-                        bulk: item.system.bulk.value,
-                        items: [],
-                    };
-                    this.actor.inventory.contents
-                        .filter((f) => f.system.containerId === item._id)
-                        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-                        .forEach((cItem) => {
-                            wornItem.items.push({
-                                name: cItem.name,
-                                displayName:
-                                    (cItem.system.quantity > 1 ? `${cItem.system.quantity} ` : '') + cItem.name,
-                                quantity: cItem.system.quantity,
-                                isMagical: cItem.isMagical,
-                                isInvested: item.isInvested,
-                                bulk: cItem.system.bulk.value,
-                            });
-                        });
-                    wornItems.push(wornItem);
-                });
-        } catch (error) {
-            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'wornItems', error.message);
-        }
-        return wornItems;
+        return this.items.filter(
+            (f) =>
+                f.stackGroup !== 'coins' && f.type !== 'consumable' && f.type !== 'treasure' && f.carryType === 'worn'
+        );
     }
 
     /**
@@ -1113,7 +1110,7 @@ class pf2eActor {
      * @param {object} price the price object
      * @returns {array} an array containing all coins
      */
-    calculatePrice(price) {
+    _calculatePrice(price) {
         const calculatePrice = [];
         ['pp', 'gp', 'sp', 'cp'].forEach((coin) => {
             if (price.value[coin] > 0) {
@@ -1128,32 +1125,7 @@ class pf2eActor {
      * @type {array}
      */
     get gemsAndArtwork() {
-        const gemsAndArtwork = [];
-        try {
-            this.actor.inventory.contents
-                .filter(
-                    (f) =>
-                        f.system.containerId === null &&
-                        f.system.stackGroup !== 'coins' &&
-                        f.type !== 'consumable' &&
-                        f.type === 'treasure'
-                )
-                .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-                .forEach((item) => {
-                    gemsAndArtwork.push({
-                        name: item.name,
-                        displayName: (item.system.quantity > 1 ? `${item.system.quantity} ` : '') + item.name,
-                        quantity: item.system.quantity,
-                        isMagical: item.isMagical,
-                        isInvested: item.isInvested,
-                        bulk: item.system.bulk.value,
-                        price: this.calculatePrice(item.system.price),
-                    });
-                });
-        } catch (error) {
-            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'gemsAndArtwork', error.message);
-        }
-        return gemsAndArtwork;
+        return this.items.filter((f) => f.stackGroup !== 'coins' && f.type !== 'consumable' && f.type === 'treasure');
     }
 
     /**
@@ -2169,6 +2141,8 @@ export class pf2eHelper extends genericHelper {
             return 'Reach ' + tTrait.split('-').pop();
         } else if (tTrait.startsWith('deadly-')) {
             return 'Deadly ' + tTrait.split('-').pop();
+        } else if (tTrait.startsWith('fatal-')) {
+            return 'Fatal ' + tTrait.split('-').pop();
         } else if (tTrait.startsWith('volley-')) {
             return 'Volley ' + tTrait.split('-').pop();
         } else {

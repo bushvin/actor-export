@@ -175,4 +175,32 @@ try {
     throw new Error(error);
 }
 
+/**
+ * actor-inventory
+ */
+fileName = 'actor-inventory';
+mapper.scribe(fileName, new scribeProvider.class.scribeHead(character.name, `The inventory of ${character.name}`));
+const items = character.flatItems();
+
+const inventoryTable = new scribeProvider.class.scribeTable('Inventory Table');
+inventoryTable.setHeaderRow(['Invested', 'Item', 'Type', 'Price', 'Bulk']);
+items
+    .filter((f) => f.stackGroup !== 'coins')
+    .forEach((item) => {
+        let itemName = '&nbsp;'.repeat(item.containerLevel * 4) + item.displayName + (item.isMagical ? ' ‡' : '');
+        inventoryTable.addContentRow(['□', itemName, item.type, item.price, item.bulk]);
+    });
+inventoryTable.setFooter('‡ Item is magical');
+mapper.scribe(fileName, inventoryTable);
+
+mapper.scribe(fileName, new scribeProvider.class.scribeHeader(1, 'Item descriptions'));
+mapper.scribe(fileName, new scribeProvider.class.scribeBreak());
+
+items
+    .filter((f) => f.stackGroup !== 'coins')
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+    .forEach((item) => {
+        mapper.scribe(fileName, new scribeProvider.class.scribeCharacterItem(item, 2));
+    });
+
 export { mapper };

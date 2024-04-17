@@ -27,7 +27,7 @@ class scribeBase {
         if (typeof this._label === 'undefined') {
             return undefined;
         } else {
-            return '((' + '+'.repeat(this._labelLevel) + this._label.replace(/\)$/, ') ') + '))';
+            return '((' + '+'.repeat(this._labelLevel) + ' ' + this._label.replace(/\)$/, ') ') + '))';
         }
     }
 
@@ -141,6 +141,9 @@ class scribeItem extends scribeBase {
      */
     async scribify() {
         const scribify = [];
+        if (typeof this._itemRank === 'undefined') {
+            this._itemRank = 0;
+        }
         scribify.push('item(');
         if (this._labelLevel > 0) {
             scribify.push(`# ${this._itemName} ${this.label}`);
@@ -149,11 +152,11 @@ class scribeItem extends scribeBase {
         }
         if (this._itemType !== '' && this._itemRank > 0) {
             scribify.push(`## ${this._itemType} ${this._itemRank}`);
-        } else if (this.this._itemType !== '') {
+        } else if (this._itemType !== '') {
             scribify.push(`## ${this._itemType}`);
         }
         scribify.push('-');
-        if (this._itemTraits.length > 0) {
+        if (this._itemTraits.length > 0 && pf2eHelper.formatTraits(this._itemTraits).trim() !== '') {
             scribify.push('; ' + pf2eHelper.formatTraits(this._itemTraits));
         }
         if (this.usage !== '') {
@@ -167,6 +170,11 @@ class scribeItem extends scribeBase {
     }
 }
 
+class scribeBreak extends scribeBase {
+    async scribify() {
+        return '/\n';
+    }
+}
 /**
  * scribe Header wrapper
  * @class
@@ -491,6 +499,28 @@ class scribeCharacterRitual extends scribeItem {
         }
         this._itemUsage = usage.join('\n\n');
 
+        return await super.scribify();
+    }
+}
+
+class scribeCharacterItem extends scribeItem {
+    constructor(item, labelLevel = 0) {
+        super();
+        this._item = item;
+        this._labelLevel = labelLevel;
+    }
+
+    async scribify() {
+        this._itemName = await this._item.name;
+        this._itemType = 'item';
+        this._itemRank = await this._item.level;
+        this._itemTraits = await this._item.traits;
+        this._itemDescription = await this._item.description;
+        this._label = this._itemName;
+
+        const usage = [];
+        usage.push(`**Price** ${this._item.price}`);
+        this._itemUsage = usage.join('\n\n');
         return await super.scribify();
     }
 }
@@ -942,7 +972,10 @@ class scribeTable extends scribeBase {
                 entry.push(renderedCells.join(' | '));
             }
             if (this._footer != '') {
-                entry.push(`.${this._footer}`);
+                this._footer.split('\n').forEach((f) => {
+                    entry.push(`. ${f}`);
+                });
+                //entry.push(`.${this._footer}`);
             }
         }
         return entry.join('\n');
@@ -955,6 +988,10 @@ class scribeTable extends scribeBase {
     setHeaderRow(row) {
         const parsed = row.map((i) => i.replace(/\(/, '\\(').replace(/\)/, '\\)'));
         this._headerRow = parsed;
+    }
+
+    setFooter(footer) {
+        this._footer = footer;
     }
 }
 
@@ -1037,10 +1074,12 @@ export class scribeProvider extends baseProvider {
         scribeCharacterActivity: scribeCharacterActivity,
         scribeCharacterFeat: scribeCharacterFeat,
         scribeCharacterFormula: scribeCharacterFormula,
+        scribeCharacterItem: scribeCharacterItem,
         scribeCharacterSpell: scribeCharacterSpell,
         scribeCharacterStrike: scribeCharacterStrike,
         scribeCharacterRitual: scribeCharacterRitual,
         scribeCreature: scribeCreature,
+        scribeBreak: scribeBreak,
         scribeHead: scribeHead,
         scribeHeader: scribeHeader,
         scribeItem: scribeItem,
