@@ -549,59 +549,49 @@ let y = 0;
 // item names shouldn't be longer than 50/45 characters
 y = 48;
 ref = 'held items';
-character.heldItems.forEach((item) => {
-    if (y < 180) {
+character.flatItems(character.heldItems).forEach((item) => {
+    if (y <= 568) {
         let pdfStyle = mf_8;
         if (item.isMagical) {
             pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
         }
-        mapper.textBox(ref, fileName, 1, 406, y, 153, 10, item.displayName, pdfStyle);
+        let xOffset = item.containerLevel * 10;
+        mapper.textBox(ref, fileName, 1, 406 + xOffset, y, 153 - xOffset, 10, item.displayName, pdfStyle);
         mapper.textBox(ref, fileName, 1, 566, y, 14, 10, item.bulk, mf_8_centered);
+        y = y + 10;
     }
-    y = y + 10;
 });
 
 // Consumables
 y = 203;
 ref = 'consumables';
-character.consumables.forEach((item) => {
-    if (y < 340) {
+character.flatItems(character.consumables).forEach((item) => {
+    if (y <= 568) {
         let pdfStyle = mf_8;
         if (item.isMagical) {
             pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
         }
-        mapper.textBox(ref, fileName, 1, 406, y, 153, 10, item.displayName, pdfStyle);
+        let xOffset = item.containerLevel * 10;
+        mapper.textBox(ref, fileName, 1, 406 + xOffset, y, 153 - xOffset, 10, item.displayName, pdfStyle);
         mapper.textBox(ref, fileName, 1, 566, y, 14, 10, item.bulk, mf_8_centered);
+        y = y + 10;
     }
-    y = y + 10;
 });
 
 // Worn items
 y = 365;
 ref = 'worn items';
-character.wornItems.forEach((container) => {
+character.flatItems(character.wornItems).forEach((item) => {
     if (y <= 568) {
         let pdfStyle = mf_8;
-        if (container.isMagical) {
+        if (item.isMagical) {
             pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
         }
-        mapper.textBox(ref, fileName, 1, 406, y, 120, 10, container.displayName, pdfStyle);
-        mapper.textBox(ref, fileName, 1, 530, y, 27, 10, mapper.checkMark(container.isInvested), mf_8_centered);
-        mapper.textBox(ref, fileName, 1, 566, y, 14, 10, container.bulk, mf_8_centered);
+        let xOffset = item.containerLevel * 10;
+        mapper.textBox(ref, fileName, 1, 406 + xOffset, y, 120 - xOffset, 10, item.displayName, pdfStyle);
+        mapper.textBox(ref, fileName, 1, 530, y, 27, 10, mapper.checkMark(item.isInvested), mf_8_centered);
+        mapper.textBox(ref, fileName, 1, 566, y, 14, 10, item.bulk, mf_8_centered);
         y = y + 10;
-
-        container.items.forEach((item) => {
-            if (y <= 568) {
-                let pdfStyle = mf_8;
-                if (container.isMagical) {
-                    pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
-                }
-                mapper.textBox(ref, fileName, 1, 416, y, 110, 10, item.displayName, pdfStyle);
-                mapper.textBox(ref, fileName, 1, 530, y, 27, 10, mapper.checkMark(item.isInvested), mf_8_centered);
-                mapper.textBox(ref, fileName, 1, 566, y, 14, 10, item.bulk, mf_8_centered);
-                y = y + 10;
-            }
-        });
     }
 });
 
@@ -617,13 +607,14 @@ mapper.textBox('wealth', fileName, 1, 544, 665, 28, 20, character.coins.pp || 0,
 // Gems and Artwork
 ref = 'gems and artwork';
 y = 711;
-character.gemsAndArtwork.forEach((item) => {
-    if (y < 752) {
+character.flatItems(character.consumables).forEach((item) => {
+    if (y <= 568) {
         let pdfStyle = mf_8;
         if (item.isMagical) {
             pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
         }
-        mapper.textBox(ref, fileName, 1, 406, y, 153, 10, item.displayName, pdfStyle);
+        let xOffset = item.containerLevel * 10;
+        mapper.textBox(ref, fileName, 1, 406 + xOffset, y, 153 - xOffset, 10, item.displayName, pdfStyle);
         mapper.textBox(ref, fileName, 1, 530, y, 27, 10, item.price.join(' '), mf_8_centered);
         mapper.textBox(ref, fileName, 1, 566, y, 14, 10, item.bulk, mf_8_centered);
         y = y + 10;
@@ -669,9 +660,6 @@ const actorOrganizations = character.details.biography.organizations;
 mapper.textBox('organizations', fileName, 2, 312, 403, 270, 22, actorOrganizations, mf_8_multiline);
 
 // Actions and activities
-const actorActionsActivities_y = [454, 534, 615, 694];
-const actorFreeActionsActivities_y = [454, 534, 615, 694];
-
 const actionActivitiesY = [440, 481, 522, 562, 603, 644, 684, 725, 765];
 const freeActionActivitiesY = [440, 481, 522, 562, 603, 644, 684, 725, 765];
 character.activities.forEach((a) => {
