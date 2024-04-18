@@ -5,11 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.4.4] 2024-04-18
+
+### Deprecated
+
+- *Bushvin's PF2e Remaster Character sheet* (pf2e-remaster) will be removed 2024-05-01
+
+### Added
+
+- `pf2e-scribe` provider inventory
+- `ScribeProvider.scribeBreak` a class to generate a scribe formatted break
+- `ScribeProvider.scribeCharacterItem` a class to generate a scribe formatted character item
+- `ScribeProvider.scribeTable.setFooter` allow the table footer to be specified outside of the initialization of the object
+
+### Changed
+
+- pf2e lore skills should not be stripped of 'lore'
+- `PF2eHelper.pf2eActor` item list generation
+
+### Fixed
+
+- `ScribeProvider.scribeBase.label` fix label generation when label starts with a + sign
+- `ScribeProvider.scribeItem.scribify` rank should always be a number.
+- `ScribeProvider.scribeItem.scribify` fix invalid reference
+- `ScribeProvider.scribeItem.scribify` hide traits when there really is nothing to show
+- `ScribeProvider.scribeTable` each line of the footer should be prefixed with a dot
+
 ## [2024.4.3] 2024-04-14
 
 ### Fixed
 
-- selecting multiple sheets from the same provider will render all of them
+- selecting multiple sheets from the s  ame provider will render all of them
 
 ## [2024.4.2] 2024-04-12
 
@@ -135,7 +161,7 @@ and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
 - restored the pf2e-remaster provider as it got somehow deleted
 
-## [2024.2.1] - 2024-02-07
+## [2024.2.1] - 2024-02-07 [YANKED]
 
 Release versioning will from now on adhere to CalVer: `YYYY.MM.MICRO`
 
@@ -276,7 +302,7 @@ Faulty pieline
 
 forgot to push the commits
 
-## [0.7.0] - 2024-01-17
+## [0.7.0] - 2024-01-17 [YANKED]
 
 ### Added
 
@@ -419,7 +445,7 @@ forgot to push the commits
 - pf2e-remaster provider: fix defaults bug causing the +10 to be dropped.
 - module: fix wrong handling of providers and files to download.
 
-## [.0.12] - 2024-01-11
+## [0.0.12] - 2024-01-11
 
 ### Fixed
 
