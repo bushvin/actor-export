@@ -8,8 +8,9 @@ This provider does not use form fields, and embeds all necessary fonts fully or 
 
 ## Known working PDF viewers
 
-- [Okular](https://okular.kde.org/)
 - [Evince](https://wiki.gnome.org/Apps/Evince)
+- [Firefox](https://www.mozilla.org/en-US/firefox/new/)
+- [Okular](https://okular.kde.org/)
 
 ## Examples
 
