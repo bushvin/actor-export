@@ -2,7 +2,16 @@
 
 ## Welcome
 
-If you would like to contribute to the project then I welcome all support. If you are (or would like to be) a developer, then hit us up on Discord (https://discord.gg/6U89NQrtyS) and we can help get you up and running.
+If you would like to contribute to the project then I welcome all support. If you are (or would like to be) a developer, then hit us up on Matrix (preferred) or Discord and we can help get you up and running.
+
+**Matrix Rooms:**
+
+- [#actor-export-general:matrix.elaba.net](https://matrix.to/#/#actor-export-general:matrix.elaba.net)
+- [#actor-export-pf2e:matrix.elaba.net](https://matrix.to/#/#actor-export-pf2e:matrix.elaba.net)
+
+**Discord Channel:**
+
+- [actor-export](https://discord.gg/6U89NQrtyS)
 
 ## Setup
 
