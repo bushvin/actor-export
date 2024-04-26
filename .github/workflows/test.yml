@@ -22,4 +22,4 @@ jobs:
         curl https://matrix.elaba.net/hookshot/webhook/${{ secrets.HOOKSHOT_TEST_WEBHOOK_UUID }} \
           --request POST \
           --header "Content-Type: application/json" \
-          --data '{"text": "A new release of **blah** is published: **0.0.0**\nRead the [Changelog](https://github.com/bushvin/actor-export/blob/main/CHANGELOG.md) for updates."}'
+          --data '{"text": "*A new release of **blah** is published: **0.0.0** - [Changelog](https://github.com/bushvin/actor-export/blob/main/CHANGELOG.md)*"}'
