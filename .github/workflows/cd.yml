@@ -66,10 +66,10 @@ jobs:
     steps:
     - name: 'Notify users on #actor-export-general:matrix.elaba.net'
       run: >
-        curl https://matrix.elaba.net/hookshot/webhook/${{ secrets.HOOKSHOT_WEBHOOK_UUID }}
-          --request POST
-          --header "Content-Type: application/json"
-          --data '{"text": "A new release of **${{ env.fvtt_module_id }}** is published: **${{ github.ref_name }}**"}'
+        curl https://matrix.elaba.net/hookshot/webhook/${{ secrets.HOOKSHOT_WEBHOOK_UUID }} \
+          --request POST \
+          --header "Content-Type: application/json" \
+          --data '{"text": "*A new release of **${{ env.fvtt_module_id }}** is published: **${{ github.ref_name }}** - [Changelog](https://github.com/bushvin/actor-export/blob/main/CHANGELOG.md)*"}'
 
   notify_discord:
     needs:
