@@ -49,14 +49,12 @@ A provider is a set of (javascript) instructions to be interpreted in order to g
 
 ### Current providers
 
-| name | system | description | type | authors | notes |
-|-|-|-|-|-|-|
-| PF2e Remaster Character sheet (deprecated) | pf2e | A set of PDF sheets based on the Paizo Remastered Character Sheet | PDF | [bushvin](https://github.com/bushvin) | Displays badly using browser built-in PDF viewers. |
-| Bushvin's modified PF2e Remaster Character sheet | pf2e | Bushvin's modified PF2e Remaster Character sheet | PDF | [bushvin](https://github.com/bushvin) |  |
-| PF2e Remaster Character sheet (original) | pf2e | The official Paizo Remastered Character Sheet | PDF | [bushvin](https://github.com/bushvin) |  |
-| PF2e Scribe Generator | pf2e | A set of templates to generate scribe.pf2.tools markdown | scribe.pf2.tools | [bushvin](https://github.com/bushvin) |  |
-
-
+Name | System | Description | Type | Author(s)
+--- | --- | --- | --- | ---
+PF2e Scribe Generator | pf2e (5.9.0+) | A set of templates to generate scribe.pf2.tools markdown | scribe.pf2.tools | [bushvin](https://github.com/bushvin)
+[Bushvin's PF2e Remaster Character sheet](./wiki/pf2e-remaster) (deprecated) | pf2e (5.9.0+) | A set of PDF sheets based on the Paizo Remastered Character Sheet | pdf | [bushvin](https://github.com/bushvin)
+[Bushvin's modified PF2e Remaster Character sheet](./wiki/pf2e-remaster-bushvin) | pf2e (5.9.0+) | A set of modified charactersheets based on Paizo's | pdf | [bushvin](https://github.com/bushvin)
+[PF2e Remaster Character sheet (original)](./wiki/pf2e-remaster-paizo) | pf2e (5.9.0+) | The official Paizo Remastered Character Sheet | pdf | [bushvin](https://github.com/bushvin)
 
 For more, please refer to the [Provider](https://github.com/bushvin/actor-export/wiki#providers) section of the [wiki](https://github.com/bushvin/actor-export/wiki)
 
@@ -75,9 +73,4 @@ See [CHANGELOG.md](CHANGELOG.md)
 
 [badge_discord]: https://img.shields.io/discord/1194592282205237290?style=flat-square&logo=discord
 
-[badge_matrix_general]: https://img.shields.io/matrix/actor-export-general%3Amatrix.elaba.net?style=flat-square&logo=matrix&label=actor-export%20general
-
-[badge_matrix_pf2e]: https://img.shields.io/matrix/actor-export-pf2e%3Amatrix.elaba.net?style=flat-square&logo=matrix&label=actor-export%20pf2e
-
 [badge_foundry_installs]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Factor-export&query=package.installs&style=flat-square&label=Foundry%20Installs
-
