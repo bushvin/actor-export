@@ -4,11 +4,12 @@
 
 ![badge_fvtt_versions] ![badge_foundry_installs]
 
-![badge_mastodon] ![badge_discord]
+![badge_mastodon] ![badge_matrix_general] ![badge_matrix_pf2e] ![badge_discord]
 
 A system agnostic Foundry VTT module which allows exporting your actors in a variety of formats through the use of (custom) providers.
 
-Feel free to join [#actor-export](https://discord.gg/6U89NQrtyS) on Discord for help.
+Feel free to join [#actor-export-general:matrix.elaba.net](https://matrix.to/#/#actor-export-general:matrix.elaba.net), [#actor-export-pf2e:matrix.elaba.net](https://matrix.to/#/#actor-export-pf2e:matrix.elaba.net) using a [Matrix client](https://matrix.org/ecosystem/clients/)
+for help.
 
 ## Installation
 
@@ -48,10 +49,16 @@ A provider is a set of (javascript) instructions to be interpreted in order to g
 
 ### Current providers
 
-| name | description | type | authors | notes |
-|-|-|-|-|-|
-| PF2e Remaster Character sheet | A set of PDF sheets based on the Paizo Remastered Character Sheet | PDF | [bushvin](https://github.com/bushvin) | Displays badly using browser built-in PDF viewers. |
-| PF2e Scribe Generator | A set of templates to generate scribe.pf2.tools markdown | scribe.pf2.tools | [bushvin](https://github.com/bushvin) | Displays badly using browser built-in PDF viewers. |
+| name | system | description | type | authors | notes |
+|-|-|-|-|-|-|
+| PF2e Remaster Character sheet (deprecated) | pf2e | A set of PDF sheets based on the Paizo Remastered Character Sheet | PDF | [bushvin](https://github.com/bushvin) | Displays badly using browser built-in PDF viewers. |
+| Bushvin's modified PF2e Remaster Character sheet | pf2e | Bushvin's modified PF2e Remaster Character sheet | PDF | [bushvin](https://github.com/bushvin) |  |
+| PF2e Remaster Character sheet (original) | pf2e | The official Paizo Remastered Character Sheet | PDF | [bushvin](https://github.com/bushvin) |  |
+| PF2e Scribe Generator | pf2e | A set of templates to generate scribe.pf2.tools markdown | scribe.pf2.tools | [bushvin](https://github.com/bushvin) |  |
+
+
+
+For more, please refer to the [Provider](https://github.com/bushvin/actor-export/wiki#providers) section of the [wiki](https://github.com/bushvin/actor-export/wiki)
 
 ## Change notes
 
@@ -67,6 +74,10 @@ See [CHANGELOG.md](CHANGELOG.md)
 [badge_mastodon]: https://img.shields.io/mastodon/follow/1084764?domain=https%3A%2F%2Fmastodon.social&logo=mastodon&logoColor=white&style=flat-square&label=%40bushvin%40mastodon.social
 
 [badge_discord]: https://img.shields.io/discord/1194592282205237290?style=flat-square&logo=discord
+
+[badge_matrix_general]: https://img.shields.io/matrix/actor-export-general%3Amatrix.elaba.net?style=flat-square&logo=matrix&label=actor-export%20general
+
+[badge_matrix_pf2e]: https://img.shields.io/matrix/actor-export-pf2e%3Amatrix.elaba.net?style=flat-square&logo=matrix&label=actor-export%20pf2e
 
 [badge_foundry_installs]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Factor-export&query=package.installs&style=flat-square&label=Foundry%20Installs
 
