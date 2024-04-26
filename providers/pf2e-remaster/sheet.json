@@ -2,6 +2,7 @@
     "id": "pf2e-remaster",
     "name": "Bushvin's PF2e Remaster Character sheet",
     "description": "A set of PDF sheets based on the Paizo Remastered Character Sheet",
+    "deprecated": "2024-05-01",
     "icon": "fas fa-file-pdf",
     "type": "pdf",
     "authors": [
