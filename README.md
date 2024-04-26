@@ -4,7 +4,7 @@
 
 ![badge_fvtt_versions] ![badge_foundry_installs]
 
-![badge_mastodon] ![badge_matrix_general] ![badge_matrix_pf2e] ![badge_discord]
+![badge_mastodon] ![badge_discord]
 
 A system agnostic Foundry VTT module which allows exporting your actors in a variety of formats through the use of (custom) providers.
 
