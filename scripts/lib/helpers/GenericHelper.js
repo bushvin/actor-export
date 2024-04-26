@@ -24,6 +24,20 @@ export class genericHelper {
     }
 
     /**
+     * Return a checkmark based on the outcome of the provided logical value
+     * @param {boolean} value the value to evaulate
+     * @param {string} checked character to use when checked (default: x)
+     * @param {string} unchecked character to use when unchecked (default: empty string)
+     * @returns {string}
+     */
+    static evalCheckMark(value, checked = 'x', unchecked = '') {
+        if (value === true) {
+            return checked;
+        }
+        return unchecked;
+    }
+
+    /**
      * a fallback method for missing method arguments
      * @param {string} argName the name of the argument
      * @param {string} functionName the name of the function
@@ -150,19 +164,5 @@ export class genericHelper {
             }
         });
         return uniqueArray;
-    }
-
-    /**
-     * Return a checkmark based on the outcome of the provided logical value
-     * @param {boolean} value the value to evaulate
-     * @param {string} checked character to use when checked (default: x)
-     * @param {string} unchecked character to use when unchecked (default: empty string)
-     * @returns {string}
-     */
-    static evalCheckMark(value, checked = 'x', unchecked = '') {
-        if (value === true) {
-            return checked;
-        }
-        return unchecked;
     }
 }
