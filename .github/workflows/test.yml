@@ -15,8 +15,6 @@ env:
 jobs:
 
   notify_matrix_elaba_net:
-    needs:
-    - build
     runs-on: ubuntu-latest
     steps:
     - name: 'Notify users on #actor-export-general:matrix.elaba.net'
