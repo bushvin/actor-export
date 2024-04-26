@@ -18,8 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: 'Notify users on #actor-export-general:matrix.elaba.net'
-      run: >
-        curl https://matrix.elaba.net/hookshot/webhook/${{ secrets.HOOKSHOT_WEBHOOK_UUID }}
-          --request POST
-          --header "Content-Type: application/json"
+      run: |
+        curl https://matrix.elaba.net/hookshot/webhook/${{ secrets.HOOKSHOT_WEBHOOK_UUID }} \
+          --request POST \
+          --header "Content-Type: application/json" \
           --data '{"text": "A new release of **blah** is published: **0.0.0**"}'
