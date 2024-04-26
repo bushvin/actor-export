@@ -1,0 +1,27 @@
+name: "test"
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+env:
+  fvtt_minimum: 11
+  fvtt_verified: 11
+  fvtt_dry_run: false
+  fvtt_module_id: actor-export
+
+jobs:
+
+  notify_matrix_elaba_net:
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Notify users on #actor-export-general:matrix.elaba.net'
+      run: >
+        curl https://matrix.elaba.net/hookshot/webhook/${{ secret.HOOKSHOT_WEBHOOK_UUID }}
+          --request POST
+          --header "Content-Type: application/json"
+          --data '{"text": "A new release of **blah** is published: **0.0.0**"}'
