@@ -975,7 +975,6 @@ class scribeTable extends scribeBase {
                 this._footer.split('\n').forEach((f) => {
                     entry.push(`. ${f}`);
                 });
-                //entry.push(`.${this._footer}`);
             }
         }
         return entry.join('\n');
