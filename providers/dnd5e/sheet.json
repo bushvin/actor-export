@@ -2,7 +2,6 @@
     "id": "dnd5e",
     "name": "Dungeons & Dragons 5th edition Character sheets",
     "description": "A set of PDF sheets based on the Official D&D5e Character Sheets by WoTC",
-    "wiki_ignore": true,
     "icon": "fas fa-file-pdf",
     "type": "pdf",
     "authors": [
