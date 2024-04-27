@@ -1,4 +1,4 @@
-import { genericHelper } from './GenericHelper.js';
+import { genericPropertyError, genericHelper } from './GenericHelper.js';
 import { semVer } from '../SemVer.js';
 /**
  * PF2eHelper module
@@ -182,7 +182,7 @@ class pf2eActor {
 
     /**
      * actor attributes
-     * @type {object}
+     * @type {Object}
      */
     get attributes() {
         const attributes = {};
@@ -202,7 +202,7 @@ class pf2eActor {
 
     /**
      * actor ac
-     * @type {object}
+     * @type {Object}
      */
     get ac() {
         const ac = {};
@@ -240,7 +240,7 @@ class pf2eActor {
 
     /**
      * actor equipped shield
-     * @type {object}
+     * @type {Object}
      */
     get equippedShield() {
         try {
@@ -263,7 +263,7 @@ class pf2eActor {
 
     /**
      * actor defense proficiencies
-     * @type {object}
+     * @type {Object}
      */
     get defenseProficiencies() {
         const proficiencies = {};
@@ -278,7 +278,7 @@ class pf2eActor {
 
     /**
      * actor saving throws
-     * @type {object}
+     * @type {Object}
      */
     get savingThrows() {
         const savingThrows = {};
@@ -313,7 +313,7 @@ class pf2eActor {
 
     /**
      * actor HP
-     * @type {object}
+     * @type {Object}
      */
     get hp() {
         return {
@@ -325,7 +325,7 @@ class pf2eActor {
 
     /**
      * actor dying
-     * @type {object}
+     * @type {Object}
      */
     get dying() {
         return {
@@ -336,7 +336,7 @@ class pf2eActor {
 
     /**
      * actor wounds
-     * @type {object}
+     * @type {Object}
      */
     get wounded() {
         return {
@@ -396,7 +396,7 @@ class pf2eActor {
 
     /**
      * actor skills
-     * @type {object}
+     * @type {Object}
      */
     get skills() {
         const skills = {};
@@ -554,7 +554,7 @@ class pf2eActor {
 
     /**
      * actor base movement
-     * @type {object}
+     * @type {Object}
      */
     get baseMovement() {
         return this.movement.filter((f) => f.isPrimary)[0];
@@ -1004,8 +1004,8 @@ class pf2eActor {
 
     /**
      * parse an item into the requested format
-     * @param {object} item the item to parse
-     * @returns {object}
+     * @param {Object} item the item to parse
+     * @returns {Object}
      */
     _rawItem(item) {
         const rawItem = {
@@ -1107,7 +1107,7 @@ class pf2eActor {
 
     /**
      * Calculate the price based on the price object
-     * @param {object} price the price object
+     * @param {Object} price the price object
      * @returns {array} an array containing all coins
      */
     _calculatePrice(price) {
@@ -1309,7 +1309,7 @@ class pf2eActor {
 
     /**
      * actor spell proficiency
-     * @type {object}
+     * @type {Object}
      */
     get spellProficiency() {
         try {
@@ -1421,7 +1421,7 @@ class pf2eActor {
 
     /**
      * actor focus points
-     * @type {object}
+     * @type {Object}
      */
     get focusPoints() {
         try {
@@ -1612,20 +1612,9 @@ class pf2eActor {
  * @param {string} methodName the name of the method the error has occurred in
  * @param {string} message the error message
  */
-class pf2eActorPropertyError extends Error {
+class f2eActorPropertyError extends genericPropertyError {
     constructor(moduleName, className, methodName, message) {
-        const msg = `${moduleName} | ${className}.${methodName} | ${message}`;
-        if (
-            typeof ui !== 'undefined' &&
-            typeof ui.notifications !== 'undefined' &&
-            typeof ui.notifications.error !== 'undefined'
-        ) {
-            ui.notifications.error(msg, { permanent: true });
-        } else {
-            console.error('pf2eActorPropertyError', msg);
-        }
-        super(msg);
-        this.name = 'pf2eActorPropertyError';
+        super(moduleName, className, methodName, message, 'pf2eActorPropertyError');
     }
 }
 
@@ -1633,8 +1622,8 @@ class pf2eActorPropertyError extends Error {
  * pf2e player character class
  * @class
  * @augments pf2eActor
- * @param {object} game the Foundry VTT game object
- * @param {object} actor the Foundry VTT actor object
+ * @param {Object} game the Foundry VTT game object
+ * @param {Object} actor the Foundry VTT actor object
  */
 class pf2ePlayer extends pf2eActor {
     constructor(game, actor) {
@@ -1700,8 +1689,8 @@ class pf2ePlayer extends pf2eActor {
  * pf2e player NPC class
  * @class
  * @augments pf2eActor
- * @param {object} game the Foundry VTT game object
- * @param {object} actor the Foundry VTT actor object
+ * @param {Object} game the Foundry VTT game object
+ * @param {Object} actor the Foundry VTT actor object
  */
 class pf2eNPC extends pf2eActor {
     constructor(game, actor) {
@@ -1710,7 +1699,7 @@ class pf2eNPC extends pf2eActor {
 
     /**
      * actor ac
-     * @type {object}
+     * @type {Object}
      */
     get ac() {
         const ac = {};
@@ -1811,7 +1800,7 @@ class pf2eNPC extends pf2eActor {
 
     /**
      * actor skills
-     * @type {object}
+     * @type {Object}
      */
     get skills() {
         const skills = {};
@@ -2075,7 +2064,7 @@ export class pf2eHelper extends genericHelper {
 
     /**
      * Format runes as traits
-     * @param {object} runes the runes object associated with a weapon
+     * @param {Object} runes the runes object associated with a weapon
      * @returns {array}
      */
     static runesToTraits(runes) {
@@ -2266,9 +2255,9 @@ export class pf2eHelper extends genericHelper {
 
     /**
      * Determine what type of actor we're dealing with and return an object which can parse all data
-     * @param {object} game the Foundry VTT game object
-     * @param {object} actor the Foundry VTT actor object
-     * @returns {object}
+     * @param {Object} game the Foundry VTT game object
+     * @param {Object} actor the Foundry VTT actor object
+     * @returns {Object}
      */
     static getActorObject(game, actor) {
         if (actor.type === 'character') {

@@ -1,0 +1,37 @@
+{
+    "id": "dnd5e",
+    "name": "Dungeons & Dragons 5th edition Character sheets",
+    "description": "A set of PDF sheets based on the Official D&D5e Character Sheets by WoTC",
+    "wiki_ignore": true,
+    "icon": "fas fa-file-pdf",
+    "type": "pdf",
+    "authors": [
+        {
+            "name": "bushvin",
+            "url": "https://github.com/bushvin"
+        }
+    ],
+    "requirements": [
+        {
+            "system": "dnd5e",
+            "system_version": "3.0.0"
+        }
+    ],
+    "files": [
+        {
+            "uri": "CharacterSheet.pdf",
+            "name": "D&D 5e Character Sheet",
+            "description": "Basic character information sheet"
+        },
+        {
+            "uri": "CharacterDetails.pdf",
+            "name": "D&D 5e Character Details Sheet",
+            "description": "Character (optional) Detail sheet"
+        },
+        {
+            "uri": "SpellcastingSheet.pdf",
+            "name": "D&D 5e Character Spellcasting Sheet",
+            "description": "Character (optional) Spellcasting sheet"
+        }
+    ]
+}

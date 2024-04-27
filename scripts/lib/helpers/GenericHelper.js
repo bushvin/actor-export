@@ -6,6 +6,33 @@
  */
 
 /**
+ * Generic Property Error class
+ * @class
+ * @augments Error
+ * @param {string} moduleName the name of the module the error has occurred in
+ * @param {string} className the name of the class the error has occurred in
+ * @param {string} methodName the name of the method the error has occurred in
+ * @param {string} message the error message
+ * @param {string} errorClassName the name of the error class
+ */
+export class genericPropertyError extends Error {
+    constructor(moduleName, className, methodName, message, errorClassName = 'genericPropertyError') {
+        const msg = `${moduleName} | ${className}.${methodName} | ${message}`;
+        if (
+            typeof ui !== 'undefined' &&
+            typeof ui.notifications !== 'undefined' &&
+            typeof ui.notifications.error !== 'undefined'
+        ) {
+            ui.notifications.error(msg, { permanent: true });
+        } else {
+            console.error(errorClassName, msg);
+        }
+        super(msg);
+        this.name = errorClassName;
+    }
+}
+
+/**
  * @class
  * This Generic Helper class provides universal static methods
  */
