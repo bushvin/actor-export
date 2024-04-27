@@ -8,6 +8,7 @@ If you would like to contribute to the project then I welcome all support. If yo
 
 - [#actor-export-general:matrix.elaba.net](https://matrix.to/#/#actor-export-general:matrix.elaba.net)
 - [#actor-export-pf2e:matrix.elaba.net](https://matrix.to/#/#actor-export-pf2e:matrix.elaba.net)
+- [#actor-export-dnd5e:matrix.elaba.net](https://matrix.to/#/#actor-export-dnd5e:matrix.elaba.net)
 
 **Discord Channel:**
 
