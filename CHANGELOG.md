@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.4.5] 2024-04-27
+
+### Added
+
+- Dungeons and Dragons 5th edition provider and standard character sheet
+- Created `GenericHelper.genericPropertyError` base class for all actor property errors
+
+### Changed
+
+- modified `PF2eHelper.f2eActorPropertyError` to use `GenericHelper.genericPropertyError` as a base class
+
+### Fixed
+
+- PF2eHelper documentation (JSDOC)
+
 ## [2024.4.4] 2024-04-18
 
 ### Deprecated
