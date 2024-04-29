@@ -76,6 +76,9 @@ class dnd5eActor {
                                 modifier: parseInt(a.labels?.toHit?.replace(/[\+\s]+/gi, '') || 0),
                                 isMelee: a.system.range.long === null,
                                 isRanged: a.system.range.long !== null,
+                                l10n: {
+                                    label: this.game.i18n.localize(a.name),
+                                },
                             };
                             if (a.system.range.long !== null) {
                                 weapon['rangeIncrement'] = a.system.range.value;
