@@ -462,8 +462,8 @@ export class pdfProvider extends baseProvider {
 
     /**
      * Store image information
-     * @param {string} file the pdf filename(s) to apply the image to ('all' means all PDFs)
-     * @param {number} page The page(s) to add the image to
+     * @param {string|array} file the pdf filename(s) to apply the image to ('all' means all PDFs)
+     * @param {number|array} page The page(s) to add the image to
      * @param {number} x The x coordinate for the image
      * @param {number} y The y coordinate for the image
      * @param {string} path The url to the image to add
