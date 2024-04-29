@@ -123,7 +123,7 @@ export class pdfProvider extends baseProvider {
         }
 
         const pdfPages = pdf.getPages();
-        if (pdfPages.length < page) {
+        if (pdfPages.length < page + 1) {
             this.notify(
                 'warning',
                 `An image was requested for this file, but there aren't enough pages in the PDF file: ${path}`
@@ -209,13 +209,26 @@ export class pdfProvider extends baseProvider {
      * @param {Object} textBoxData an Object containing path, (x,y) coordinates, scaling information, etc...
      */
     async embedTextBox(pdf, textBoxData) {
-        const { page, x, y, width, height, text, options } = textBoxData;
+        const { reference, file, page, x, y, width, height, text, options } = textBoxData;
         const pdfPages = pdf.getPages();
-        if (pdfPages.length < page) {
+        if (pdfPages.length < page + 1) {
+            const debug = {
+                reference: reference,
+                file: file,
+                page: page,
+                x: x,
+                y: y,
+                width: width,
+                height: height,
+                text: text,
+                options: options,
+            };
             this.notify(
                 'warning',
-                `A text box was requested for this file, but there aren't enough pages in the PDF file`
+                `A text box was requested for this file, but there aren't enough pages in the PDF file. The textbox is not rendered on the PDF.`,
+                { permanent: true }
             );
+            console.debug('debug information:', debug);
             return;
         }
 
