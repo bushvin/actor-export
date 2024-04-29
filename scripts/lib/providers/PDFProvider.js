@@ -462,8 +462,8 @@ export class pdfProvider extends baseProvider {
 
     /**
      * Store image information
-     * @param {string} file the pdf filename to apply the image to ('all' means all PDFs)
-     * @param {number} page The page to add the image to
+     * @param {string} file the pdf filename(s) to apply the image to ('all' means all PDFs)
+     * @param {number} page The page(s) to add the image to
      * @param {number} x The x coordinate for the image
      * @param {number} y The y coordinate for the image
      * @param {string} path The url to the image to add
@@ -476,17 +476,32 @@ export class pdfProvider extends baseProvider {
         if (typeof file === 'undefined') {
             this.notify('error', `No pdf filename defined for new image;`);
             fail = true;
-        } else {
-            file = String(file);
+        }
+        if (!Array.isArray(file)) {
+            file = [file];
+        }
+        for (let i = 0; i < file.length; i++) {
+            if (typeof file[i] !== 'string') {
+                this.notify('error', 'An invalid pdf filename is defined: %s, type: %s;' % (file[i], typeof file[i]));
+                fail = true;
+            } else {
+                file[i] = String(file[i]).trim();
+            }
         }
 
         if (typeof page === 'undefined') {
             this.notify('error', `No page defined for new image;`);
             fail = true;
-        } else if (isNaN(parseInt(page))) {
-            this.notify('error', `page is an invalid type for new image;`);
-            fail = true;
         }
+        if (!Array.isArray(page)) {
+            page = [page];
+        }
+        page.forEach((n) => {
+            if (typeof n !== 'number') {
+                this.notify('error', 'An invalid pdf page number is defined: %s, type: %s;' % (n, typeof n));
+                fail = true;
+            }
+        });
 
         if (typeof x === 'undefined') {
             this.notify('error', `No x coordinate defined for new image;`);
@@ -504,6 +519,10 @@ export class pdfProvider extends baseProvider {
             fail = true;
         }
 
+        if (typeof path !== 'string') {
+            this.notify('error', `Invalid value type for the image;`);
+            fail = true;
+        }
         if (typeof maxWidth === 'undefined') {
             this.notify('error', `No maximum width defined for new image;`);
             fail = true;
@@ -525,6 +544,13 @@ export class pdfProvider extends baseProvider {
             fail = true;
         }
 
+        if (typeof options === 'undefined') {
+            options = {};
+        } else if (!(typeof options === 'object' && options.constructor === Object)) {
+            this.notify('error', `An invalid options value is specified: %s, type: %s;` % (options, typeof options));
+            fail = true;
+        }
+
         if (fail) {
             const ret = {
                 file: file,
@@ -534,7 +560,7 @@ export class pdfProvider extends baseProvider {
                 path: path,
                 maxHeight: maxHeight,
                 maxWidth: maxWidth,
-                options: options || {},
+                options: options,
             };
             console.debug('data', ret);
             return;
@@ -548,22 +574,21 @@ export class pdfProvider extends baseProvider {
             return;
         }
 
-        let imageInfo = {
-            file: String(file).trim(),
-            page: parseInt(page),
-            x: Number(x),
-            y: Number(y),
-            path: String(path).trim(),
-            maxHeight: Number(maxHeight),
-            maxWidth: Number(maxWidth),
-        };
-        if (typeof options !== 'undefined') {
-            imageInfo.options = options;
-        } else {
-            imageInfo.options = {};
-        }
-
-        this.pdfImages.push(imageInfo);
+        file.forEach((f) => {
+            page.forEach((p) => {
+                const imageInfo = {
+                    file: f,
+                    page: p,
+                    x: Number(x),
+                    y: Number(y),
+                    path: String(path).trim(),
+                    maxHeight: Number(maxHeight),
+                    maxWidth: Number(maxWidth),
+                    options: options,
+                };
+                this.pdfImages.push(imageInfo);
+            });
+        });
     }
 
     /**
@@ -686,8 +711,9 @@ export class pdfProvider extends baseProvider {
 
     /**
      * Store pdf text box information
-     * @param {string} file the pdf filename to apply the text box to ('all' means all PDFs)
-     * @param {number} page The page to add the text box to
+     * @param {string} reference a reference for the textBox added (for debugging purposes)
+     * @param {string|array} file the pdf filename(s) to apply the text box to ('all' means all PDFs)
+     * @param {number|array} page The page(s) to add the text box to
      * @param {number} x The x coordinate for the text box (in % of the page width)
      * @param {number} y The y coordinate for the text box (in % of the page height)
      * @param {number} width The width of the text box to add (in % of the page width)
@@ -708,18 +734,40 @@ export class pdfProvider extends baseProvider {
      */
     textBox(reference, file, page, x, y, width, height, text, options = {}) {
         let fail = false;
+        if (typeof reference === 'undefined') {
+            this.notify('error', `No pdf reference defined for new text box;`);
+            fail = true;
+        }
+
         if (typeof file === 'undefined') {
             this.notify('error', `No pdf filename defined for new text box;`);
             fail = true;
+        }
+        if (!Array.isArray(file)) {
+            file = [file];
+        }
+        for (let i = 0; i < file.length; i++) {
+            if (typeof file[i] !== 'string') {
+                this.notify('error', 'An invalid pdf filename is defined: %s, type: %s;' % (file[i], typeof file[i]));
+                fail = true;
+            } else {
+                file[i] = String(file[i]).trim();
+            }
         }
 
         if (typeof page === 'undefined') {
             this.notify('error', `No page defined for new text box;`);
             fail = true;
-        } else if (isNaN(parseInt(page))) {
-            this.notify('error', `page is an invalid type for new text box;`);
-            fail = true;
         }
+        if (!Array.isArray(page)) {
+            page = [page];
+        }
+        page.forEach((n) => {
+            if (typeof n !== 'number') {
+                this.notify('error', 'An invalid pdf page number is defined: %s, type: %s;' % (n, typeof n));
+                fail = true;
+            }
+        });
 
         if (typeof x === 'undefined') {
             this.notify('error', `No x coordinate defined for new text box;`);
@@ -753,6 +801,13 @@ export class pdfProvider extends baseProvider {
             fail = true;
         }
 
+        if (typeof options === 'undefined') {
+            options = {};
+        } else if (!(typeof options === 'object' && options.constructor === Object)) {
+            this.notify('error', `An invalid options value is specified: %s, type: %s;` % (options, typeof options));
+            fail = true;
+        }
+
         if (fail) {
             const ret = {
                 reference: reference,
@@ -769,24 +824,24 @@ export class pdfProvider extends baseProvider {
             return;
         }
 
-        let textBoxInfo = {
-            reference: reference,
-            file: String(file).trim(),
-            page: parseInt(page),
-            x: Number(x),
-            y: Number(y),
-            width: Number(width),
-            height: Number(height),
-            text: text,
-        };
-        if (typeof options !== 'undefined') {
-            textBoxInfo.options = options;
-        } else {
-            textBoxInfo.options = {};
-        }
+        file.forEach((f) => {
+            page.forEach((p) => {
+                const textBoxInfo = {
+                    reference: reference,
+                    file: String(f).trim(),
+                    page: p,
+                    x: Number(x),
+                    y: Number(y),
+                    width: Number(width),
+                    height: Number(height),
+                    text: text,
+                    options: options,
+                };
 
-        if (String(text).trim() !== '') {
-            this.pdfTextBoxes.push(textBoxInfo);
-        }
+                if (typeof text === 'string' && String(text).trim() !== '') {
+                    this.pdfTextBoxes.push(textBoxInfo);
+                }
+            });
+        });
     }
 }
