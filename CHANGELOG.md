@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.4.6] - 2024-04-29
+
+### Added
+
+- Dungeons and Dragons 5th edition provider and standard character sheet in Portuguese
+- `DND5eHelper` has localization support for relevant text fields
+- dnd5e provider: added biography
+
+### Changed
+
+- `PDFProvider.pdfProvider.image` supports an array for both file name and page number
+- `PDFProvider.pdfProvider.textBox` supports an array for both file name and page number
+- `BaseProvider.baseProvider.cleanFoundryMarkup` strip `a` html tags
+
+### Fixed
+
+- `PDFProvider.pdfProvider.embedTextBox` should respect newline characters
+- `PDFProvider.pdfProvider.embedImage` correctly counts pdf pages
+- `PDFProvider.pdfProvider.embedTextBox` correctly counts pdf pages
+
 ## [2024.4.5] 2024-04-27
 
 ### Added
