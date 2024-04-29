@@ -104,7 +104,10 @@ class dnd5eActor {
      * @type {string}
      */
     get alignment() {
-        return this.actor.system.details.alignment;
+        return {
+            name: this.actor.system.details.alignment,
+            l10n: { name: this.game.i18n.localize(this.actor.system.details.alignment.trim()) },
+        };
     }
 
     /**
@@ -135,6 +138,9 @@ class dnd5eActor {
                                 modifier: parseInt(w.labels?.toHit?.replace(/[\+\s]+/gi, '') || 0),
                                 isMelee: w.system.range.long === null,
                                 isRanged: w.system.range.long !== null,
+                                l10n: {
+                                    label: this.game.i18n.localize(w.name),
+                                },
                             };
                             if (w.system.range.long !== null) {
                                 weapon['rangeIncrement'] = w.system.range.value;
@@ -159,7 +165,7 @@ class dnd5eActor {
      * @type {Object}
      */
     get background() {
-        return { name: '' };
+        return { name: '', l10n: { name: '' } };
     }
 
     /**
@@ -170,12 +176,25 @@ class dnd5eActor {
         const classLevels = actor.items
             .filter((i) => i.type === 'class')
             .map((i) => {
-                return {
-                    name: i.name,
+                const c = {
+                    name: i.name.trim(),
+                    isPrimaryClass: i.flags?.srd5e?.isPrimaryClass || false,
                     level: i.system.levels,
-                    displayName: `${i.name} ${i.system.levels}`,
                     spellCastingClass: typeof i.spellcasting.type !== 'undefined',
+                    subClass: (i.system.subclass || '').trim(),
+                    l10n: {
+                        name: this.game.i18n.localize(i.name.trim()),
+                        subClass: this.game.i18n.localize((i.system.subclass || '').trim()),
+                    },
                 };
+                if (c.subClass === '') {
+                    c.displayName = `${c.name} ${c.level}`;
+                    c.l10n.displayName = `${c.l10n.name} ${c.level}`;
+                } else {
+                    c.displayName = `${c.name} (${c.subClass}) ${c.level}`;
+                    c.l10n.displayName = `${c.l10n.name} (${c.l10n.subClass}) ${c.level}`;
+                }
+                return c;
             });
 
         return classLevels;
@@ -240,13 +259,18 @@ class dnd5eActor {
             .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
             .forEach((i) => {
                 const item = {
-                    name: i.name,
+                    name: i.name.trim(),
                     type: i.type,
-                    displayName: i.system.quantity > 1 ? `${i.system.quantity} ${i.name}` : i.name,
                     quantity: i.system.quantity,
                     isMagical: Array.from(i.system.properties).includes('mgc'),
                     isAttuned: (i.system.attunement || 0) > 0,
+                    l10n: {
+                        name: this.game.i18n.localize(i.name.trim()),
+                    },
                 };
+                item['displayName'] = item.quantity > 1 ? `${item.quantity} ${item.name}` : item.name;
+                item['l10n']['displayName'] = item.quantity > 1 ? `${item.quantity} ${item.l10n.name}` : item.l10n.name;
+
                 equipment.push(item);
             });
         return equipment;
@@ -265,6 +289,9 @@ class dnd5eActor {
                 const feature = {
                     name: f.name,
                     description: f.system.description.value,
+                    l10n: {
+                        name: this.game.i18n.localize(f.name.trim()),
+                    },
                 };
                 features.push(feature);
             });
@@ -325,6 +352,9 @@ class dnd5eActor {
                         level: s.system.level,
                         components: [],
                         prepared: s.system.preparation.prepared,
+                        l10n: {
+                            name: this.game.i18n.localize(s.name.trim()),
+                        },
                     };
                     if (s.system.properties.has('vocal')) {
                         spell.components.push('v');
@@ -362,6 +392,7 @@ class dnd5eActor {
                 isStandard: false,
                 isExotic: false,
                 isCustom: false,
+                l10n: { label: 'unknown' },
             };
             if (typeof this.game.dnd5e.config.languages.standard.children[l] !== 'undefined') {
                 language['label'] = this.game.dnd5e.config.languages.standard.children[l];
@@ -372,6 +403,8 @@ class dnd5eActor {
             } else if (typeof this.game.dnd5e.config.languages[l] !== 'undefined') {
                 language['label'] = this.game.dnd5e.config.languages[l];
             }
+            language['l10n']['label'] = this.game.i18n.localize(language['label']);
+
             languages.push(language);
         });
         this.actor.system.traits.languages.custom.split(';').forEach((l) => {
@@ -382,6 +415,7 @@ class dnd5eActor {
                     isStandard: false,
                     isExotic: false,
                     isCustom: true,
+                    l10n: { label: this.game.i18n.localize(l) },
                 });
             }
         });
@@ -403,6 +437,9 @@ class dnd5eActor {
                     canHover: this.actor.system.attributes.movement.hover,
                     units: this.game.dnd5e.config.movementUnits[this.actor.system.attributes.movement.units],
                     isPrimary: false,
+                    l10n: {
+                        label: this.game.i18n.localize(this.game.dnd5e.config.movementTypes[m]),
+                    },
                 };
                 if (m === 'walk') {
                     move['isPrimary'] = true;
@@ -452,7 +489,7 @@ class dnd5eActor {
      * @type {Object}
      */
     get race() {
-        return { name: '' };
+        return { name: '', l10n: { name: '' } };
     }
 
     /**
@@ -471,6 +508,9 @@ class dnd5eActor {
                         isProficient: this.actor.system.skills[s].value > 0,
                         modifier: this.actor.system.skills[s].total,
                         passive: this.actor.system.skills[s].passive,
+                        l10n: {
+                            name: this.game.i18n.localize(this.game.dnd5e.config.skills[s].label),
+                        },
                     };
                     skills[s]['slug'] = s;
                 });
@@ -493,7 +533,12 @@ class dnd5eActor {
      * @type {string}
      */
     get spellCastingAbility() {
-        return this.actor.system.attributes.spellcasting || '';
+        return {
+            shortName: this.actor.system.attributes.spellcasting || '',
+            l10n: {
+                shortName: this.game.i18n.localize(this.actor.system.attributes.spellcasting || ''),
+            },
+        };
     }
 
     /**
@@ -545,6 +590,9 @@ class dnd5eActor {
                     .get('dnd5e.items')
                     .index.get(this.game.dnd5e.config.toolIds[p]).name;
             }
+            toolProficiencies['l10n'] = {
+                label: this.game.i18n.localize(toolProficiencies['label']),
+            };
             toolProficiencies.push(toolProficiency);
         });
 
@@ -564,6 +612,9 @@ class dnd5eActor {
                 const trait = {
                     name: f.name,
                     description: f.system.description.value,
+                    l10n: {
+                        name: this.game.i18n.localize(f.name),
+                    },
                 };
                 traits.push(trait);
             });
@@ -635,16 +686,22 @@ class dnd5ePlayer extends dnd5eActor {
                         .get('dnd5e.items')
                         .index.get(this.game.dnd5e.config.armorIds[p]).name;
                 }
+                armorProficiencies['l10n'] = {
+                    label: this.game.i18n.localize(armorProficiencies['label']),
+                };
 
                 armorProficiencies.push(armorProficiency);
             });
             this.actor.system.traits.armorProf.custom.split(';').forEach((p) => {
                 if (p.trim() !== '') {
-                    const weaponProficiency = {
+                    const armorProficiency = {
                         slug: p.toLowerCase().replace(/[^a-z0-9]+/, '-'),
                         label: p,
+                        l10n: {
+                            label: this.game.i18n.localize(p),
+                        },
                     };
-                    armorProficiencies.push(weaponProficiency);
+                    armorProficiencies.push(armorProficiency);
                 }
             });
         } catch (error) {
@@ -661,6 +718,9 @@ class dnd5ePlayer extends dnd5eActor {
         try {
             return {
                 name: this.actor.system.details.background.name,
+                l10n: {
+                    name: this.game.i18n.localize(this.actor.system.details.background.name),
+                },
             };
         } catch (error) {
             throw new dnd5eActorPropertyError('actor-export', this.className, 'background', error.message);
@@ -675,6 +735,9 @@ class dnd5ePlayer extends dnd5eActor {
         try {
             return {
                 name: this.actor.system.details.race.name,
+                l10n: {
+                    name: this.game.i18n.localize(this.actor.system.details.race.name),
+                },
             };
         } catch (error) {
             throw new dnd5eActorPropertyError('actor-export', this.className, 'race', error.message);
@@ -702,6 +765,9 @@ class dnd5ePlayer extends dnd5eActor {
                         .get('dnd5e.items')
                         .index.get(this.game.dnd5e.config.weaponIds[p]).name;
                 }
+                weaponProficiency['l10n'] = {
+                    label: this.game.i18n.localize(weaponProficiency['label']),
+                };
                 weaponProficiencies.push(weaponProficiency);
             });
             this.actor.system.traits.weaponProf.custom.split(';').forEach((p) => {
@@ -709,6 +775,9 @@ class dnd5ePlayer extends dnd5eActor {
                     const weaponProficiency = {
                         slug: p.toLowerCase().replace(/[^a-z0-9]+/, '-'),
                         label: p,
+                        l10n: {
+                            label: this.game.i18n.localize(p),
+                        },
                     };
                     weaponProficiencies.push(weaponProficiency);
                 }
