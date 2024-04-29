@@ -838,7 +838,7 @@ export class pdfProvider extends baseProvider {
                     options: options,
                 };
 
-                if (typeof text === 'string' && String(text).trim() !== '') {
+                if (String(text).trim() !== '') {
                     this.pdfTextBoxes.push(textBoxInfo);
                 }
             });
