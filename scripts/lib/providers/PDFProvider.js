@@ -269,11 +269,9 @@ export class pdfProvider extends baseProvider {
             );
             textWidth = Math.max(...multiLine.lines.map((i) => i.width));
             textHeight = 0;
-            modifiedText = '';
             for (let i = 0; i < multiLine.lines.length; i++) {
                 if (multiLine.lines[i].text.trim() !== '' && textHeight < textOptions.height) {
                     textHeight = textHeight + multiLine.lineHeight;
-                    modifiedText = modifiedText + multiLine.lines[i].text.trim() + ' ';
                 }
             }
             textLineHeight = multiLine.lineHeight;
