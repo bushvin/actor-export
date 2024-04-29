@@ -37,6 +37,7 @@ export class baseProvider {
         if (!helper || typeof helper.stripHTMLtag !== 'function' || typeof helper.stripNestedHTMLtag !== 'function') {
             return value;
         }
+        value = helper.stripHTMLtag(value, 'a', '');
         value = helper.stripHTMLtag(value, 'br', '', '\n');
         value = helper.stripHTMLtag(value, 'hr', '---');
         value = helper.stripHTMLtag(value, 'p', '', '\n');
