@@ -38,6 +38,7 @@ body:
       label: Game system
       description: Please enter the name of your game system
       options:
+        - dnd5e
         - pf2e
     validations:
       required: true
@@ -73,7 +74,10 @@ body:
       label: What Provider is affected?
       multiple: true
       options:
-        - PF2e Remaster Character sheet
+        - Bushvin's modified PF2e Remaster Character sheet
+        - Bushvin's PF2e Remaster Character sheet (deprecated)
+        - Dungeons & Dragons 5th edition Character sheets
+        - PF2e Remaster Character sheet (original)
         - PF2e Scribe Generator
   - type: textarea
     id: what-happened
