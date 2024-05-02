@@ -182,9 +182,8 @@ export class pdfProvider extends baseProvider {
             `${moduleRootPath}/fonts/${fileName}?t=${Date.now()}`,
         ];
         let errorCount = 0;
-
         for (let i = 0; i < fontURIs.length; i++) {
-            const res = await fetch(fontURIs[i]);
+            const res = await fetch(fontURIs[i], { cache: 'no-store' });
             if (res.ok) {
                 const fontBytes = await res.arrayBuffer();
                 try {
