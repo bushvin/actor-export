@@ -285,14 +285,14 @@ fileNames = ['CharacterDetails.pdf'];
 mapper.image(fileNames, 0, 41, 168, actor.img, 229, 305);
 
 mapper.textBox('character name', fileNames, 0, 60, 83, 291, 26, character.name, mf_24);
-mapper.textBox('age', fileNames, 0, 353, 66, 152, 23, character.details.age);
-mapper.textBox('eyes', fileNames, 0, 353, 99, 152, 23, character.details.eyes);
+mapper.textBox('age', fileNames, 0, 353, 66, 152, 23, character.details.age, mf_12);
+mapper.textBox('eyes', fileNames, 0, 353, 99, 152, 23, character.details.eyes, mf_12);
 
-mapper.textBox('height', fileNames, 0, 505, 66, 130, 23, character.details.height);
-mapper.textBox('skin', fileNames, 0, 505, 99, 130, 23, character.details.skin);
+mapper.textBox('height', fileNames, 0, 505, 66, 130, 23, character.details.height, mf_12);
+mapper.textBox('skin', fileNames, 0, 505, 99, 130, 23, character.details.skin, mf_12);
 
-mapper.textBox('weight', fileNames, 0, 634, 66, 130, 23, character.details.weight);
-mapper.textBox('hair', fileNames, 0, 634, 99, 130, 23, character.details.hair);
+mapper.textBox('weight', fileNames, 0, 634, 66, 130, 23, character.details.weight, mf_12);
+mapper.textBox('hair', fileNames, 0, 634, 99, 130, 23, character.details.hair, mf_12);
 
 // Allies & Organizations
 // TODO: Allies & Organizations
@@ -551,14 +551,14 @@ character.attacks
 mapper.image(fileNames, 1, 41, 168, actor.img, 229, 305);
 
 mapper.textBox('character name', fileNames, 1, 60, 83, 291, 26, character.name, mf_24);
-mapper.textBox('age', fileNames, 1, 353, 66, 152, 23, character.details.age);
-mapper.textBox('eyes', fileNames, 1, 353, 99, 152, 23, character.details.eyes);
+mapper.textBox('age', fileNames, 1, 353, 66, 152, 23, character.details.age, mf_12);
+mapper.textBox('eyes', fileNames, 1, 353, 99, 152, 23, character.details.eyes, mf_12);
 
-mapper.textBox('height', fileNames, 1, 505, 66, 130, 23, character.details.height);
-mapper.textBox('skin', fileNames, 1, 505, 99, 130, 23, character.details.skin);
+mapper.textBox('height', fileNames, 1, 505, 66, 130, 23, character.details.height, mf_12);
+mapper.textBox('skin', fileNames, 1, 505, 99, 130, 23, character.details.skin, mf_12);
 
-mapper.textBox('weight', fileNames, 1, 634, 66, 130, 23, character.details.weight);
-mapper.textBox('hair', fileNames, 1, 634, 99, 130, 23, character.details.hair);
+mapper.textBox('weight', fileNames, 1, 634, 66, 130, 23, character.details.weight, mf_12);
+mapper.textBox('hair', fileNames, 1, 634, 99, 130, 23, character.details.hair, mf_12);
 
 // Allies & Organizations
 // TODO: Allies & Organizations
