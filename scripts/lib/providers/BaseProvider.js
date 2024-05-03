@@ -58,6 +58,22 @@ export class baseProvider {
     }
 
     /**
+     * Deep clone the Provider
+     * @returns {Object}
+     */
+    clone() {
+        const obj = Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+        const properties = Object.getOwnPropertyNames(obj);
+        for (let i = 0; i < properties.length; i++) {
+            if (properties[i] !== 'actor' && typeof obj[properties[i]] === 'object' && obj[properties[i]] !== null) {
+                obj[properties[i]] = structuredClone(obj[properties[i]]);
+            }
+        }
+
+        return obj;
+    }
+
+    /**
      * Create a new file
      * @async
      * @returns {Promise} must return a promise with the attribute `ok` set to `true` if it is ok.
