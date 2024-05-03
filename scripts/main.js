@@ -360,10 +360,7 @@ class actorExportDialog extends FormApplication {
                             );
                         } else {
                             try {
-                                const mapper = Object.assign(
-                                    Object.create(Object.getPrototypeOf(module.mapper)),
-                                    module.mapper
-                                );
+                                const mapper = module.mapper.clone();
                                 mapper.download(
                                     actorExport.providerPath(providerId),
                                     undefined,
@@ -409,6 +406,7 @@ class actorExportDialog extends FormApplication {
                             );
                         } else {
                             for (let f = 0; f < selectedFiles[providerId].length; f++) {
+                                const mapper = module.mapper.clone();
                                 if (this.providers.filter((i) => i.id === providerId).length !== 1) {
                                     ui.notifications.error(
                                         `${actorExport.ID} | Could not find provider info for ${providerId}.`
@@ -425,14 +423,8 @@ class actorExportDialog extends FormApplication {
                                     );
                                     return;
                                 }
-                                const destinationFileName = `${module.mapper.actorName} - ${fileInfo[0].uri
-                                    .split('/')
-                                    .pop()}`;
+                                const destinationFileName = `${mapper.actorName} - ${fileInfo[0].uri.split('/').pop()}`;
                                 try {
-                                    const mapper = Object.assign(
-                                        Object.create(Object.getPrototypeOf(module.mapper)),
-                                        module.mapper
-                                    );
                                     mapper.download(
                                         actorExport.providerPath(providerId),
                                         fileInfo[0].uri,
