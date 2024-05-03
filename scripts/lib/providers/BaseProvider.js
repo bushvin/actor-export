@@ -196,6 +196,17 @@ export class baseProvider {
      * Get providerFullFilePath
      */
     get providerFullFilePath() {
+        if (
+            typeof this.overrideFilePath !== 'undefined' &&
+            (this.overrideFilePath.startsWith('http://') || this.overrideFilePath.startsWith('https://'))
+        ) {
+            return this.overrideFilePath;
+        } else if (
+            typeof this.providerFilePath !== 'undefined' &&
+            (this.providerFilePath.startsWith('http://') || this.providerFilePath.startsWith('https://'))
+        ) {
+            return this.providerFilePath;
+        }
         return (
             (this.overrideProviderPath || this.providerRootPath) +
             '/' +
