@@ -173,7 +173,7 @@ export class pdfProvider extends baseProvider {
      * @returns {CustomFontEmbedder} The resulted embedded font
      */
     async embedFont(pdf, fileName) {
-        if (typeof this.pdfEmbeddedFonts[fileName] !== 'undefined') {
+        if (Object.keys(this.pdfEmbeddedFonts).indexOf(fileName) > -1) {
             return this.pdfEmbeddedFonts[fileName];
         }
         const moduleRootPath = this.providerRootPath.split('/').slice(0, 3).join('/');
@@ -199,6 +199,7 @@ export class pdfProvider extends baseProvider {
             this.notify('error', `Could not load font ${fileName}. Please make sure it exists.`);
             throw new Error(`Failed to embed font ${fileName}.`);
         }
+        return this.pdfEmbeddedFonts[fileName];
     }
 
     /**
@@ -253,7 +254,7 @@ export class pdfProvider extends baseProvider {
         const fontName = options.font || this.pdfFontName;
         await this.embedFont(pdf, fontName);
 
-        if (this.pdfEmbeddedFonts[fontName] !== undefined) {
+        if (Object.keys(this.pdfEmbeddedFonts).indexOf(fontName) > -1) {
             textOptions.font = this.pdfEmbeddedFonts[fontName];
         }
 
