@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.5.3] - 2024-05-03
+
+### Added
+
+- an upload button for the custom provider
+- custom provider file upload support for `BaseProvider.baseProvider`
+- custom provider file upload support for `PDFProvider.pdfProvider`
+- a python script to convert pdf-export mappings to actor-export custom provider
+
+### Changed
+
+- improve `PDFProvider.pdfProvider.getField()` error reporting
+
+### Fixed
+
+- `PDFProvider.pdfProvider.updateFile()` fieldExists syntax was wrong
+
 ## [2024.5.2] - 2024-05-03
 
 ### Added
@@ -15,7 +32,6 @@ and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
 - `BaseProvider.baseProvider.providerFullFilePath` allow an external file to be loaded by the provider
 - `PDFProvider.pdfProvider.embedFont` font cache detection
-
 
 ### Fixed
 
