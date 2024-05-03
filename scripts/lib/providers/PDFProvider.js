@@ -62,6 +62,17 @@ export class pdfProvider extends baseProvider {
             : defaultRGB;
     }
 
+    async createFile() {
+        if (typeof this.customProviderFile !== 'undefined') {
+            this.customProviderFileArrayBuffer = await this.uploadCustomProviderFile();
+            this.providerFilePath = await this.customProviderFile.name;
+            this.providerDestinationFileName = await this.customProviderFile.name;
+            return new Promise((resolve) => {
+                resolve({ ok: true });
+            });
+        }
+    }
+
     /**
      * Set the default font, size and lineheight for text boxes
      * @param {string} font The name of the font file
@@ -423,17 +434,27 @@ export class pdfProvider extends baseProvider {
      * @returns {string|boolean|undefined} the requested field data
      */
     async getField(file, name) {
-        if (this.pdfFields.filter((i) => i.file.toLowerCase() === file.toLowerCase() && i.name === name).length > 0) {
-            return this.pdfFields.filter((i) => i.file === file && i.name === name)[0];
-        } else if (this.pdfFields.filter((i) => i.file.toLowerCase() === 'all' && i.name === name).length > 0) {
-            return this.pdfFields.filter((i) => i.file.toLowerCase() === 'all' && i.name === name)[0];
-        } else if (
-            this.pdfFields.filter(
-                (i) =>
-                    (i.file.toLowerCase() === file.toLowerCase() || i.file.toLowerCase() === 'all') && i.name === name
-            ).length === 0
-        ) {
-            return undefined;
+        try {
+            if (
+                this.pdfFields.filter((i) => i.file.toLowerCase() === file.toLowerCase() && i.name === name).length > 0
+            ) {
+                return this.pdfFields.filter((i) => i.file === file && i.name === name)[0];
+            } else if (this.pdfFields.filter((i) => i.file.toLowerCase() === 'all' && i.name === name).length > 0) {
+                return this.pdfFields.filter((i) => i.file.toLowerCase() === 'all' && i.name === name)[0];
+            } else if (
+                this.pdfFields.filter(
+                    (i) =>
+                        (i.file.toLowerCase() === file.toLowerCase() || i.file.toLowerCase() === 'all') &&
+                        i.name === name
+                ).length === 0
+            ) {
+                return undefined;
+            }
+        } catch (error) {
+            this.notify('error', 'An error ocurred fetching a field');
+            console.error('file', file);
+            console.error('name', name);
+            throw error;
         }
     }
 
@@ -608,12 +629,18 @@ export class pdfProvider extends baseProvider {
      */
     async updateFile() {
         try {
-            const buffer = await this.fileResponse.arrayBuffer();
+            let buffer;
+            if (typeof this.customProviderFile === 'undefined') {
+                buffer = await this.fileResponse.arrayBuffer();
+            } else {
+                buffer = this.customProviderFileArrayBuffer;
+            }
+            //const buffer = await this.fileResponse.arrayBuffer();
             const pdf = await PDFDocument.load(buffer);
             this.pdf = pdf;
             pdf.registerFontkit(fontkit);
 
-            // Fill out form
+            // Fill out form fields
             let pdfForm = null;
             let pdfFormFields = [];
             try {
@@ -629,6 +656,7 @@ export class pdfProvider extends baseProvider {
                 );
                 throw Error(error);
             }
+
             if (this.debug || false) {
                 console.debug(`actor-export | PDF | ${pdfFormFields.length} fields found.`);
             }
@@ -637,7 +665,7 @@ export class pdfProvider extends baseProvider {
                 const fieldName = pdfField.getName().trim();
                 const fieldType = pdfField.constructor.name.trim();
 
-                if (this.fieldExists(fieldName)) {
+                if (this.fieldExists(this.providerFilePath, fieldName)) {
                     switch (fieldType) {
                         case 'PDFTextField':
                             let stringValue = String(await this.getFieldValue(this.providerFilePath, fieldName, ''));

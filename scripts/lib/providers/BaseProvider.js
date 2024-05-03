@@ -14,6 +14,7 @@ export class baseProvider {
     constructor(actor) {
         this.actor = actor;
         this.actorName = this.actor.name || '';
+        this.customProviderFile = undefined;
         this.logPrefix = 'actor-export';
         this.providerRootPath = undefined;
         this.providerFilePath = undefined;
@@ -66,7 +67,12 @@ export class baseProvider {
         const properties = Object.getOwnPropertyNames(obj);
         for (let i = 0; i < properties.length; i++) {
             if (properties[i] !== 'actor' && typeof obj[properties[i]] === 'object' && obj[properties[i]] !== null) {
-                obj[properties[i]] = structuredClone(obj[properties[i]]);
+                try {
+                    // Let's be safe and only create clones of objects we can clone
+                    obj[properties[i]] = structuredClone(obj[properties[i]]);
+                } catch (error) {
+                    continue;
+                }
             }
         }
 
@@ -246,6 +252,25 @@ export class baseProvider {
     async updateFile() {
         this.notify('error', 'There is no updateFile method for this provider', { permanent: true });
         throw new Error(`There is no updateFile method for this provider`);
+    }
+
+    /**
+     * Upload the file and return it as an ArrayBuffer
+     * @returns {Promise}
+     */
+    uploadCustomProviderFile() {
+        try {
+            return new Promise((resolve, reject) => {
+                let reader = new FileReader();
+                reader.onload = (f) => resolve(f.target.result);
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(this.customProviderFile);
+            });
+        } catch (error) {
+            this.notify('error', 'Failed to load local file', { permanent: true });
+            console.error('error', error);
+            throw error;
+        }
     }
 
     /**
