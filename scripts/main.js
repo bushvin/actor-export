@@ -227,6 +227,7 @@ class actorExportDialog extends FormApplication {
     constructor(actor) {
         super();
         this.actor = actor;
+        this.customProviderFile = undefined;
     }
 
     static get defaultOptions() {
@@ -300,6 +301,13 @@ class actorExportDialog extends FormApplication {
 
     activateListeners(html) {
         super.activateListeners(html);
+        const uploadCustomProviderFileButton = document.getElementById('upload-file');
+        if (uploadCustomProviderFileButton !== null) {
+            uploadCustomProviderFileButton.addEventListener('change', (event) => {
+                this.customProviderFile = event.currentTarget.files[0];
+            });
+        }
+
         /* FIXME: why doesn't this work?
         html.on('click', '.actor-export-download', this.downloadFiles(this));
         */
@@ -361,6 +369,7 @@ class actorExportDialog extends FormApplication {
                         } else {
                             try {
                                 const mapper = module.mapper.clone();
+                                mapper.customProviderFile = this.customProviderFile;
                                 mapper.download(
                                     actorExport.providerPath(providerId),
                                     undefined,
