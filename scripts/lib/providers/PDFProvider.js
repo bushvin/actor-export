@@ -62,6 +62,10 @@ export class pdfProvider extends baseProvider {
             : defaultRGB;
     }
 
+    /**
+     * Create a file when no file is associated with the provider sheet
+     * @returns {undefined}
+     */
     async createFile() {
         if (typeof this.customProviderFile !== 'undefined') {
             this.customProviderFileArrayBuffer = await this.uploadCustomProviderFile();
