@@ -7,6 +7,30 @@
 
 /**
  * @class
+ * An error class to use for raising Provider-related errors
+ * @param {string} className The name of the class the error is related to
+ * @param {string} methodName The name of the method the error is related to
+ * @param {string} message An error message
+ * @param {string} errorClassName the name of the error class raising the error
+ */
+export class providerError extends Error {
+    constructor(className, methodName, message, errorClassName = 'providerError') {
+        const msg = `${className}.${methodName} | ${message}`;
+        if (
+            typeof ui !== 'undefined' &&
+            typeof ui.notifications !== 'undefined' &&
+            typeof ui.notifications.error !== 'undefined'
+        ) {
+            ui.notifications.error(msg, { permanent: true });
+        } else {
+            console.error(errorClassName, msg);
+        }
+        super(msg);
+        this.name = errorClassName;
+    }
+}
+/**
+ * @class
  * The base Provider class with required basic functionality for all providers
  * @param {Object} actor The Foundry VTT actor object.
  */
@@ -63,17 +87,26 @@ export class baseProvider {
      * @returns {Object}
      */
     clone() {
-        const obj = Object.assign(Object.create(Object.getPrototypeOf(this)), this);
-        const properties = Object.getOwnPropertyNames(obj);
-        for (let i = 0; i < properties.length; i++) {
-            if (properties[i] !== 'actor' && typeof obj[properties[i]] === 'object' && obj[properties[i]] !== null) {
-                try {
-                    // Let's be safe and only create clones of objects we can clone
-                    obj[properties[i]] = structuredClone(obj[properties[i]]);
-                } catch (error) {
-                    continue;
+        let obj;
+        try {
+            obj = Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+            const properties = Object.getOwnPropertyNames(obj);
+            for (let i = 0; i < properties.length; i++) {
+                if (
+                    properties[i] !== 'actor' &&
+                    typeof obj[properties[i]] === 'object' &&
+                    obj[properties[i]] !== null
+                ) {
+                    try {
+                        // Let's be safe and only create clones of objects we can clone
+                        obj[properties[i]] = structuredClone(obj[properties[i]]);
+                    } catch (error) {
+                        continue;
+                    }
                 }
             }
+        } catch (error) {
+            throw new providerError('baseProvider', 'clone', error.message);
         }
 
         return obj;
