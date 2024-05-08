@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.5.4] - 2024-05-08
+
+### Added
+
+- `BaseProvider.providerError` error class
+
+### Changed
+
+- add information to `convert-pdf-export.py`
+
+### Fixed
+
+- Issue with DND5eHelper.dnd5eActor.languages
+- Issue with DND5eHelper.dnd5ePlayer.background
+- Issue with DND5eHelper.dnd5ePlayer.race
+-
 ## [2024.5.3] - 2024-05-03
 
 ### Added
