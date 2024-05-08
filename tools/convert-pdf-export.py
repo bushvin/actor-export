@@ -26,6 +26,13 @@ def main():
     head = """import { pdfProvider } from 'https://<ENTER FOUNDRY VTT HOSTNAME>/modules/actor-export/scripts/lib/providers/PDFProvider.js';
 const mapper = new pdfProvider(actor);
 /* This is a very basic mapper for PDF exports */
+/**
+* mapper.field syntax:
+* mapper.field(filename, field_name, value)
+*   filename: use 'all', as in the case of custom Providers you cannot specify multiple files
+*   field_name: the name of the form field in the PDF file (no, at this time I cannot provide you with a list)
+*   value: the value of the PDF form field. If you are targetting a chackbox, make sure the value is either true or false
+*/
     """
     tail = "export { mapper };"
     print(head)
