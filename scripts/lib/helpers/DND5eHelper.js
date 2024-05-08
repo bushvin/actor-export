@@ -388,40 +388,46 @@ class dnd5eActor {
      */
     get languages() {
         const languages = [];
-        this.actor.system.traits.languages.value.forEach((l) => {
-            const language = {
-                slug: l,
-                label: 'unknown',
-                isStandard: false,
-                isExotic: false,
-                isCustom: false,
-                l10n: { label: 'unknown' },
-            };
-            if (typeof this.game.dnd5e.config.languages.standard.children[l] !== 'undefined') {
-                language['label'] = this.game.dnd5e.config.languages.standard.children[l];
-                language['isStandard'] = true;
-            } else if (typeof this.game.dnd5e.config.languages.exotic.children[l] !== 'undefined') {
-                language['label'] = this.game.dnd5e.config.languages.exotic.children[l];
-                language['isExotic'] = true;
-            } else if (typeof this.game.dnd5e.config.languages[l] !== 'undefined') {
-                language['label'] = this.game.dnd5e.config.languages[l];
-            }
-            language['l10n']['label'] = this.game.i18n.localize(language['label']);
-
-            languages.push(language);
-        });
-        this.actor.system.traits.languages.custom.split(';').forEach((l) => {
-            if (l.trim() !== '') {
-                languages.push({
-                    slug: l.toLowerCase().replace(/[^a-z0-9]+/, '-'),
-                    label: l,
+        try {
+            this.actor.system.traits.languages.value.forEach((l) => {
+                const language = {
+                    slug: l,
+                    label: 'unknown',
                     isStandard: false,
                     isExotic: false,
-                    isCustom: true,
-                    l10n: { label: this.game.i18n.localize(l) },
-                });
-            }
-        });
+                    isCustom: false,
+                    l10n: { label: 'unknown' },
+                };
+
+                if (typeof this.game.dnd5e.config.languages.standard.children[l] !== 'undefined') {
+                    language['label'] = this.game.dnd5e.config.languages.standard.children[l];
+                    language['isStandard'] = true;
+                } else if (typeof this.game.dnd5e.config.languages.exotic.children[l] !== 'undefined') {
+                    language['label'] = this.game.dnd5e.config.languages.exotic.children[l].label;
+                    language['isExotic'] = true;
+                } else if (typeof this.game.dnd5e.config.languages[l] !== 'undefined') {
+                    language['label'] = this.game.dnd5e.config.languages[l].label;
+                }
+                language['l10n']['label'] = this.game.i18n.localize(language['label']);
+
+                languages.push(language);
+            });
+            this.actor.system.traits.languages.custom.split(';').forEach((l) => {
+                if (l.trim() !== '') {
+                    languages.push({
+                        slug: l.toLowerCase().replace(/[^a-z0-9]+/, '-'),
+                        label: l,
+                        isStandard: false,
+                        isExotic: false,
+                        isCustom: true,
+                        l10n: { label: this.game.i18n.localize(l) },
+                    });
+                }
+            });
+        } catch (error) {
+            throw new dnd5eActorPropertyError('actor-export', this.className, 'languages', error.message);
+        }
+
         return languages;
     }
 
@@ -718,16 +724,14 @@ class dnd5ePlayer extends dnd5eActor {
      * @type {Object}
      */
     get background() {
+        const background = super.background;
         try {
-            return {
-                name: this.actor.system.details.background.name,
-                l10n: {
-                    name: this.game.i18n.localize(this.actor.system.details.background.name),
-                },
-            };
+            background['name'] = this.actor.system.details.background.name || this.actor.system.details.background;
+            background['l10n']['name'] = this.game.i18n.localize(background['name']);
         } catch (error) {
             throw new dnd5eActorPropertyError('actor-export', this.className, 'background', error.message);
         }
+        return background;
     }
 
     /**
@@ -735,16 +739,14 @@ class dnd5ePlayer extends dnd5eActor {
      * @type {Object}
      */
     get race() {
+        const race = super.race;
         try {
-            return {
-                name: this.actor.system.details.race.name,
-                l10n: {
-                    name: this.game.i18n.localize(this.actor.system.details.race.name),
-                },
-            };
+            race['name'] = this.actor.system.details.race.name || this.actor.system.details.race;
+            race['l10n']['name'] = this.game.i18n.localize(race['name']);
         } catch (error) {
             throw new dnd5eActorPropertyError('actor-export', this.className, 'race', error.message);
         }
+        return race;
     }
 
     /**
