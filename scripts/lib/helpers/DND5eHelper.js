@@ -22,6 +22,22 @@ class dnd5eActor {
     }
 
     /**
+     * Remove secrets from the given html
+     * @param {string} html the html to be stripped of secrets
+     * @returns
+     */
+    removeSecrets(html) {
+        const secretMatchHtml = new RegExp('<section .*id=.secret-.*((?!/section).)*</section>', 'gi');
+        try {
+            html = html.replace(secretMatchHtml, '');
+        } catch (error) {
+            throw new dnd5eActorPropertyError('actor-export', this.className, 'removeSecrets', error.message);
+        }
+
+        return html;
+    }
+
+    /**
      * get the actor's abilities
      * @type {Object}
      */
@@ -231,23 +247,23 @@ class dnd5eActor {
      * @type {Object}
      */
     get details() {
+        const details = {};
         try {
-            return {
-                traits: this.actor.system.details.trait || '',
-                ideals: this.actor.system.details.ideal || '',
-                bonds: this.actor.system.details.bond || '',
-                flaws: this.actor.system.details.flaw || '',
-                age: this.actor.flags['tidy5e-sheet']?.age || '',
-                height: this.actor.flags['tidy5e-sheet']?.height || '',
-                weight: this.actor.flags['tidy5e-sheet']?.weight || '',
-                eyes: this.actor.flags['tidy5e-sheet']?.eyes || '',
-                skin: this.actor.flags['tidy5e-sheet']?.skin || '',
-                hair: this.actor.flags['tidy5e-sheet']?.hair || '',
-                backstory: this.actor.system.details.biography.value || '',
-            };
+            details['traits'] = this.actor.system.details.trait || '';
+            details['ideals'] = this.actor.system.details.ideal || '';
+            details['bonds'] = this.actor.system.details.bond || '';
+            details['flaws'] = this.actor.system.details.flaw || '';
+            details['age'] = this.actor.flags['tidy5e-sheet']?.age || '';
+            details['height'] = this.actor.flags['tidy5e-sheet']?.height || '';
+            details['weight'] = this.actor.flags['tidy5e-sheet']?.weight || '';
+            details['eyes'] = this.actor.flags['tidy5e-sheet']?.eyes || '';
+            details['skin'] = this.actor.flags['tidy5e-sheet']?.skin || '';
+            details['hair'] = this.actor.flags['tidy5e-sheet']?.hair || '';
+            details['backstory'] = this.removeSecrets(this.actor.system.details.biography.value || '');
         } catch (error) {
             throw new dnd5eActorPropertyError('actor-export', this.className, 'details', error.message);
         }
+        return details;
     }
 
     /**
