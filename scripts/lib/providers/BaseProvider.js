@@ -64,8 +64,9 @@ export class baseProvider {
         }
         value = helper.stripHTMLtag(value, 'a', '');
         value = helper.stripHTMLtag(value, 'br', '', '\n');
-        value = helper.stripHTMLtag(value, 'hr', '---');
+        value = helper.stripHTMLtag(value, 'hr', '-----\n');
         value = helper.stripHTMLtag(value, 'p', '', '\n');
+        value = helper.stripHTMLtag(value, 'section', '', '\n');
         value = helper.stripHTMLtag(value, 'strong');
         value = helper.stripHTMLtag(value, 'em');
         value = helper.stripHTMLtag(value, 'span');
