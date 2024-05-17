@@ -356,7 +356,7 @@ character.knownSpells.forEach((spell) => {
     if (typeof x !== 'undefined') {
         if (spell.level > 0) {
             const checked = dnd5eHelper.evalCheckMark(spell.prepared);
-            mapper.textBox('spells', fileNames, 0, x - 12, y + 9, 10, 10, checked, mf_12_centered);
+            mapper.textBox('spells', fileNames, 0, x - 12, y - 9, 10, 10, checked, mf_12_centered);
         }
         const displayName = spell.name + ' (' + spell.components.join('').toUpperCase() + ')';
         mapper.textBox('spells', fileNames, 0, x, y - 18, 217, 18, displayName, mf_12);
@@ -610,7 +610,7 @@ character.knownSpells.forEach((spell) => {
     if (typeof x !== 'undefined') {
         if (spell.level > 0) {
             const checked = dnd5eHelper.evalCheckMark(spell.prepared);
-            mapper.textBox('spells', fileNames, 2, x - 12, y + 9, 10, 10, checked, mf_12_centered);
+            mapper.textBox('spells', fileNames, 2, x - 12, y - 9, 10, 10, checked, mf_12_centered);
         }
         const displayName = spell.name + ' (' + spell.components.join('').toUpperCase() + ')';
         mapper.textBox('spells', fileNames, 2, x, y - 18, 217, 18, displayName, mf_12);
