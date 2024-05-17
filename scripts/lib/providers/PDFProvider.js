@@ -261,10 +261,6 @@ export class pdfProvider extends baseProvider {
             prefix: String(options.prefix || ''),
         };
 
-        if (textOptions.debug || this.debugProvider || false) {
-            console.debug(`actor-export | PDF | page dimensions: ${pageHeight} x ${pageWidth} pixels`);
-        }
-
         // TODO: check if this is a standard font.
         const fontName = options.font || this.pdfFontName;
         await this.embedFont(pdf, fontName);
@@ -718,6 +714,14 @@ export class pdfProvider extends baseProvider {
 
     async saveFile() {
         const destinationFileName = this.overrideDestinationFileName || this.providerDestinationFileName;
+        if (this.debugProvider || false) {
+            const pdfPages = this.pdf.getPages();
+            for (let c = 0; c < pdfPages.length; c++) {
+                const pageHeight = pdfPages[c].getHeight();
+                const pageWidth = pdfPages[c].getWidth();
+                console.debug(`actor-export | PDF | page ${c} WxH dimensions: ${pageWidth} x ${pageHeight} pixels`);
+            }
+        }
         const blob = new Blob([await this.pdf.save()], { type: 'application/pdf' });
         await saveAs(blob, destinationFileName);
     }
