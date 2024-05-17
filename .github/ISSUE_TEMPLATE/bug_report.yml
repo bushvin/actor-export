@@ -98,7 +98,9 @@ body:
     id: actor
     attributes:
       label: Sample Actor
-      description: Please paste your exported actor here
+      description: >
+        Please paste your exported actor here.
+        Go to your Actors Sidebar tab, right-click the actor (character) and select "Export Data".
       render: JSON
   - type: textarea
     id: attachments
