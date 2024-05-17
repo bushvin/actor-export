@@ -1671,16 +1671,21 @@ class pf2ePlayer extends pf2eActor {
             '2,000 gp',
             '3,500 gp',
         ];
-        actor.system.crafting.formulas.forEach((f) => {
-            const el = fromUuidSync(f.uuid);
-            knownFormulas.push({
-                name: el.name,
-                level: el.system.level.value,
-                description: el.system.description.value,
-                traits: [el.system.traits.rarity].concat(el.system.traits.value),
-                cost: formulaCost[el.system.level.value],
+        try {
+            actor.system.crafting.formulas.forEach((f) => {
+                const el = fromUuidSync(f.uuid);
+                knownFormulas.push({
+                    name: el.name,
+                    level: el.system.level.value,
+                    description: el.system.description.value,
+                    traits: [el.system.traits.rarity].concat(el.system.traits.value),
+                    cost: formulaCost[el.system.level.value],
+                });
             });
-        });
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'knownFormulas', error.message);
+        }
+
         return knownFormulas;
     }
 }
