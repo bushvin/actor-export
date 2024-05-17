@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.5.5] - 2024-05-17
+
+### Added
+
+- new function `DND5eHelper.dnd5eActor.removeSecrets` to remove secrets from texts
+- `PF2eHelper.pf2ePlayer.knownFormulas` error trapping
+
+### Changed
+
+- `BaseProvider.baseProvider.cleanFoundryMarkup` add a newline character to horizontal rulers
+- `BaseProvider.baseProvider.cleanFoundryMarkup` clean up `section` elements
+- `DND5eHelper.dnd5eActor.details` use `DND5eHelper.dnd5eActor.removeSecrets` to cleanup the backstory
+
+### Fixed
+
+- `providers/dnd5e/provider.js` align spell preparation checkmarks with spellname
+
 ## [2024.5.4] - 2024-05-08
 
 ### Added
@@ -17,10 +34,10 @@ and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
 ### Fixed
 
-- Issue with DND5eHelper.dnd5eActor.languages
-- Issue with DND5eHelper.dnd5ePlayer.background
-- Issue with DND5eHelper.dnd5ePlayer.race
--
+- Issue with `DND5eHelper.dnd5eActor.languages`
+- Issue with `DND5eHelper.dnd5ePlayer.background`
+- Issue with `DND5eHelper.dnd5ePlayer.race`
+
 ## [2024.5.3] - 2024-05-03
 
 ### Added
