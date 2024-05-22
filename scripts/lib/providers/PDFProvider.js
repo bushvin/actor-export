@@ -147,11 +147,10 @@ export class pdfProvider extends baseProvider {
         }
         const pdfPage = pdfPages[page];
         const pageHeight = pdfPage.getHeight();
-        const pageWidth = pdfPage.getWidth();
 
         // Calculate scaling
-        const scaleHeight = maxHeight > 0 ? (maxHeight * pageHeight) / htmlImage.height : 1;
-        const scaleWidth = maxWidth > 0 ? (maxWidth * pageWidth) / htmlImage.width : 1;
+        const scaleHeight = maxHeight > 0 ? maxHeight / htmlImage.height : 1;
+        const scaleWidth = maxWidth > 0 ? maxWidth / htmlImage.width : 1;
         const scale = Math.min(scaleHeight, scaleWidth);
 
         let embeddedImage;
@@ -168,8 +167,8 @@ export class pdfProvider extends baseProvider {
         }
 
         // Draw the image on the PDF page
-        const realX = x * pageWidth;
-        const realY = pageHeight - y * pageHeight - embeddedImage.height * scale;
+        const realX = x;
+        const realY = pageHeight - y - embeddedImage.height * scale;
 
         const imageOptions = {
             x: realX,
@@ -248,14 +247,13 @@ export class pdfProvider extends baseProvider {
         }
 
         const pageHeight = pdfPages[page].getHeight();
-        const pageWidth = pdfPages[page].getWidth();
         const textOptions = {
             ...options,
-            size: (options.size || this.pdfFontSize) * pageHeight,
+            size: options.size || this.pdfFontSize,
             color: rgb(...this.convertHexColorToRgb(options.color || this.pdfFontColor)),
-            lineHeight: (options.lineHeight || this.pdfFontLineHeight) * pageHeight,
-            width: pageWidth * width,
-            height: pageHeight * height,
+            lineHeight: options.lineHeight || this.pdfFontLineHeight,
+            width: width,
+            height: height,
             overflow: options.overflow || this.pdfTextBoxOverflow || false,
             suffix: String(options.suffix || ''),
             prefix: String(options.prefix || ''),
@@ -347,7 +345,7 @@ export class pdfProvider extends baseProvider {
         }
 
         // Horizontal alignment
-        textOptions.x = pageWidth * x;
+        textOptions.x = x;
         if ((textOptions.halign || 'left') === 'center') {
             textOptions.x = textOptions.x + (textOptions.width - textWidth) / 2;
         } else if ((textOptions.halign || 'left') === 'right') {
@@ -355,7 +353,7 @@ export class pdfProvider extends baseProvider {
         }
 
         // Vertical alignment
-        textOptions.y = pageHeight - pageHeight * y - textOptions.height;
+        textOptions.y = pageHeight - y - textOptions.height;
         if ((textOptions.valign || 'bottom') === 'top') {
             textOptions.y = textOptions.y + textOptions.height - textLineHeight;
         } else if ((textOptions.valign || 'bottom') === 'middle') {
@@ -364,15 +362,12 @@ export class pdfProvider extends baseProvider {
         // TODO: vertical alignment: middle
 
         if (textOptions.debug || this.debugProvider || false) {
-            console.debug(
-                'actor-export | PDF | real x, y:',
-                pageWidth * x,
-                pageHeight - pageHeight * y - textOptions.height
-            );
+            console.debug('actor-export | PDF |', reference);
+            console.debug('actor-export | PDF | real x, y:', x, pageHeight - y - textOptions.height);
             console.debug('actor-export | PDF | textOptions:', textOptions);
             pdfPages[page].drawRectangle({
-                x: pageWidth * x,
-                y: pageHeight - pageHeight * y - textOptions.height,
+                x: x,
+                y: pageHeight - y - textOptions.height,
                 width: textOptions.width,
                 height: textOptions.height,
                 borderColor: rgb(1, 0, 0),
@@ -719,7 +714,9 @@ export class pdfProvider extends baseProvider {
             for (let c = 0; c < pdfPages.length; c++) {
                 const pageHeight = pdfPages[c].getHeight();
                 const pageWidth = pdfPages[c].getWidth();
-                console.debug(`actor-export | PDF | page ${c} WxH dimensions: ${pageWidth} x ${pageHeight} pixels`);
+                console.debug(
+                    `actor-export | PDF | ${this.providerFilePath} page ${c} WxH dimensions: ${pageWidth} x ${pageHeight} pixels`
+                );
             }
         }
         const blob = new Blob([await this.pdf.save()], { type: 'application/pdf' });
