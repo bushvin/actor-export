@@ -24,7 +24,7 @@ class dnd5eActor {
     /**
      * Remove secrets from the given html
      * @param {string} html the html to be stripped of secrets
-     * @returns
+     * @returns {string}
      */
     removeSecrets(html) {
         const secretMatchHtml = new RegExp('<section .*id=.secret-.*((?!/section).)*</section>', 'gi');
