@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## unreleased
+
+### Added
+
+- dnd5e provider: Official German charactersheet
+- pfrpg provider: the original Pathfinder RPG Character Sheet by Paizo
+
+### Changed
+
+- move `PDFProvider.pdfProvider.embedTextBox` page dimension debug to `PDFProvider.pdfProvider.saveFile`
+- `PDFProvider.pdfProvider` relative sizes are absolute now in pixels
+- dnd5e provider uses absolute sizes
+- pf2e-remaster-paizo provider uses absolute sizes
+- pf2e-remaster-bushvin provider uses absolute sizes
+
+### Removed
+
+- the original pf2e-remaster provider which started this all is now removed.
+
 ## [2024.5.5] - 2024-05-17
 
 ### Added
