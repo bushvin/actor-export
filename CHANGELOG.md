@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.5.7] - 2024-05-27
+
+### Changed
+
+- dnd5e provider: english charactersheet is now 1 pdf
+
 ## [2024.5.6] - 2024-05-24
 
 ### Added
