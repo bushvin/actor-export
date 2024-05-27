@@ -47,7 +47,7 @@ const character = dnd5eHelper.getActorObject(game, actor);
 //                                              |___/
 
 // D&D 5e CHaracter Sheet by WoTC
-fileNames = ['CharacterSheet.pdf'];
+fileNames = ['CharacterSheetComplete.pdf'];
 mapper.textBox('character name', fileNames, 0, 45, 55, 218, 24, character.name, mf_24);
 const classLevels = character.classLevels.map((m) => m.displayName).join(', ');
 mapper.textBox('class levels', fileNames, 0, 268, 49, 112.5, 14, classLevels, mf_12);
@@ -242,25 +242,24 @@ character.attacks
         attackY = attackY + 21;
     });
 
-// D&D 5e Character details Sheet by WoTC
-fileNames = ['CharacterDetails.pdf'];
-mapper.image(fileNames, 0, 31, 126, actor.img, 172, 228);
+// Page 2: Character details
+mapper.image(fileNames, 1, 31, 126, actor.img, 172, 228);
 
-mapper.textBox('character name', fileNames, 0, 45, 60, 218, 24, character.name, mf_24);
-mapper.textBox('age', fileNames, 0, 265, 53, 113, 14, character.details.age, mf_12);
-mapper.textBox('eyes', fileNames, 0, 265, 79, 113, 14, character.details.eyes, mf_12);
+mapper.textBox('character name', fileNames, 1, 45, 60, 218, 24, character.name, mf_24);
+mapper.textBox('age', fileNames, 1, 265, 53, 113, 14, character.details.age, mf_12);
+mapper.textBox('eyes', fileNames, 1, 265, 79, 113, 14, character.details.eyes, mf_12);
 
-mapper.textBox('height', fileNames, 0, 379, 53, 97, 14, character.details.height, mf_12);
-mapper.textBox('skin', fileNames, 0, 379, 79, 97, 14, character.details.skin, mf_12);
+mapper.textBox('height', fileNames, 1, 379, 53, 97, 14, character.details.height, mf_12);
+mapper.textBox('skin', fileNames, 1, 379, 79, 97, 14, character.details.skin, mf_12);
 
-mapper.textBox('weight', fileNames, 0, 476, 53, 97, 14, character.details.weight, mf_12);
-mapper.textBox('hair', fileNames, 0, 476, 79, 97, 14, character.details.hair, mf_12);
+mapper.textBox('weight', fileNames, 1, 476, 53, 97, 14, character.details.weight, mf_12);
+mapper.textBox('hair', fileNames, 1, 476, 79, 97, 14, character.details.hair, mf_12);
 
 // Allies & Organizations
 // TODO: Allies & Organizations
 
 // Character backstory
-mapper.textBox('backstory', fileNames, 0, 31, 382, 172, 384, character.details.backstory, mf_8_multiline);
+mapper.textBox('backstory', fileNames, 1, 31, 382, 172, 384, character.details.backstory, mf_8_multiline);
 
 // Treasure
 const treasureType = ['backpack', 'consumable', 'container', 'loot'];
@@ -269,24 +268,22 @@ const treasure = character.equipment
     .map((m) => m.displayName)
     .join(', ');
 
-mapper.textBox('treasure', fileNames, 0, 220, 600, 361, 166, treasure, mf_8_multiline);
+mapper.textBox('treasure', fileNames, 1, 220, 600, 361, 166, treasure, mf_8_multiline);
 
-// D&D 5e Character Spellcasting Sheet by WoTC
-fileNames = ['SpellcastingSheet.pdf'];
-
+// Page 3: Spellcasting
 // Spellcasting class
 const spellCastingClass = character.classLevels
     .filter((f) => f.spellCastingClass)
     .map((m) => m.name)
     .join(', ');
-mapper.textBox('character name', fileNames, 0, 45, 60, 218, 24, spellCastingClass, mf_24);
+mapper.textBox('character name', fileNames, 2, 45, 60, 218, 24, spellCastingClass, mf_24);
 
 ref = 'spell casting ability';
-mapper.textBox(ref, fileNames, 0, 282, 53, 69, 31, character.spellCastingAbility.shortName, mf_24_centered_middle);
-mapper.textBox('spell save DC', fileNames, 0, 382, 53, 70, 31, character.spellSaveDC, mf_24_centered_middle);
+mapper.textBox(ref, fileNames, 2, 282, 53, 69, 31, character.spellCastingAbility.shortName, mf_24_centered_middle);
+mapper.textBox('spell save DC', fileNames, 2, 382, 53, 70, 31, character.spellSaveDC, mf_24_centered_middle);
 ref = 'spell attack bonus';
 const spellAttackBonus = dnd5eHelper.quantifyNumber(character.spellAttackBonus);
-mapper.textBox(ref, fileNames, 0, 486, 53, 69, 31, spellAttackBonus, mf_24_centered_middle);
+mapper.textBox(ref, fileNames, 2, 486, 53, 69, 31, spellAttackBonus, mf_24_centered_middle);
 
 // Spell list
 let spellList = {
@@ -312,10 +309,10 @@ character.knownSpells.forEach((spell) => {
     if (typeof x !== 'undefined') {
         if (spell.level > 0) {
             const checked = dnd5eHelper.evalCheckMark(spell.prepared);
-            mapper.textBox('spells', fileNames, 0, x - 11, y - 10, 10, 10, checked, mf_8_centered_middle);
+            mapper.textBox('spells', fileNames, 2, x - 11, y - 10, 10, 10, checked, mf_8_centered_middle);
         }
         const displayName = spell.name + ' (' + spell.components.join('').toUpperCase() + ')';
-        mapper.textBox('spells', fileNames, 0, x, y - 10, 164, 10, displayName, mf_8);
+        mapper.textBox('spells', fileNames, 2, x, y - 10, 164, 10, displayName, mf_8);
     }
 });
 
@@ -338,8 +335,8 @@ try {
         const y = spellSlots[lvl].y;
         const spellEntry = character.spellSlots.filter((f) => f.level === Number(lvl))[0];
         if (spellEntry.max > 0) {
-            mapper.textBox(ref, fileNames, 0, x, y, 46, 24, spellEntry.max, mf_15_centered_middle);
-            mapper.textBox(ref, fileNames, 0, x + 52, y + 3, 101, 18, spellEntry.expended, mf_15_middle);
+            mapper.textBox(ref, fileNames, 2, x, y, 46, 24, spellEntry.max, mf_15_centered_middle);
+            mapper.textBox(ref, fileNames, 2, x + 52, y + 3, 101, 18, spellEntry.expended, mf_15_middle);
         }
     });
 } catch (error) {
