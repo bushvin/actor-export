@@ -710,6 +710,19 @@ export class pdfProvider extends baseProvider {
     async saveFile() {
         const destinationFileName = this.overrideDestinationFileName || this.providerDestinationFileName;
         if (this.debugProvider || false) {
+            const pdfForm = this.pdf.getForm();
+            const pdfFormFields = pdfForm.getFields();
+            const pdfFormSchema = [];
+            for (let i = 0; i < pdfFormFields.length; i++) {
+                const pdfField = pdfFormFields[i];
+                pdfFormSchema.push({
+                    name: pdfField.getName().trim(),
+                    type: pdfField.constructor.name.trim(),
+                });
+            }
+            console.debug(`actor-export | PDF | ${this.providerFilePath} contains ${pdfFormSchema.length} form fields`);
+            console.debug(`actor-export | PDF | fields:`, pdfFormSchema);
+
             const pdfPages = this.pdf.getPages();
             for (let c = 0; c < pdfPages.length; c++) {
                 const pageHeight = pdfPages[c].getHeight();
