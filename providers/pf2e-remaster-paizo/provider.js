@@ -380,18 +380,14 @@ mapper.textBox(ref, fileName, 1, 49, 53, 162, 25, ancestryAndHeritageAbilities.j
 
 // Ancestry Feats
 const ancestry_y = [86, 272, 398, 524, 650];
-
-pf2eHelper
-    .unique(character.ancestryFeats.map((m) => m.level))
-    .sort()
-    .forEach((level) => {
-        const feats = character.ancestryFeats.filter((f) => f.level === level).map((m) => m.name);
-        if (ancestry_y.length > 0) {
-            const y = ancestry_y[0];
-            ancestry_y.shift();
-            mapper.textBox('Ancestry feats', fileName, 1, 49, y, 162, 20, feats.join(', '), mf_8_multiline);
-        }
-    });
+for (let level = 1; level <= 20; level = level + 4) {
+    const feats = character.ancestryFeats.filter((f) => f.level === level).map((m) => m.name);
+    if (ancestry_y.length > 0) {
+        const y = ancestry_y[0];
+        ancestry_y.shift();
+        mapper.textBox('Ancestry feats', fileName, 1, 49, y, 162, 20, feats.join(', '), mf_8_multiline);
+    }
+}
 
 // Background Skill Feats
 ref = 'background skill feats';
@@ -400,31 +396,25 @@ mapper.textBox(ref, fileName, 1, 49, 123, 162, 43, backgroundSkillFeats.join(', 
 
 // Skill feats
 const skill_feats_y = [176, 239, 302, 365, 428, 491, 554, 617, 680, 742];
-pf2eHelper
-    .unique(character.skillFeats.map((m) => m.level))
-    .sort()
-    .forEach((level) => {
-        const feats = character.skillFeats.filter((f) => f.level === level).map((m) => m.name);
-        if (skill_feats_y.length > 0) {
-            const y = skill_feats_y[0];
-            skill_feats_y.shift();
-            mapper.textBox('skill feats', fileName, 1, 49, y, 162, 20, feats.sort().join(', '), mf_8_multiline);
-        }
-    });
+for (let level = 2; level <= 20; level = level + 2) {
+    const feats = character.skillFeats.filter((f) => f.level === level).map((m) => m.name);
+    if (skill_feats_y.length > 0) {
+        const y = skill_feats_y[0];
+        skill_feats_y.shift();
+        mapper.textBox('skill feats', fileName, 1, 49, y, 162, 20, feats.sort().join(', '), mf_8_multiline);
+    }
+}
 
 // General feats
 const general_feats_y = [208, 333, 460, 586, 712];
-pf2eHelper
-    .unique(character.generalFeats.map((m) => m.level))
-    .sort()
-    .forEach((level) => {
-        const feats = character.generalFeats.filter((f) => f.level === level).map((m) => m.name);
-        if (general_feats_y.length > 0) {
-            const y = general_feats_y[0];
-            general_feats_y.shift();
-            mapper.textBox('general feats', fileName, 1, 49, y, 162, 20, feats.sort().join(', '), mf_8_multiline);
-        }
-    });
+for (let level = 3; level <= 20; level = level + 4) {
+    const feats = character.generalFeats.filter((f) => f.level === level).map((m) => m.name);
+    if (general_feats_y.length > 0) {
+        const y = general_feats_y[0];
+        general_feats_y.shift();
+        mapper.textBox('general feats', fileName, 1, 49, y, 162, 20, feats.sort().join(', '), mf_8_multiline);
+    }
+}
 
 // Attribute boosts
 const boost_y = [271, 428, 586, 743];

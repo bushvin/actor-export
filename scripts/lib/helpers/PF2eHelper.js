@@ -773,7 +773,7 @@ class pf2eActor {
     get ancestryFeats() {
         const ancestryFeats = [];
         try {
-            for (let i = 1; i <= 20; i = i + 4) {
+            for (let i = 1; i <= 20; i++) {
                 this.actor.items
                     .filter(
                         (f) =>
@@ -839,7 +839,7 @@ class pf2eActor {
     get skillFeats() {
         const skillFeats = [];
         try {
-            for (let i = 2; i <= 20; i = i + 2) {
+            for (let i = 1; i <= 20; i++) {
                 this.actor.items
                     .filter((f) => f.type === 'feat' && f.system.location === `skill-${i}`)
                     .forEach((f) => {
@@ -865,7 +865,7 @@ class pf2eActor {
     get generalFeats() {
         const generalFeats = [];
         try {
-            for (let i = 3; i <= 20; i = i + 4) {
+            for (let i = 1; i <= 20; i++) {
                 this.actor.items
                     .filter((f) => f.type === 'feat' && f.system.location === `general-${i}`)
                     .forEach((f) => {
