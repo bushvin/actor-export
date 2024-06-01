@@ -40,6 +40,7 @@ body:
       options:
         - dnd5e
         - pf2e
+        - pfrpg
     validations:
       required: true
   - type: input
