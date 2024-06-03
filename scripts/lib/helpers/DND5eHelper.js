@@ -329,7 +329,12 @@ class dnd5eActor {
      * @type {number}
      */
     get hd() {
-        return this.actor.system.attributes.hd || 0;
+        const hd = {
+            max: this.actor.system.attributes.hd.max || 0,
+            value: this.actor.system.attributes.hd.value || 0,
+        };
+
+        return hd;
     }
 
     /**
@@ -742,7 +747,11 @@ class dnd5ePlayer extends dnd5eActor {
     get background() {
         const background = super.background;
         try {
-            background['name'] = this.actor.system.details.background.name || this.actor.system.details.background;
+            if (typeof this.actor.system.details.background.name !== 'undefined') {
+                background['name'] = this.actor.system.details.background.name;
+            } else if (typeof this.actor.system.details.background === 'string') {
+                background['name'] = this.actor.system.details.background;
+            }
             background['l10n']['name'] = this.game.i18n.localize(background['name']);
         } catch (error) {
             throw new dnd5eActorPropertyError('actor-export', this.className, 'background', error.message);
