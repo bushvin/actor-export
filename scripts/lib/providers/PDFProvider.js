@@ -50,7 +50,8 @@ export class pdfProvider extends baseProvider {
     /**
      * Convert Hexadecimal color (HTML) to RGB
      * @param {string} hex The hexadecimal value (html color) representing a color
-     * @returns {array} the RGB color code in % for each of the main colors, or the color code for black
+     * @param {Array} [defaultRGB=[0, 0, 0]] The default color to return if @param hex is invalid
+     * @returns {Array} the RGB color code in % for each of the main colors, or the color code for black
      */
     convertHexColorToRgb(hex, defaultRGB = [0, 0, 0]) {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -82,7 +83,7 @@ export class pdfProvider extends baseProvider {
      * Set the default font, size and lineheight for text boxes
      * @param {string} font The name of the font file
      * @param {number} size The size of the font
-     * @param {number} lineHeight The lineheight of the font
+     * @param {number} [lineHeight=size] The lineheight of the font
      */
     defaultFont(font, size, lineHeight = undefined) {
         // TODO: should we check the font is available?
@@ -112,7 +113,8 @@ export class pdfProvider extends baseProvider {
 
     /**
      * Set the default font color for text boxes
-     * @param {string|rgb} color an HTML or fontkit rgb color.
+     * @param {string|rgb} color an HTML or fontkit rgb color.<br />
+     * `import rgb from './pdf-lib.esm.js'; const black = rgb(0,0,0);`
      */
     defaultFontColor(color) {
         this.pdfFontColor = color;
@@ -122,6 +124,13 @@ export class pdfProvider extends baseProvider {
      * Embed an image to the given PDF Object
      * @async
      * @param {Object} imageData an Object containing path, (x,y) coordinates, scaling information, etc...
+     * @param {number} imageData.page the page to embed the image in. Pages start at 0
+     * @param {number} imageData.x the x coordinate to embed the image at
+     * @param {number} imageData.y the y coordinate to embed the image at
+     * @param {string} imageData.path the url to the image to embed
+     * @param {number} imageData.maxWidth the maximum width of the image
+     * @param {number} imageData.maxHeight the maximum height of the image
+     * @returns undefined
      */
     async embedImage(imageData) {
         const { page, x, y, path, maxWidth, maxHeight } = imageData;
@@ -235,6 +244,15 @@ export class pdfProvider extends baseProvider {
      * Embed a Text Box to the given PDF Object
      * @async
      * @param {Object} textBoxData an Object containing path, (x,y) coordinates, scaling information, etc...
+     * @param {string} textBoxData.reference a reference to the field (for debugging purposes)
+     * @param {string} textBoxData.file the name pf the pdf file to embed the text in to
+     * @param {number} textBoxData.page the page to embed the text on. Pages start at 0
+     * @param {number} textBoxData.x the x coordinate to start the textbox at.
+     * @param {number} textBoxData.y the y coordinate to start the textbox at.
+     * @param {number} textBoxData.width the width of the textbox
+     * @param {number} textBoxData.height the height of the textbox
+     * @param {string} textBoxData.text the text to be printer
+     * @param {Object} textBoxData.options the options for the text to be printed
      */
     async embedTextBox(textBoxData) {
         const { reference, file, page, x, y, width, height, text, options } = textBoxData;
@@ -428,7 +446,7 @@ export class pdfProvider extends baseProvider {
     }
 
     /**
-     * Check if a field is defined
+     * Check if a value for a form field is defined
      * @param {string} file  The name of the PDF file a field belongs to
      * @param {string} name The name of the field to return the value from
      * @returns {boolean} whether the field is defined
@@ -443,7 +461,7 @@ export class pdfProvider extends baseProvider {
      * @async
      * @param {string} file The name of the PDF file a field belongs to
      * @param {string} name The name of the field to return the value from
-     * @returns {string|boolean|undefined} the requested field data
+     * @returns {Object|undefined} the requested field data
      */
     async getField(file, name) {
         try {
@@ -471,7 +489,7 @@ export class pdfProvider extends baseProvider {
     }
 
     /**
-     * Return a PDF field value
+     * Return a PDF form field value
      * @async
      * @param {string} file The name of the PDF file a field belongs to
      * @param {string} name The name of the field to return the value from
@@ -488,6 +506,7 @@ export class pdfProvider extends baseProvider {
     }
 
     /**
+     * Get the options associated to a form field
      * @param {string} file The name of the PDF file a field belongs to
      * @param {string} name The name of the field to return the value from
      * @param {string} optionName Optional name of a field to return
@@ -506,14 +525,14 @@ export class pdfProvider extends baseProvider {
 
     /**
      * Store image information
-     * @param {string|array} file the pdf filename(s) to apply the image to ('all' means all PDFs)
-     * @param {number|array} page The page(s) to add the image to
+     * @param {string|string[]} file the pdf filename(s) to apply the image to ('all' means all PDFs)
+     * @param {number|number[]} page The page(s) to add the image to
      * @param {number} x The x coordinate for the image
      * @param {number} y The y coordinate for the image
      * @param {string} path The url to the image to add
-     * @param {number} maxWidth The maximum width of the Image
-     * @param {number} maxHeight The maximum height of the Image
-     * @param {object} options Additional options
+     * @param {number} [maxWidth] The maximum width of the Image
+     * @param {number} [maxHeight] The maximum height of the Image
+     * @param {object} [options] Additional options
      */
     image(file, page, x, y, path, maxWidth = -1, maxHeight = -1, options) {
         let fail = false;
@@ -720,6 +739,9 @@ export class pdfProvider extends baseProvider {
         }
     }
 
+    /**
+     * Save the generated PDF to disk
+     */
     async saveFile() {
         const destinationFileName = this.overrideDestinationFileName || this.providerDestinationFileName;
         if (this.debugProvider || false) {
@@ -797,25 +819,25 @@ export class pdfProvider extends baseProvider {
     /**
      * Store pdf text box information
      * @param {string} reference a reference for the textBox added (for debugging purposes)
-     * @param {string|array} file the pdf filename(s) to apply the text box to ('all' means all PDFs)
-     * @param {number|array} page The page(s) to add the text box to
+     * @param {string|string[]} file the pdf filename(s) to apply the text box to ('all' means all PDFs)
+     * @param {number|number[]} page The page(s) to add the text box to
      * @param {number} x The x coordinate for the text box
      * @param {number} y The y coordinate for the text box
      * @param {number} width The width of the text box to add
      * @param {number} height The height of the text box to add
      * @param {string|Promise} text The text to display in the text box
-     * @param {object} options Additional options
-     * @param {string|array} options.color either a hexadecimal (html) color, or array of rgb values (in %)
-     * @param {string} options.font The name or filename of the font to be used
-     * @param {string} options.halign how to align the text horizontally (left[default], center, right)
-     * @param {number} options.lineHeight The lineheight of the text
-     * @param {boolean} options.multiline treat this text as multiline (default: true)
-     * @param {boolean} options.overflow allow the text to overflow the boundaries (default: false) The text will be suffixed with three dots if it is too long
-     * @param {string} options.prefix a text to add at the beginning of @param text
-     * @param {number} options.size The font size
-     * @param {string} options.suffix a text to add at the end of @param text, after any overflow characters.
-     * @param {string} options.valign how to align the text vertically (top, center, bottom[default])
-     * @param {Function} options.valueParser function to parse the value after resolving the value Promise
+     * @param {object} [options={}] Additional options
+     * @param {string|number[]} [options.color] either a hexadecimal (html) color, or array of rgb values (in %)
+     * @param {string} [options.font] The name or filename of the font to be used
+     * @param {'left'|'center'|'right'} [options.halign='left'] how to align the text horizontally
+     * @param {number} [options.lineHeight] The lineheight of the text
+     * @param {boolean} [options.multiline=true] treat this text as multiline
+     * @param {boolean} [options.overflow=false] allow the text to overflow the boundaries. The text will be suffixed with three dots if it is too long
+     * @param {string} [options.prefix] a text to add at the beginning of @param text
+     * @param {number} [options.size] The font size
+     * @param {string} [options.suffix] a text to add at the end of @param text, after any overflow characters.
+     * @param {'top'|'center'|'bottom'} [options.valign='bottom'] how to align the text vertically
+     * @param {Function} [options.valueParser] function to parse the value after resolving the value Promise
      */
     textBox(reference, file, page, x, y, width, height, text, options = {}) {
         let fail = false;
