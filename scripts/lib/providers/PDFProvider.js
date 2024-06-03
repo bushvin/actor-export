@@ -1,6 +1,6 @@
 import { baseProvider } from './BaseProvider.js';
 import { genericHelper } from '../helpers/GenericHelper.js';
-import { layoutMultilineText, PDFDocument, rgb } from './pdf-lib.esm.js';
+import { layoutMultilineText, PDFDocument, StandardFonts, rgb } from './pdf-lib.esm.js';
 import fontkit from './fontkit.es.js';
 
 /**
@@ -183,37 +183,52 @@ export class pdfProvider extends baseProvider {
      * Embed a fontfile into the given PDF
      * @async
      * @param {PDFDocument} pdf The pdf to embed the font into
-     * @param {string} fileName the name of the file
+     * @param {string} fontName the name of the Standard font (pdf-lib.StandardFonts) or font filename
      * @returns {CustomFontEmbedder} The resulted embedded font
      */
-    async embedFont(pdf, fileName) {
-        if (Object.keys(this.pdfEmbeddedFonts).indexOf(fileName) > -1) {
-            return this.pdfEmbeddedFonts[fileName];
-        }
-        const moduleRootPath = this.providerRootPath.split('/').slice(0, 3).join('/');
-        const fontURIs = [
-            `${this.providerRootPath}/fonts/${fileName}?t=${Date.now()}`,
-            `${moduleRootPath}/fonts/${fileName}?t=${Date.now()}`,
-        ];
-        let errorCount = 0;
-        for (let i = 0; i < fontURIs.length; i++) {
-            const res = await fetch(fontURIs[i], { cache: 'no-store' });
-            if (res.ok) {
-                const fontBytes = await res.arrayBuffer();
-                try {
-                    this.pdfEmbeddedFonts[fileName] = await pdf.embedFont(fontBytes);
-                } catch (error) {
-                    errorCount++;
-                }
-            }
+    async embedFont(pdf, fontName) {
+        const embeddedFontIndex = Object.keys(this.pdfEmbeddedFonts)
+            .map((m) => m.toLocaleLowerCase())
+            .indexOf(fontName.toLowerCase());
+
+        if (embeddedFontIndex > -1) {
+            return Object.values(this.pdfEmbeddedFonts)[embeddedFontIndex];
         }
 
-        // If none of the font URIs could be embedded, raise an error
-        if (errorCount === fontURIs.length) {
-            this.notify('error', `Could not load font ${fileName}. Please make sure it exists.`);
-            throw new Error(`Failed to embed font ${fileName}.`);
+        const standardFontIndex = Object.keys(StandardFonts)
+            .map((m) => m.toLowerCase())
+            .indexOf(fontName.toLowerCase());
+
+        if (standardFontIndex === -1) {
+            // A font file is specified
+            const moduleRootPath = this.providerRootPath.split('/').slice(0, 3).join('/');
+            const fontURIs = [
+                `${this.providerRootPath}/fonts/${fontName}?t=${Date.now()}`,
+                `${moduleRootPath}/fonts/${fontName}?t=${Date.now()}`,
+            ];
+            let errorCount = 0;
+            for (let i = 0; i < fontURIs.length; i++) {
+                const res = await fetch(fontURIs[i], { cache: 'no-store' });
+                if (res.ok) {
+                    const fontBytes = await res.arrayBuffer();
+                    try {
+                        this.pdfEmbeddedFonts[fontName] = await pdf.embedFont(fontBytes);
+                    } catch (error) {
+                        errorCount++;
+                    }
+                }
+            }
+
+            // If none of the font URIs could be embedded, raise an error
+            if (errorCount === fontURIs.length) {
+                this.notify('error', `Could not load font ${fontName}. Please make sure it exists.`);
+                throw new Error(`Failed to embed font ${fontName}.`);
+            }
+        } else {
+            // A standard font is specified
+            this.pdfEmbeddedFonts[fontName] = await pdf.embedFont(Object.values(StandardFonts)[standardFontIndex]);
         }
-        return this.pdfEmbeddedFonts[fileName];
+        return this.pdfEmbeddedFonts[fontName];
     }
 
     /**
