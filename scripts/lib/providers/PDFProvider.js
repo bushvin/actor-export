@@ -32,6 +32,7 @@ import fontkit from './fontkit.es.js';
 export class pdfProvider extends baseProvider {
     constructor(actor) {
         super(actor);
+        this.pdfTitle = undefined;
         this.pdfFields = [];
         this.pdfImages = [];
         this.pdfTextBoxes = [];
@@ -747,6 +748,21 @@ export class pdfProvider extends baseProvider {
                 );
             }
         }
+        /**
+         * Set the metadata of the PDF document
+         */
+        const pdfKeywords = ['foundryvtt', 'actor-export', 'actor', 'charactersheet', 'character', 'sheet'];
+        if (typeof this.pdfTitle !== 'undefined') {
+            pdfKeywords.push(this.pdfTitle);
+        }
+        this.pdf.setTitle(this.pdfTitle || destinationFileName);
+        this.pdf.setSubject(`${this.pdfTitle || 'Actor'} Charactersheet`);
+        this.pdf.setProducer("Bushvin's actor-export");
+        this.pdf.setCreator('actor-export (https://github.com/bushvin/actor-export)');
+        this.pdf.setKeywords(pdfKeywords);
+        this.pdf.setCreationDate(new Date());
+        this.pdf.setModificationDate(new Date());
+
         const blob = new Blob([await this.pdf.save()], { type: 'application/pdf' });
         await saveAs(blob, destinationFileName);
     }
