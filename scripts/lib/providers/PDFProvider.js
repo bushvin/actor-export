@@ -121,10 +121,9 @@ export class pdfProvider extends baseProvider {
     /**
      * Embed an image to the given PDF Object
      * @async
-     * @param {PDFDocument} pdf The PDFDocument to add the image to
      * @param {Object} imageData an Object containing path, (x,y) coordinates, scaling information, etc...
      */
-    async embedImage(pdf, imageData) {
+    async embedImage(imageData) {
         const { page, x, y, path, maxWidth, maxHeight } = imageData;
 
         // Load the image
@@ -138,7 +137,7 @@ export class pdfProvider extends baseProvider {
             return;
         }
 
-        const pdfPages = pdf.getPages();
+        const pdfPages = this.pdf.getPages();
         if (pdfPages.length < page + 1) {
             this.notify(
                 'warning',
@@ -161,7 +160,7 @@ export class pdfProvider extends baseProvider {
             context.drawImage(htmlImage, 0, 0);
             const blob = await context.canvas.convertToBlob({ type: 'image/png' });
             const imageBuffer = await blob.arrayBuffer();
-            embeddedImage = await pdf.embedPng(imageBuffer);
+            embeddedImage = await this.pdf.embedPng(imageBuffer);
         } catch (error) {
             this.notify('warning', `Failed to embed the image: ${error}`);
             return;
@@ -181,13 +180,13 @@ export class pdfProvider extends baseProvider {
     }
 
     /**
-     * Embed a fontfile into the given PDF
+     * Embed a font into the given PDF
      * @async
-     * @param {PDFDocument} pdf The pdf to embed the font into
-     * @param {string} fontName the name of the Standard font (pdf-lib.StandardFonts) or font filename
+     * @param {string} fontName the case insensitive name of the standard font (pdf-lib.StandardFonts) or font filename.
+     * Current StandardFonts are: Courier, CourierBold, CourierOblique, CourierBoldOblique, Helvetica, HelveticaBold, HelveticaOblique, HelveticaBoldOblique, TimesRoman, TimesRomanBold, TimesRomanItalic, TimesRomanBoldItalic, Symbol, ZapfDingbats
      * @returns {CustomFontEmbedder} The resulted embedded font
      */
-    async embedFont(pdf, fontName) {
+    async embedFont(fontName) {
         const embeddedFontIndex = Object.keys(this.pdfEmbeddedFonts)
             .map((m) => m.toLocaleLowerCase())
             .indexOf(fontName.toLowerCase());
@@ -213,7 +212,7 @@ export class pdfProvider extends baseProvider {
                 if (res.ok) {
                     const fontBytes = await res.arrayBuffer();
                     try {
-                        this.pdfEmbeddedFonts[fontName] = await pdf.embedFont(fontBytes);
+                        this.pdfEmbeddedFonts[fontName] = await this.pdf.embedFont(fontBytes);
                     } catch (error) {
                         errorCount++;
                     }
@@ -227,7 +226,7 @@ export class pdfProvider extends baseProvider {
             }
         } else {
             // A standard font is specified
-            this.pdfEmbeddedFonts[fontName] = await pdf.embedFont(Object.values(StandardFonts)[standardFontIndex]);
+            this.pdfEmbeddedFonts[fontName] = await this.pdf.embedFont(Object.values(StandardFonts)[standardFontIndex]);
         }
         return this.pdfEmbeddedFonts[fontName];
     }
@@ -235,12 +234,11 @@ export class pdfProvider extends baseProvider {
     /**
      * Embed a Text Box to the given PDF Object
      * @async
-     * @param {PDFDocument} pdf The PDFDocument to add the Text Box to
      * @param {Object} textBoxData an Object containing path, (x,y) coordinates, scaling information, etc...
      */
-    async embedTextBox(pdf, textBoxData) {
+    async embedTextBox(textBoxData) {
         const { reference, file, page, x, y, width, height, text, options } = textBoxData;
-        const pdfPages = pdf.getPages();
+        const pdfPages = this.pdf.getPages();
         if (pdfPages.length < page + 1) {
             const debug = {
                 reference: reference,
@@ -275,12 +273,15 @@ export class pdfProvider extends baseProvider {
             prefix: String(options.prefix || ''),
         };
 
-        // TODO: check if this is a standard font.
         const fontName = options.font || this.pdfFontName;
-        await this.embedFont(pdf, fontName);
+        await this.embedFont(fontName);
 
-        if (Object.keys(this.pdfEmbeddedFonts).indexOf(fontName) > -1) {
-            textOptions.font = this.pdfEmbeddedFonts[fontName];
+        const embeddedFontIndex = Object.keys(this.pdfEmbeddedFonts)
+            .map((m) => m.toLocaleLowerCase())
+            .indexOf(fontName.toLowerCase());
+
+        if (embeddedFontIndex > -1) {
+            textOptions.font = Object.values(this.pdfEmbeddedFonts)[embeddedFontIndex];
         }
 
         let textWidth = 0;
@@ -702,7 +703,7 @@ export class pdfProvider extends baseProvider {
             for (let i = 0; i < this.pdfImages.length; i++) {
                 const image = this.pdfImages[i];
                 if (image.file.toLowerCase() === 'all' || image.file === this.providerFilePath) {
-                    await this.embedImage(pdf, image);
+                    await this.embedImage(image);
                 }
             }
 
@@ -710,7 +711,7 @@ export class pdfProvider extends baseProvider {
             for (let i = 0; i < this.pdfTextBoxes.length; i++) {
                 const textBox = this.pdfTextBoxes[i];
                 if (textBox.file.toLowerCase() === 'all' || textBox.file === this.providerFilePath) {
-                    await this.embedTextBox(pdf, textBox);
+                    await this.embedTextBox(textBox);
                 }
             }
         } catch (error) {
