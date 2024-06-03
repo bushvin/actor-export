@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.6.1] - 2024-06-03
+
+### Changed
+
+- `PDFProvider.pdfProvider.saveFile` prints a PDF field schema of fields found in the pdf file
+- `PF2eHelper.pf2eHelper.ancestryFeats` gets ancestry feats for each level, instead of every 4 levels
+- `PF2eHelper.pf2eHelper.skillFeats` gets skill feats for each level, instead of every 2 levels
+- `PF2eHelper.pf2eHelper.generalFeats` gets general feats for each level, instead of every 4 levels
+
+### Fixed
+
+- pf2e-paizo-bushvin provider: More than 2 lore skills no longer raise an error
+- pf2e-paizo-bushvin provider: Lore skill name is shortened when it starts with "lore"
+- pf2e-paizo-bushvin provider: Add skill feats for each level
+- pf2e-paizo-paizo provider: More than 2 lore skills no longer raise an error
+- pf2e-paizo-paizo provider: Lore skill name is shortened when it starts with "lore"
+- pf2e-paizo-paizo provider: Add skill feats for each level
+
 ## [2024.5.8] - 2024-05-27
 
 ### Fixed
