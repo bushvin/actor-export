@@ -204,7 +204,7 @@ Object.values(character.skills).forEach((skill) => {
         if (skill.label.length > 14) {
             pdfLabelStyle = { ...mf_10, ...{ halign: 'right' } };
         }
-        let skillName = skill.label;
+        let skillName = skill.label.trim();
         if (skillName.toLowerCase().endsWith('lore')) {
             skillName = skillName.slice(0, -4).trim();
         } else if (skillName.toLowerCase().startsWith('lore')) {
@@ -384,11 +384,16 @@ mapper.textBox(ref, fileName, 1, 49, 53, 162, 25, ancestryAndHeritageAbilities.j
 // Ancestry Feats
 const ancestry_y = [86, 272, 398, 524, 650];
 for (let level = 1; level <= 20; level = level + 4) {
-    const feats = character.ancestryFeats.filter((f) => f.level === level).map((m) => m.name);
+    const ancestryFeats = character.ancestryFeats.filter((f) => f.level === level).map((m) => m.name);
+    const skillFeats = character.skillFeats.filter((f) => f.level === level).map((m) => m.name);
+    let feats = ancestryFeats.sort().join(', ');
+    if (skillFeats.length > 0) {
+        feats = feats + '; Skill Feat: ' + skillFeats.sort().join(', ');
+    }
     if (ancestry_y.length > 0) {
         const y = ancestry_y[0];
         ancestry_y.shift();
-        mapper.textBox('Ancestry feats', fileName, 1, 49, y, 162, 20, feats.join(', '), mf_8_multiline);
+        mapper.textBox('Ancestry feats', fileName, 1, 49, y, 162, 20, feats, mf_8_multiline);
     }
 }
 
@@ -411,11 +416,16 @@ for (let level = 2; level <= 20; level = level + 2) {
 // General feats
 const general_feats_y = [208, 333, 460, 586, 712];
 for (let level = 3; level <= 20; level = level + 4) {
-    const feats = character.generalFeats.filter((f) => f.level === level).map((m) => m.name);
+    const generalFeats = character.generalFeats.filter((f) => f.level === level).map((m) => m.name);
+    const skillFeats = character.skillFeats.filter((f) => f.level === level).map((m) => m.name);
+    let feats = generalFeats.sort().join(', ');
+    if (skillFeats.length > 0) {
+        feats = feats + '; Skill Feat: ' + skillFeats.sort().join(', ');
+    }
     if (general_feats_y.length > 0) {
         const y = general_feats_y[0];
         general_feats_y.shift();
-        mapper.textBox('general feats', fileName, 1, 49, y, 162, 20, feats.sort().join(', '), mf_8_multiline);
+        mapper.textBox('general feats', fileName, 1, 49, y, 162, 20, feats, mf_8_multiline);
     }
 }
 
