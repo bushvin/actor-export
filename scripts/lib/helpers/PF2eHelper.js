@@ -1717,7 +1717,7 @@ class pf2eActor {
  * @param {string} methodName the name of the method the error has occurred in
  * @param {string} message the error message
  */
-class f2eActorPropertyError extends genericPropertyError {
+class pf2eActorPropertyError extends genericPropertyError {
     constructor(moduleName, className, methodName, message) {
         super(moduleName, className, methodName, message, 'pf2eActorPropertyError');
     }
