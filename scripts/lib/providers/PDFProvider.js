@@ -81,8 +81,8 @@ export class pdfProvider extends baseProvider {
     /**
      * Set the default font, size and lineheight for text boxes
      * @param {string} font The name of the font file
-     * @param {number} size The size of the font, expressed in % of the page height.
-     * @param {number} lineHeight The lineheight of the font, expressed in % of the page height.
+     * @param {number} size The size of the font
+     * @param {number} lineHeight The lineheight of the font
      */
     defaultFont(font, size, lineHeight = undefined) {
         // TODO: should we check the font is available?
@@ -647,7 +647,6 @@ export class pdfProvider extends baseProvider {
             } else {
                 buffer = this.customProviderFileArrayBuffer;
             }
-            //const buffer = await this.fileResponse.arrayBuffer();
             const pdf = await PDFDocument.load(buffer);
             this.pdf = pdf;
             pdf.registerFontkit(fontkit);
@@ -669,9 +668,6 @@ export class pdfProvider extends baseProvider {
                 throw Error(error);
             }
 
-            if (this.debug || false) {
-                console.debug(`actor-export | PDF | ${pdfFormFields.length} fields found.`);
-            }
             for (let i = 0; i < pdfFormFields.length; i++) {
                 const pdfField = pdfFormFields[i];
                 const fieldName = pdfField.getName().trim();
@@ -803,16 +799,16 @@ export class pdfProvider extends baseProvider {
      * @param {string} reference a reference for the textBox added (for debugging purposes)
      * @param {string|array} file the pdf filename(s) to apply the text box to ('all' means all PDFs)
      * @param {number|array} page The page(s) to add the text box to
-     * @param {number} x The x coordinate for the text box (in % of the page width)
-     * @param {number} y The y coordinate for the text box (in % of the page height)
-     * @param {number} width The width of the text box to add (in % of the page width)
-     * @param {number} height The height of the text box to add (in % of the page height)
+     * @param {number} x The x coordinate for the text box
+     * @param {number} y The y coordinate for the text box
+     * @param {number} width The width of the text box to add
+     * @param {number} height The height of the text box to add
      * @param {string|Promise} text The text to display in the text box
      * @param {object} options Additional options
      * @param {string|array} options.color either a hexadecimal (html) color, or array of rgb values (in %)
-     * @param {string} options.font The filename of the font used, will be looked for in the provider's font directory or the module's font directory
+     * @param {string} options.font The name or filename of the font to be used
      * @param {string} options.halign how to align the text horizontally (left[default], center, right)
-     * @param {number} options.lineHeight The lineheight of the text (in % of the page height)
+     * @param {number} options.lineHeight The lineheight of the text
      * @param {boolean} options.multiline treat this text as multiline (default: true)
      * @param {boolean} options.overflow allow the text to overflow the boundaries (default: false) The text will be suffixed with three dots if it is too long
      * @param {string} options.prefix a text to add at the beginning of @param text
