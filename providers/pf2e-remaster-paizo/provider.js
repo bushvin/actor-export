@@ -197,35 +197,39 @@ const lore_skill_y = [477, 503];
 Object.values(character.skills).forEach((skill) => {
     let y;
     let pdfLabelStyle;
-    if (skill.isLore) {
+    if (skill.isLore && lore_skill_y.length > 0) {
         y = lore_skill_y[0];
         lore_skill_y.shift();
         pdfLabelStyle = { ...mf_12, ...{ halign: 'right' } };
         if (skill.label.length > 14) {
             pdfLabelStyle = { ...mf_10, ...{ halign: 'right' } };
         }
-        let skillName = skill.label;
+        let skillName = skill.label.trim();
         if (skillName.toLowerCase().endsWith('lore')) {
-            skillName = skillName.trim().slice(0, -4).trim();
+            skillName = skillName.slice(0, -4).trim();
+        } else if (skillName.toLowerCase().startsWith('lore')) {
+            skillName = skillName.slice(4).trim();
         }
         mapper.textBox(ref, fileName, 0, 0, y - 3, 68, 18, skillName, pdfLabelStyle);
-    } else {
+    } else if (!skill.isLore && skill_y.length > 0) {
         y = skill_y[0];
         skill_y.shift();
     }
-    ref = `${skill.label} skill`;
-    mapper.textBox(ref, fileName, 0, 95, y, 32, 18, pf2eHelper.quantifyNumber(skill.modifier), mf_15_centered);
-    mapper.textBox(ref, fileName, 0, 146, y + 1, 19, 12, skill.attributeModifier, mf_12_centered);
-    mapper.textBox(ref, fileName, 0, 166, y + 1, 19, 12, skill.proficiencyModifier, mf_12_centered);
-    mapper.textBox(ref, fileName, 0, 187, y + 1, 19, 12, skill.itemModifier, mf_12_centered);
-    if (typeof skill.armorModifier !== 'undefined') {
-        mapper.textBox(ref, fileName, 0, 207, y + 1, 19, 12, skill.armorModifier, mf_12_centered);
+    if (typeof y !== 'undefined') {
+        ref = `${skill.label} skill`;
+        mapper.textBox(ref, fileName, 0, 95, y, 32, 18, pf2eHelper.quantifyNumber(skill.modifier), mf_15_centered);
+        mapper.textBox(ref, fileName, 0, 146, y + 1, 19, 12, skill.attributeModifier, mf_12_centered);
+        mapper.textBox(ref, fileName, 0, 166, y + 1, 19, 12, skill.proficiencyModifier, mf_12_centered);
+        mapper.textBox(ref, fileName, 0, 187, y + 1, 19, 12, skill.itemModifier, mf_12_centered);
+        if (typeof skill.armorModifier !== 'undefined') {
+            mapper.textBox(ref, fileName, 0, 207, y + 1, 19, 12, skill.armorModifier, mf_12_centered);
+        }
+        ref = `${skill.label} proficiency`;
+        mapper.textBox(ref, fileName, 0, 133, y, 5, 5, pf2eHelper.evalCheckMark(skill.rank >= 1), mf_8_centered);
+        mapper.textBox(ref, fileName, 0, 133, y + 5, 5, 5, pf2eHelper.evalCheckMark(skill.rank >= 2), mf_8_centered);
+        mapper.textBox(ref, fileName, 0, 133, y + 10, 5, 5, pf2eHelper.evalCheckMark(skill.rank >= 3), mf_8_centered);
+        mapper.textBox(ref, fileName, 0, 133, y + 15, 5, 5, pf2eHelper.evalCheckMark(skill.rank >= 4), mf_8_centered);
     }
-    ref = `${skill.label} proficiency`;
-    mapper.textBox(ref, fileName, 0, 133, y, 5, 5, pf2eHelper.evalCheckMark(skill.rank >= 1), mf_8_centered);
-    mapper.textBox(ref, fileName, 0, 133, y + 5, 5, 5, pf2eHelper.evalCheckMark(skill.rank >= 2), mf_8_centered);
-    mapper.textBox(ref, fileName, 0, 133, y + 10, 5, 5, pf2eHelper.evalCheckMark(skill.rank >= 3), mf_8_centered);
-    mapper.textBox(ref, fileName, 0, 133, y + 15, 5, 5, pf2eHelper.evalCheckMark(skill.rank >= 4), mf_8_centered);
 });
 
 // Skill Notes
