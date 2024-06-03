@@ -17,7 +17,17 @@ class pf2eActor {
     constructor(game, actor) {
         this.actor = actor;
         this.game = game;
+        /**
+         * the list of spellcasting traditions
+         * @type {string[]}
+         * @public
+         */
         this.spellcastingTraditions = ['arcane', 'occult', 'primal', 'divine'];
+        /**
+         * the list of spellcatsing types
+         * @type {string[]}
+         * @public
+         */
         this.spellcastingTypes = ['prepared', 'spontaneous'];
         console.debug('actor-export | character:', this);
     }
@@ -49,7 +59,7 @@ class pf2eActor {
 
     /**
      * actor traits
-     * @type {array}
+     * @type {string[]}
      */
     get traits() {
         return Array.from(this.actor.traits);
@@ -562,7 +572,7 @@ class pf2eActor {
 
     /**
      * actor list of movement
-     * @type {array}
+     * @type {Object[]}
      */
     get movement() {
         const movement = [];
@@ -598,7 +608,7 @@ class pf2eActor {
 
     /**
      * actor strikes
-     * @type {array}
+     * @type {Object[]}
      */
     get strikes() {
         const strikes = [];
@@ -734,8 +744,15 @@ class pf2eActor {
     }
 
     /**
+     * @typedef {Object} Heritage
+     * @property {string} name The heritage name
+     * @property {string} displayName the heritage display name
+     * @property {string} description the description of the heritage
+     */
+
+    /**
      * actor ancestry and heritage abilities
-     * @type {array}
+     * @type {Heritage[]}
      */
     get ancestryAndHeritageAbilities() {
         const ancestryAndHeritageAbilities = [];
@@ -767,8 +784,17 @@ class pf2eActor {
     }
 
     /**
+     * @typedef {Object} Feat
+     * @property {string} description  the description of the feat
+     * @property {number} level the level of the feat
+     * @property {string} name the name of the feat
+     * @property {string} prerequisites the prerequisites of the feat
+     * @property {string[]} traits the traits of the feat
+     */
+
+    /**
      * actor ancestry feats
-     * @type {array}
+     * @type {Feat[]}
      */
     get ancestryFeats() {
         const ancestryFeats = [];
@@ -806,7 +832,7 @@ class pf2eActor {
 
     /**
      * actor background skill feats
-     * @type {array}
+     * @type {Feat[]}
      */
     get backgroundSkillFeats() {
         const backgroundSkillFeats = [];
@@ -834,7 +860,7 @@ class pf2eActor {
 
     /**
      * actor skill feats
-     * @type {array}
+     * @type {Feat[]}
      */
     get skillFeats() {
         const skillFeats = [];
@@ -860,7 +886,7 @@ class pf2eActor {
 
     /**
      * actor general feats
-     * @type {array}
+     * @type {Feat[]}
      */
     get generalFeats() {
         const generalFeats = [];
@@ -885,8 +911,14 @@ class pf2eActor {
     }
 
     /**
+     * @typedef {Object} AtrributeBoost an attribute boost
+     * @property {number} level the level for the applied boost
+     * @property {'str'|'dex'|'con'|'int'|'wis'|'cha'} ability the shortname of the ability boost
+     */
+
+    /**
      * actor attribute boosts
-     * @type {array}
+     * @type {AtrributeBoost[]}
      */
     get attributeBoosts() {
         const attributeBoosts = [];
@@ -906,7 +938,7 @@ class pf2eActor {
 
     /**
      * actor class feats
-     * @type {array}
+     * @type {Feat[]}
      */
     get classFeats() {
         const classFeats = [];
@@ -933,8 +965,16 @@ class pf2eActor {
     }
 
     /**
+     * @typedef {Object} Feature a class feature
+     * @property {number} level the level for the feature
+     * @property {string} name the name of the feature
+     * @property {string[]} traits teh traits of the feature
+     * @property {string} frequency the frequency a feature can be used
+     * @property {string} description  the description of the feature
+     */
+    /**
      * actor class features
-     * @type {array}
+     * @type {Feature[]}
      */
     get classFeatures() {
         const classFeatures = [];
@@ -970,8 +1010,28 @@ class pf2eActor {
     }
 
     /**
+     * @typedef {Object} Item an inventory item
+     * @property {number} containerLevel the level of the container the item is in
+     * @property {string} name the name of the item
+     * @property {string} displayName the display name of th eitem entry
+     * @property {number} quantity the number of this item in the inventory
+     * @property {boolean} isMagical is the item magical?
+     * @property {boolean} isInvested is the item invested?
+     * @property {number} bulk the bulk value of the item
+     * @property {'armor'|'weapon'|'treasure'|'equipment'|'backpack'} type the type of the item
+     * @property {string} stackGroup don't know
+     * @property {'worn'|'stowed'} carryType how is the item carried
+     * @property {number} level the level of the item
+     * @property {string[]} price the price of the item
+     * @property {string[]} traits the triats of the item
+     * @property {string} description the description of the item
+     * @property {Item[]} items The items within the container
+     * @property {string} containerId the id of the container the item is in
+     */
+
+    /**
      * all actor items
-     * @type {array}
+     * @type {Item[]}
      */
     get items() {
         const items = this._items();
@@ -980,9 +1040,9 @@ class pf2eActor {
 
     /**
      * Enumerate actor items in a container
-     * @param {null|string} containerId the id of the container to get the items from (null for the root)
-     * @param {number} level a number indicating the level of depth the item is in
-     * @returns {array}
+     * @param {null|string} [containerId=null] the id of the container to get the items from (null for the root)
+     * @param {number} [level=0] a number indicating the level of depth the item is in
+     * @returns {Item[]}
      */
     _items(containerId = null, level = 0) {
         const _items = [];
@@ -1005,7 +1065,7 @@ class pf2eActor {
     /**
      * parse an item into the requested format
      * @param {Object} item the item to parse
-     * @returns {Object}
+     * @returns {Item}
      */
     _rawItem(item) {
         const rawItem = {
@@ -1031,8 +1091,8 @@ class pf2eActor {
 
     /**
      * return a flat list of items
-     * @param {array} itemList list of items to parse
-     * @returns {array}
+     * @param {Item[]} [itemList=this.items] list of items to parse
+     * @returns {Item[]}
      */
     flatItems(itemList = this.items) {
         const flatItems = [];
@@ -1049,7 +1109,7 @@ class pf2eActor {
 
     /**
      * actor held items
-     * @type {array}
+     * @type {Item[]}
      */
     get heldItems() {
         return this.items.filter(
@@ -1060,7 +1120,7 @@ class pf2eActor {
 
     /**
      * actor consumables
-     * @type {array}
+     * @type {Item[]}
      */
     get consumables() {
         return this.items.filter((f) => f.stackGroup !== 'coins' && f.type === 'consumable');
@@ -1068,7 +1128,7 @@ class pf2eActor {
 
     /**
      * actor worn items
-     * @type {array}
+     * @type {Item[]}
      */
     get wornItems() {
         return this.items.filter(
@@ -1078,8 +1138,17 @@ class pf2eActor {
     }
 
     /**
+     * @typedef {Object} Coins
+     * @property {number} cp Copper pieces
+     * @property {number} sp Silver pieces
+     * @property {number} gp Gold pieces
+     * @property {number} pp Platinum pieces
+     *
+     */
+
+    /**
      * actor coins
-     * @type {Object}
+     * @type {Coins}
      */
     get coins() {
         const coins = {};
@@ -1122,15 +1191,38 @@ class pf2eActor {
 
     /**
      * actor gems and artwork
-     * @type {array}
+     * @type {Item[]}
      */
     get gemsAndArtwork() {
         return this.items.filter((f) => f.stackGroup !== 'coins' && f.type !== 'consumable' && f.type === 'treasure');
     }
 
     /**
+     * @typedef {Object} Details
+     * @property {string} ethnicity
+     * @property {string} nationality
+     * @property {string} age
+     * @property {string} gender
+     * @property {string} height
+     * @property {string} weight
+     * @property {string} deity
+     * @property {Object} biography
+     * @property {string} biography.appearance
+     * @property {string} biography.attitude
+     * @property {string} biography.edicts
+     * @property {string} biography.anathema
+     * @property {string} biography.dislikes
+     * @property {string} biography.likes
+     * @property {string} biography.catchphrases
+     * @property {string} biography.campaignNotes
+     * @property {string} biography.allies
+     * @property {string} biography.enemies
+     * @property {string} biography.organizations
+     */
+
+    /**
      * actor details
-     * @type {Object}
+     * @type {Details}
      */
     get details() {
         const details = {};
@@ -1163,8 +1255,21 @@ class pf2eActor {
     }
 
     /**
+     * @typedef {Object} Action
+     * @property {string} name
+     * @property {string[]} traits
+     * @property {string} reference
+     * @property {string} frequency
+     * @property {string} type
+     * @property {string} description
+     * @property {number} actionCount
+     * @property {string} category
+     * @property {string} glyph
+     */
+
+    /**
      * actor actions, free actions and reactions
-     * @type {array}
+     * @type {Action[]}
      */
     get activities() {
         const activities = [];
@@ -1301,7 +1406,7 @@ class pf2eActor {
 
     /**
      * actor spellcasting entries
-     * @type {array}
+     * @type {Object[]}
      */
     get spellCastingEntries() {
         return this.actor.spellcasting.filter((f) => f.type === 'spellcastingEntry');
@@ -1309,7 +1414,7 @@ class pf2eActor {
 
     /**
      * actor spell proficiency
-     * @type {Object}
+     * @type {Object[]}
      */
     get spellProficiency() {
         try {
