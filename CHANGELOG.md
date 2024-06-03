@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.6.3] - 2021-06-03
+
+### Added
+
+- `PDFProvider.pdfProvider.embedFont` supports pdf-lib.StandardFonts
+- `PDFProvider.pdfProvider.saveFile` include document metadata
+- dnd5e provider: pdf title
+- pf2e-remaster-bushvin provider: pdf title
+- pf2e-remaster-paizo provider: pdf title
+
+### Changed
+
+- `PDFProvider.pdfProvider.embedImage` simplify method
+- `PDFProvider.pdfProvider.embedFont` simplify method
+- `PDFProvider.pdfProvider.embedTextBox` simplify method
+- `PDFProvider.pdfProvider.embedTextBox` make font name case insensitive to lookup
+
+### Fixed
+
+- `PF2eHelper.pf2eActorPropertyError` had a typo in the name
+
 ## [2024.6.2] - 2024-06-03
 
 ### Fixed
