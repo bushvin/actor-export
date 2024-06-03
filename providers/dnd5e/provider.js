@@ -128,9 +128,8 @@ mapper.textBox(ref, fileNames, 0, 228, 211, 91, 14, character.hp.value, mf_12);
 mapper.textBox(ref, fileNames, 0, 228, 262, 91, 14, character.hp.temp, mf_12);
 
 // Hid Dice
-mapper.textBox(ref, fileNames, 0, 246, 313, 48, 14, character.hd, mf_12);
-
-// <== here!
+mapper.textBox(ref, fileNames, 0, 246, 313, 48, 14, character.hd.max, mf_12);
+mapper.textBox(ref, fileNames, 0, 228, 329, 70, 14, character.hd.value, mf_12);
 
 // Death Saves
 const deathSuccesses = character.deathSave.successes;
@@ -424,7 +423,8 @@ mapper.textBox(ref, fileNames, 0, 220, 203, 155, 14, character.hp.value, mf_12);
 mapper.textBox(ref, fileNames, 0, 220, 254, 155, 14, character.hp.temp, mf_12);
 
 // Hid Dice
-mapper.textBox(ref, fileNames, 0, 240, 304, 46, 14, character.hd, mf_12);
+mapper.textBox(ref, fileNames, 0, 240, 304, 46, 14, character.hd.max, mf_12);
+mapper.textBox(ref, fileNames, 0, 221, 319, 70, 14, character.hd.value, mf_12);
 
 // Death Saves
 ref = 'death saves';
@@ -663,7 +663,8 @@ mapper.textBox(ref, fileNames, 0, 218, 225, 160, 14, character.hp.value, mf_12);
 mapper.textBox(ref, fileNames, 0, 218, 275, 160, 14, character.hp.temp, mf_12);
 
 // Hid Dice
-mapper.textBox(ref, fileNames, 0, 243, 328, 46, 14, character.hd, mf_12);
+mapper.textBox(ref, fileNames, 0, 243, 328, 46, 14, character.hd.max, mf_12);
+mapper.textBox(ref, fileNames, 0, 221, 343, 70, 14, character.hd.value, mf_12);
 
 // Death Saves
 ref = 'death saves';
