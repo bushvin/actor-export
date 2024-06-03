@@ -53,6 +53,7 @@ const fileName = 'pf2e-remastered.pdf';
 
 // an abstraction of actor
 const character = pf2eHelper.getActorObject(game, actor);
+mapper.pdfTitle = character.name;
 
 mapper.image(fileName, 2, 29, 39, actor.img, 178, 265);
 

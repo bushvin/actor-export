@@ -36,6 +36,7 @@ let ref;
 let fileNames;
 
 const character = dnd5eHelper.getActorObject(game, actor);
+mapper.pdfTitle = character.name;
 
 // ______      ______   _____        _____            _ _     _
 // |  _  \___  |  _  \ |  ___|      |  ___|          | (_)   | |
