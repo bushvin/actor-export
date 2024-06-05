@@ -12,7 +12,7 @@ import fontkit from './fontkit.es.js';
 
 /**
  * @class
- * A class to manipulate PDF files. Fills out forms created text boxes and adds images.
+ * A class to manipulate PDF files.
  *
  * You should use:
  *   - pdfProvider.field to add form field text
@@ -22,6 +22,7 @@ import fontkit from './fontkit.es.js';
  * @extends baseProvider
  * @requires pdf-lib
  * @requires fontkit
+ * @requires pako
  * requires pdf-lib.esm
  * url: https://cdnjs.com/libraries/pdf-lib
  * requires fontkit.es
@@ -50,8 +51,8 @@ export class pdfProvider extends baseProvider {
     /**
      * Convert Hexadecimal color (HTML) to RGB
      * @param {string} hex The hexadecimal value (html color) representing a color
-     * @param {Array} [defaultRGB=[0, 0, 0]] The default color to return if @param hex is invalid
-     * @returns {Array} the RGB color code in % for each of the main colors, or the color code for black
+     * @param {number[]} [defaultRGB=[0, 0, 0]] The default color to return if @param hex is invalid
+     * @returns {number[]} the RGB color code in % for each of the main colors, or the color code for black
      */
     convertHexColorToRgb(hex, defaultRGB = [0, 0, 0]) {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -66,7 +67,6 @@ export class pdfProvider extends baseProvider {
 
     /**
      * Create a file when no file is associated with the provider sheet
-     * @returns {undefined}
      */
     async createFile() {
         if (typeof this.customProviderFile !== 'undefined') {
@@ -130,7 +130,6 @@ export class pdfProvider extends baseProvider {
      * @param {string} imageData.path the url to the image to embed
      * @param {number} imageData.maxWidth the maximum width of the image
      * @param {number} imageData.maxHeight the maximum height of the image
-     * @returns undefined
      */
     async embedImage(imageData) {
         const { page, x, y, path, maxWidth, maxHeight } = imageData;
@@ -394,7 +393,6 @@ export class pdfProvider extends baseProvider {
         } else if ((textOptions.valign || 'bottom') === 'middle') {
             textOptions.y = textOptions.y + (textOptions.height - textLineHeight) / 2;
         }
-        // TODO: vertical alignment: middle
 
         if (textOptions.debug || this.debugProvider || false) {
             console.debug('actor-export | PDF |', reference);
@@ -784,36 +782,6 @@ export class pdfProvider extends baseProvider {
 
         const blob = new Blob([await this.pdf.save()], { type: 'application/pdf' });
         await saveAs(blob, destinationFileName);
-    }
-
-    /**
-     * asynchronously parse a value through a function
-     * @async
-     * @param {any|Promise} value the value to be parsed
-     * @param {Function} parser the parser function, arguments passed are the (awaited) value and `this`
-     * @returns the parsed value
-     */
-    async parseValue(value, parser) {
-        if (value instanceof Promise) {
-            value = await value;
-        }
-        if (typeof parser === 'function') {
-            if (typeof value === 'undefined') {
-                this.notify('warning', 'The value you have specified is undefined');
-            }
-            try {
-                return parser(value, this);
-            } catch (error) {
-                this.notify('error', `Parsing value ${value} through your parser failed`);
-                console.error('error', error);
-                throw Error(error);
-            }
-        } else if (typeof parser !== 'undefined') {
-            this.notify('warning', `The parser you have specified is invalid.`);
-            return;
-        }
-
-        return value;
     }
 
     /**

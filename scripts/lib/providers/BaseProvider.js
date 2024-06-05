@@ -249,6 +249,36 @@ export class baseProvider {
     }
 
     /**
+     * asynchronously parse a value through a function
+     * @async
+     * @param {any|Promise} value the value to be parsed
+     * @param {Function} parser the parser function, arguments passed are the (awaited) value and `this`
+     * @returns the parsed value
+     */
+    async parseValue(value, parser) {
+        if (value instanceof Promise) {
+            value = await value;
+        }
+        if (typeof parser === 'function') {
+            if (typeof value === 'undefined') {
+                this.notify('warning', 'The value you have specified is undefined');
+            }
+            try {
+                return parser(value, this);
+            } catch (error) {
+                this.notify('error', `Parsing value ${value} through your parser failed`);
+                console.error('error', error);
+                throw Error(error);
+            }
+        } else if (typeof parser !== 'undefined') {
+            this.notify('warning', `The parser you have specified is invalid.`);
+            return;
+        }
+
+        return value;
+    }
+
+    /**
      * Get providerFullFilePath
      */
     get providerFullFilePath() {
