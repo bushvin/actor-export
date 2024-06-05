@@ -1,5 +1,6 @@
 /**
  * BaseProvider module
+ * This module should be used as the basis for new providers
  * @module BaseProvider
  * @author William Leemans
  * @copyright William Leemans 2024
@@ -11,7 +12,7 @@
  * @param {string} className The name of the class the error is related to
  * @param {string} methodName The name of the method the error is related to
  * @param {string} message An error message
- * @param {string} errorClassName the name of the error class raising the error
+ * @param {string} [errorClassName='providerError'] the name of the error class raising the error
  */
 export class providerError extends Error {
     constructor(className, methodName, message, errorClassName = 'providerError') {
@@ -129,7 +130,7 @@ export class baseProvider {
      * @param {string} providerRootPath the URI of the provider
      * @param {string} providerFilePath the URI of the file to use, relative to the providerPath
      * @param {string} providerDestinationFileName the name of the file to be saved
-     * @param {function} postDownloadFunction the function to be executed after execution
+     * @param {Function} [postDownloadFunction=Function] the function to be executed after execution
      */
     download(providerRootPath, providerFilePath, providerDestinationFileName, postDownloadFunction = function () {}) {
         this.providerRootPath = providerRootPath;
@@ -212,7 +213,7 @@ export class baseProvider {
      * Will use the Foundry VTT notifier by default but falls back on `console` if ui.notifications is not available.
      * @param {string} severity - The severity of the message (debug, error, warning, info).
      * @param {string} message - The message to display.
-     * @param {Object} options - Additional options for ui.notifications.
+     * @param {Object} [options] - Additional options for ui.notifications.
      */
     notify(severity, message, options) {
         const msg = `${this.logPrefix} | ${message}`;
@@ -279,7 +280,8 @@ export class baseProvider {
     }
 
     /**
-     * Get providerFullFilePath
+     * Get the full path to the provider being used
+     * @returns {string} the correct URL to the provider
      */
     get providerFullFilePath() {
         if (
