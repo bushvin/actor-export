@@ -144,6 +144,7 @@ class actorExport {
      * @returns {Object}
      */
     static evalProviderRequirements(provider) {
+        const foundryvtt_version = game.version;
         const system = game.system.id;
         const system_version = game.system.version;
 
@@ -153,10 +154,13 @@ class actorExport {
         }
         provider.requirements.forEach((req) => {
             if (
+                (typeof req.foundryvtt_version === 'undefined' ||
+                    (typeof req.foundryvtt_version !== 'undefined' &&
+                        this.evalVersion(foundryvtt_version, req.foundryvtt_version, req.foundryvtt_operator))) &&
                 (typeof req.system === 'undefined' || (typeof req.system !== 'undefined' && req.system === system)) &&
                 (typeof req.system_version === 'undefined' ||
                     (typeof req.system_version !== 'undefined' &&
-                        this.evalVersion(system_version, req.system_version, req.operator)))
+                        this.evalVersion(system_version, req.system_version, req.system_operator)))
             ) {
                 provider.allowed = true;
             }
