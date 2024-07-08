@@ -432,55 +432,47 @@ for (let level = 3; level <= 20; level = level + 4) {
 
 // Attribute boosts
 const boost_y = [271, 428, 586, 743];
-pf2eHelper
-    .unique(character.attributeBoosts.map((m) => m.level))
-    .sort()
-    .forEach((level) => {
-        const boosts = pf2eHelper.formatAttributeBoosts(
-            character.attributeBoosts.filter((f) => f.level === level).map((m) => m.boost)
-        );
-        if (boost_y.length > 0) {
-            const y = boost_y[0];
-            boost_y.shift();
-            mapper.textBox('attribute boosts', fileName, 1, 184, y, 27, 20, boosts, mf_6_multiline);
-        }
-    });
+for (let level = 5; level <= 20; level = level + 5) {
+    const boosts = pf2eHelper.formatAttributeBoosts(
+        character.attributeBoosts.filter((f) => f.level === level).map((m) => m.boost)
+    );
+    if (boost_y.length > 0) {
+        const y = boost_y[0];
+        boost_y.shift();
+        mapper.textBox('attribute boosts', fileName, 1, 184, y, 27, 20, boosts, mf_6_multiline);
+    }
+}
 
 // Class Feats and Features
 // Class Features
 const class_features_y = [53, 208, 272, 333, 398, 460, 524, 586, 650, 712];
 let firstFeature = true;
-pf2eHelper
-    .unique(character.classFeatures.map((m) => m.level))
-    .sort()
-    .forEach((level) => {
-        const features = character.classFeatures.filter((f) => f.level === level).map((m) => m.name);
-        ref = 'class features';
-        if (class_features_y.length > 0) {
-            const y = class_features_y[0];
-            class_features_y.shift();
-            let pdfHeight = 20;
-            if (firstFeature) {
-                firstFeature = false;
-                pdfHeight = 113;
-            }
-            mapper.textBox(ref, fileName, 1, 216, y, 179, pdfHeight, features.sort().join(', '), mf_8_multiline);
+
+for (let level = 1; level <= 20; level = level + 2) {
+    const features = character.classFeatures.filter((f) => f.level === level).map((m) => m.name);
+    ref = 'class features';
+    if (class_features_y.length > 0) {
+        const y = class_features_y[0];
+        class_features_y.shift();
+        let pdfHeight = 20;
+        if (firstFeature) {
+            firstFeature = false;
+            pdfHeight = 113;
         }
-    });
+        mapper.textBox(ref, fileName, 1, 216, y, 179, pdfHeight, features.sort().join(', '), mf_8_multiline);
+    }
+}
 
 // Class Feats
 const class_feats_y = [176, 239, 302, 365, 428, 491, 554, 617, 680, 742];
-pf2eHelper
-    .unique(character.classFeats.map((m) => m.level))
-    .sort()
-    .forEach((level) => {
-        const feats = character.classFeats.filter((f) => f.level === level).map((m) => m.name);
-        if (class_feats_y.length > 0) {
-            const y = class_feats_y[0];
-            class_feats_y.shift();
-            mapper.textBox('class feats', fileName, 1, 216, y, 179, 20, feats.sort().join(', '), mf_8_multiline);
-        }
-    });
+for (let level = 2; level <= 20; level = level + 2) {
+    const feats = character.classFeats.filter((f) => f.level === level).map((m) => m.name);
+    if (class_feats_y.length > 0) {
+        const y = class_feats_y[0];
+        class_feats_y.shift();
+        mapper.textBox('class feats', fileName, 1, 216, y, 179, 20, feats.sort().join(', '), mf_8_multiline);
+    }
+}
 
 // Inventory
 let y = 0;
