@@ -920,9 +920,13 @@ class pf2eActor {
                         const sub = this.actor.items
                             .filter((f) => f.flags?.pf2e?.grantedBy?.id === f._id)
                             .map((m) => m.name);
+                        let featName = f.name;
+                        if (f.grants.length > 0) {
+                            featName = featName + ' (' + f.grants.map((m) => m.name).join(', ') + ')';
+                        }
                         const feat = {
                             level: i,
-                            name: f.name,
+                            name: featName,
                             description: f.system.description.value,
                             traits: [f.system.traits.rarity].concat(f.system.traits.value),
                             prerequisites: f.system.prerequisites.value,
@@ -978,8 +982,12 @@ class pf2eActor {
                 this.actor.items
                     .filter((f) => f.type === 'feat' && f.system.location === `skill-${i}`)
                     .forEach((f) => {
+                        let featName = f.name;
+                        if (f.grants.length > 0) {
+                            featName = featName + ' (' + f.grants.map((m) => m.name).join(', ') + ')';
+                        }
                         skillFeats.push({
-                            name: f.name,
+                            name: featName,
                             level: i,
                             description: f.system.description.value,
                             traits: [f.system.traits.rarity].concat(f.system.traits.value),
@@ -1004,9 +1012,13 @@ class pf2eActor {
                 this.actor.items
                     .filter((f) => f.type === 'feat' && f.system.location === `general-${i}`)
                     .forEach((f) => {
+                        let featName = f.name;
+                        if (f.grants.length > 0) {
+                            featName = featName + ' (' + f.grants.map((m) => m.name).join(', ') + ')';
+                        }
                         generalFeats.push({
                             level: i,
-                            name: f.name,
+                            name: featName,
                             description: f.system.description.value,
                             prerequisites: f.system.prerequisites.value,
                             traits: [f.system.traits.rarity].concat(f.system.traits.value),
