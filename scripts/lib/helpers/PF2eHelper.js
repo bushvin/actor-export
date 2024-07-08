@@ -1,7 +1,7 @@
 import { genericPropertyError, genericHelper } from './GenericHelper.js';
 import { semVer } from '../SemVer.js';
 /**
- * PF2eHelper module
+ * PF2eHelper module. Provides a couple of classes to easily manage your PF2e characters.
  * @module PF2eHelper
  * @author William Leemans
  * @copyright William Leemans 2024
@@ -9,6 +9,9 @@ import { semVer } from '../SemVer.js';
 
 /**
  * pf2e actor abstraction base class
+ *
+ * This class provides a stable interface to the FoundryVTT actor object for use in
+ * your charactersheets.
  * @class
  * @param {Object} game The foundry VTT game object
  * @param {Object} actor Foundry VTT actor object
@@ -33,7 +36,7 @@ class pf2eActor {
     }
 
     /**
-     * actor name
+     * Return the actor name
      * @type {string}
      */
     get name() {
@@ -41,7 +44,7 @@ class pf2eActor {
     }
 
     /**
-     * actor owner name
+     * Return the Owner name of the actor
      * @type {string}
      */
     get ownerName() {
@@ -58,7 +61,7 @@ class pf2eActor {
     }
 
     /**
-     * actor traits
+     * Return the actor traits
      * @type {string[]}
      */
     get traits() {
@@ -66,8 +69,14 @@ class pf2eActor {
     }
 
     /**
-     * actor ancestry
-     * @type {string}
+     * @typedef {Object} actorAncestry
+     * @property {string} name
+     * @property {string} description
+     */
+
+    /**
+     * Return the actor ancestry information
+     * @type {actorAncestry}
      */
     get ancestry() {
         const ancestry = {
@@ -78,8 +87,14 @@ class pf2eActor {
     }
 
     /**
-     * actor heritage
-     * @type {string}
+     * @typedef {Object} actorHeritage
+     * @property {string} name
+     * @property {string} description
+     */
+
+    /**
+     * Return the actor heritage information
+     * @type {actorHeritage}
      */
     get heritage() {
         const heritage = {
@@ -91,7 +106,7 @@ class pf2eActor {
     }
 
     /**
-     * actor (small) size
+     * Return the actor's (abbreviated) size
      * @type {string}
      */
     get size() {
@@ -99,8 +114,14 @@ class pf2eActor {
     }
 
     /**
-     * actor background
-     * @type {Object}
+     * @typedef {Object} actorBackground
+     * @property {string} name
+     * @property {string} description
+     */
+
+    /**
+     * Return the actor background information
+     * @type {actorBackground}
      */
     get background() {
         return {
@@ -110,15 +131,23 @@ class pf2eActor {
     }
 
     /**
-     * actor class
-     * @type {string}
+     * @typedef {Object} actorClass
+     * @property {string} name
+     * @property {string} description
+     * @property {string} subClass
+     * @property {string} id
+     */
+
+    /**
+     * Return the actor class information
+     * @type {actorClass}
      */
     get class() {
         const classInfo = {
             name: this.actor.class?.name || 'unknown',
             description: actor.class?.system.description.value,
             subClass: '',
-            id: this.actor.class?._id,
+            id: this.actor.class?._id || '',
         };
         const subClassFeatures = [
             'research-field', // alchemist
@@ -159,7 +188,7 @@ class pf2eActor {
     }
 
     /**
-     * actor level
+     * Return the actor level
      * @type {number|string}
      */
     get level() {
@@ -171,7 +200,7 @@ class pf2eActor {
     }
 
     /**
-     * actor XPs
+     * Return the actor's XP count
      * @type {number|string}
      */
     get xp() {
@@ -183,7 +212,7 @@ class pf2eActor {
     }
 
     /**
-     * actor hero points
+     * Return the actor's hero point count
      * @type {number}
      */
     get heroPoints() {
@@ -191,8 +220,25 @@ class pf2eActor {
     }
 
     /**
-     * actor attributes
-     * @type {Object}
+     * @typedef {Object} actorAttribute
+     * @property {string} name
+     * @property {number} modifier
+     * @property {boolean} isPartialBoost
+     */
+
+    /**
+     * @typedef {Object} actorAttributes
+     * @property {actorAttribute} str
+     * @property {actorAttribute} dex
+     * @property {actorAttribute} con
+     * @property {actorAttribute} int
+     * @property {actorAttribute} wis
+     * @property {actorAttribute} dex
+     */
+
+    /**
+     * return the actor's attributes
+     * @type {actorAttributes}
      */
     get attributes() {
         const attributes = {};
@@ -211,8 +257,16 @@ class pf2eActor {
     }
 
     /**
-     * actor ac
-     * @type {Object}
+     * @typedef {Object} actorAC
+     * @property {number} statusModifier
+     * @property {number} attributeModifier
+     * @property {number} proficiencyModifier
+     * @property {number} itemModifier
+     * @property {number} modifier
+     */
+    /**
+     * Return the actor's AC information
+     * @type {actorAC}
      */
     get ac() {
         const ac = {};
@@ -241,7 +295,7 @@ class pf2eActor {
     }
 
     /**
-     * actor has a shield equipped
+     * Return whether the actor has a shield equipped
      * @type {boolean}
      */
     get hasShieldEquipped() {
@@ -249,8 +303,17 @@ class pf2eActor {
     }
 
     /**
-     * actor equipped shield
-     * @type {Object}
+     * @typedef {Object} actorEquippedShield
+     * @property {number} ac
+     * @property {number} hardness
+     * @property {number} hpMax
+     * @property {number} hpValue
+     * @property {number} bt
+     */
+
+    /**
+     * Return the actor's equipped shield
+     * @type {actorEquippedShield}
      */
     get equippedShield() {
         try {
@@ -270,10 +333,25 @@ class pf2eActor {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'ac', error.message);
         }
     }
+    /**
+     * @typedef {Object} actorDefenseProficiency
+     * @property {string} name
+     * @property {number} rank
+     */
 
     /**
-     * actor defense proficiencies
-     * @type {Object}
+     * @typedef {Object} actorDefenseProficiencies
+     * @property {actorDefenseProficiency} unarmored
+     * @property {actorDefenseProficiency} light
+     * @property {actorDefenseProficiency} medium
+     * @property {actorDefenseProficiency} heavy
+     * @property {actorDefenseProficiency} 'light-barding'
+     * @property {actorDefenseProficiency} 'heavy-barding'
+     */
+
+    /**
+     * Return the actor's defense proficiencies
+     * @type {actorDefenseProficiencies}
      */
     get defenseProficiencies() {
         const proficiencies = {};
@@ -287,8 +365,26 @@ class pf2eActor {
     }
 
     /**
-     * actor saving throws
-     * @type {Object}
+     * @typedef {Object} actorSavingThrow
+     * @property {string} name
+     * @property {number} attributeModifier
+     * @property {number} proficiencyModifier
+     * @property {number} itemModifier
+     * @property {number} statusModifier
+     * @property {number} rank
+     * @property {number} modifier
+     */
+
+    /**
+     * @typedef {Object} actorSavingThrows
+     * @property {actorSavingThrow} fortitude
+     * @property {actorSavingThrow} reflex
+     * @property {actorSavingThrow} will
+     */
+
+    /**
+     * Return the actor's saving throws
+     * @type {actorSavingThrows}
      */
     get savingThrows() {
         const savingThrows = {};
@@ -322,8 +418,15 @@ class pf2eActor {
     }
 
     /**
-     * actor HP
-     * @type {Object}
+     * @typedef {Object} actorHP
+     * @property {number} max
+     * @property {number} value
+     * @property {number} temp
+     */
+
+    /**
+     * Return actor's HP information
+     * @type {actorHP}
      */
     get hp() {
         return {
@@ -334,7 +437,13 @@ class pf2eActor {
     }
 
     /**
-     * actor dying
+     * @typedef {Object} actorDying
+     * @property {number} max
+     * @property {number} value
+     */
+
+    /**
+     * Return the actor's dying information
      * @type {Object}
      */
     get dying() {

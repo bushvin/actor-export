@@ -1,5 +1,5 @@
 /**
- * GenericHelper module
+ * GenericHelper module. The boilerplate and default helper for characters.
  * @module GenericHelper
  * @author William Leemans
  * @copyright William Leemans 2024
@@ -52,13 +52,13 @@ export class genericHelper {
 
     /**
      * Return a checkmark based on the outcome of the provided logical value
-     * @param {boolean} value the value to evaulate
-     * @param {string} checked character to use when checked (default: x)
-     * @param {string} unchecked character to use when unchecked (default: empty string)
+     * @param {boolean} condition the condition to evaluate
+     * @param {string} [checked='x'] character to use when checked
+     * @param {string} [unchecked=''] character to use when unchecked
      * @returns {string}
      */
-    static evalCheckMark(value, checked = 'x', unchecked = '') {
-        if (value === true) {
+    static evalCheckMark(condition, checked = 'x', unchecked = '') {
+        if (condition === true) {
             return checked;
         }
         return unchecked;
@@ -116,8 +116,8 @@ export class genericHelper {
      * Strip html tags from text, possibly replacing opening and/or closing tags
      * @param {string} html the HTML code to strip
      * @param {string} tag the name of the tag to strip
-     * @param {string} openTagReplace the value to use to replace the opening tag with
-     * @param {string} closeTagReplace the value to use to replace the closing tag with
+     * @param {string} [openTagReplace=''] the value to use to replace the opening tag with
+     * @param {string} [closeTagReplace=''] the value to use to replace the closing tag with
      * @returns {string} the stripped html text
      */
     static stripHTMLtag(html, tag, openTagReplace = '', closeTagReplace = '') {
@@ -145,8 +145,8 @@ export class genericHelper {
      * @param {string} html the HTML code to strip
      * @param {string} tag the name of the parent tag to strip child tags
      * @param {string} childTag the name of the child tag to strip
-     * @param {string} openTagReplace the value to use to replace the opening tag with
-     * @param {string} closeTagReplace the value to use to replace the closing tag with
+     * @param {string} [openTagReplace=''] the value to use to replace the opening tag with
+     * @param {string} [closeTagReplace=''] the value to use to replace the closing tag with
      * @returns {string} the stripped html text
      */
     static stripNestedHTMLtag(html, tag, childTag, openTagReplace = '', closeTagReplace = '') {

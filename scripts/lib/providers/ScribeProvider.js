@@ -99,10 +99,10 @@ class scribeBase {
  * @param {string} name the name of the item
  * @param {string} type the type of the item
  * @param {number} rank the rank of the item
- * @param {array} traits the traits of the item
+ * @param {string[]} traits the traits of the item
  * @param {string} usage the usage text of the item
- * @param {string} description the descrition text of the item
- * @param {number} labelLevel the level of the label of the item
+ * @param {string} description the description text of the item
+ * @param {number} [labelLevel=0] the level of the label of the item
  * @augments scribeBase
  * @description This class provides a renderer for the item scribe resource.
  */
@@ -175,6 +175,7 @@ class scribeBreak extends scribeBase {
         return '/\n';
     }
 }
+
 /**
  * scribe Header wrapper
  * @class
