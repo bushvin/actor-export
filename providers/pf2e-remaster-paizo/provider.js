@@ -355,7 +355,7 @@ character.strikes.forEach((strike) => {
 
 // Weapon proficiencies
 const wp_x = [314, 336, 360, 381];
-['simple', 'martial', 'advanced', 'unarmed'].forEach((a) => {
+['unarmed', 'simple', 'martial', 'advanced'].forEach((a) => {
     // Object.keys(actor.system.proficiencies?.attacks || []).forEach((a, i) => {
     //const wp = actor.system.proficiencies.attacks[a].rank || 0;
     let x = wp_x[0];
