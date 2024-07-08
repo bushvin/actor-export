@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.7.1] - 2024-07-08
+
+### Added
+
+- Support for Foundry VTT v12.325
+- Support Foundry VTT version check in providers
+- Improved API Documentation
+
+### Fixed
+
+- pf2e-remaster-bushvin provider: fix weapon proficiency order (thank you @OnlineCaveman)
+- pf2e-remaster-paizo provider: fix weapon proficiency order (thank you @OnlineCaveman)
+- dnd5e provider: fix order of investigation and intimidation skills (thank you Surb)
+
 ## [2024.6.3] - 2021-06-03
 
 ### Added
