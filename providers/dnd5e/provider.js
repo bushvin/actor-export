@@ -85,19 +85,22 @@ mapper.textBox('proficiency bonus', fileNames, 0, 95, 165, 25, 25, proficiencyBo
 
 // skills
 let skillsY = [316, 328, 343, 356, 370, 383, 397, 410, 424, 437, 451, 464, 478, 491, 505, 518, 532, 545];
-Object.values(character.skills).forEach((s) => {
-    let skillY;
-    if (skillsY.length > 0) {
-        skillY = skillsY[0];
-        skillsY.shift();
-    }
-    if (typeof skillY !== 'undefined') {
-        ref = `${s.label} skill`;
-        const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
-        mapper.textBox(ref, fileNames, 0, 101, skillY + 5, 7, 10, isProficient, mf_8_centered);
-        mapper.textBox(ref, fileNames, 0, 111, skillY, 16, 14, dnd5eHelper.quantifyNumber(s.modifier), mf_12_centered);
-    }
-});
+Object.values(character.skills)
+    .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
+    .forEach((s) => {
+        let skillY;
+        if (skillsY.length > 0) {
+            skillY = skillsY[0];
+            skillsY.shift();
+        }
+        if (typeof skillY !== 'undefined') {
+            ref = `${s.label} skill`;
+            const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
+            const skillModifier = dnd5eHelper.quantifyNumber(s.modifier);
+            mapper.textBox(ref, fileNames, 0, 101, skillY + 5, 7, 10, isProficient, mf_8_centered);
+            mapper.textBox(ref, fileNames, 0, 111, skillY, 16, 14, skillModifier, mf_12_centered);
+        }
+    });
 
 // AC
 ref = 'AC';
@@ -387,19 +390,23 @@ mapper.textBox('proficiency bonus', fileNames, 0, 92, 160, 25, 24, proficiencyBo
 
 // skills
 skillsY = [306, 320, 333, 346, 359, 372, 385, 398, 411, 424, 438, 451, 464, 477, 490, 503, 516, 529];
-Object.values(character.skills).forEach((s) => {
-    let skillY;
-    if (skillsY.length > 0) {
-        skillY = skillsY[0];
-        skillsY.shift();
-    }
-    if (typeof skillY !== 'undefined') {
-        ref = `${s.label} skill`;
-        const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
-        mapper.textBox(ref, fileNames, 0, 98, skillY + 3, 7, 10, isProficient, mf_8_centered);
-        mapper.textBox(ref, fileNames, 0, 109, skillY, 14, 14, dnd5eHelper.quantifyNumber(s.modifier), mf_12_centered);
-    }
-});
+
+Object.values(character.skills)
+    .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
+    .forEach((s) => {
+        let skillY;
+        if (skillsY.length > 0) {
+            skillY = skillsY[0];
+            skillsY.shift();
+        }
+        if (typeof skillY !== 'undefined') {
+            ref = `${s.label} skill`;
+            const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
+            const skillModifier = dnd5eHelper.quantifyNumber(s.modifier);
+            mapper.textBox(ref, fileNames, 0, 98, skillY + 3, 7, 10, isProficient, mf_8_centered);
+            mapper.textBox(ref, fileNames, 0, 109, skillY, 14, 14, skillModifier, mf_12_centered);
+        }
+    });
 
 // AC
 ref = 'AC';
@@ -627,19 +634,22 @@ mapper.textBox('proficiency bonus', fileNames, 0, 88, 179, 25, 24, proficiencyBo
 
 // skills
 skillsY = [330, 344, 357, 371, 384, 398, 411, 425, 438, 452, 465, 479, 492, 506, 519, 533, 546, 560];
-Object.values(character.skills).forEach((s) => {
-    let skillY;
-    if (skillsY.length > 0) {
-        skillY = skillsY[0];
-        skillsY.shift();
-    }
-    if (typeof skillY !== 'undefined') {
-        ref = `${s.label} skill`;
-        const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
-        mapper.textBox(ref, fileNames, 0, 94, skillY + 3, 7, 10, isProficient, mf_8_centered);
-        mapper.textBox(ref, fileNames, 0, 105, skillY, 14, 14, dnd5eHelper.quantifyNumber(s.modifier), mf_12_centered);
-    }
-});
+Object.values(character.skills)
+    .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
+    .forEach((s) => {
+        let skillY;
+        if (skillsY.length > 0) {
+            skillY = skillsY[0];
+            skillsY.shift();
+        }
+        if (typeof skillY !== 'undefined') {
+            ref = `${s.label} skill`;
+            const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
+            const skillModifier = dnd5eHelper.quantifyNumber(s.modifier);
+            mapper.textBox(ref, fileNames, 0, 94, skillY + 3, 7, 10, isProficient, mf_8_centered);
+            mapper.textBox(ref, fileNames, 0, 105, skillY, 14, 14, skillModifier, mf_12_centered);
+        }
+    });
 
 // AC
 ref = 'AC';
