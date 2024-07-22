@@ -5,13 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.7.2] 2024-07-22
+
+### Fixed
+
+- `ScribeProvider.scribeCharacterFeat.scribify`: check if `this._feat.prerequisites` exists to avoid errors (thank you, murgol)
+- `PF2eHelper.pf2eActor.ancestryFeats` add names of feats granted by this feat
+- `PF2eHelper.pf2eActor.skillFeats` add names of feats granted by this feat
+- `PF2eHelper.pf2eActor.generalFeats` add names of feats granted by this feat
+- pf2e-remaster-bushvin provider: enum feats/features by predefined levels to avoid missing levels which are not defined by the actor owner
+- pf2e-remaster-paizo provider: enum feats/features by predefined levels to avoid missing levels which are not defined by the actor owner
+
 ## [2024.7.1] - 2024-07-08
 
 ### Added
 
 - Support for Foundry VTT v12.325
 - Support Foundry VTT version check in providers
-- Improved API Documentation
+- Improved A`PI Documentation
 
 ### Fixed
 
