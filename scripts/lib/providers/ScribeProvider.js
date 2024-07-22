@@ -310,9 +310,11 @@ class scribeCharacterFeat extends scribeItem {
         this._label = this._itemName;
 
         const usage = [];
-        const itemPrerequisites = this._feat.prerequisites.map((m) => m.value).sort();
-        if (itemPrerequisites.length > 0) {
-            usage.push(`**Prerequisites** ${itemPrerequisites.join('; ')}`);
+        if (typeof this._feat.prerequisites !== 'undefined') {
+            const itemPrerequisites = this._feat.prerequisites.map((m) => m.value).sort();
+            if (itemPrerequisites.length > 0) {
+                usage.push(`**Prerequisites** ${itemPrerequisites.join('; ')}`);
+            }
         }
         this._itemUsage = usage.join('\n\n');
         return await super.scribify();
