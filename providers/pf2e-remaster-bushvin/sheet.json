@@ -1,7 +1,7 @@
 {
     "id": "pf2e-remaster-bushvin",
-    "name": "Bushvin's modified PF2e Remaster Character sheet",
-    "description": "A set of modified charactersheets based on Paizo's",
+    "name": "Bushvin's PF2e Remaster Character sheets",
+    "description": "A set of character sheets based on Paizo's remastered pf2e",
     "icon": "fas fa-file-pdf",
     "type": "pdf",
     "authors": [
@@ -19,8 +19,8 @@
     "files": [
         {
             "uri": "pf2e-remastered.pdf",
-            "name": "PF2e Remaster Character Sheet modified by bushvin",
-            "description": "A modified version of the official Paizo Remastered Charactersheet."
+            "name": "Modified PF2e Remaster Character Sheet",
+            "description": "A modified version of the official Paizo Remastered Character Sheet."
         }
     ]
 }
