@@ -1,7 +1,7 @@
 {
     "id": "pf2e-remaster-paizo",
-    "name": "PF2e Remaster Character sheet (original)",
-    "description": "The official Paizo Remastered Character Sheet",
+    "name": "Paizo's PF2e Remaster Character sheets",
+    "description": "The official Paizo PF2e Remastered Character Sheets",
     "icon": "fas fa-file-pdf",
     "type": "pdf",
     "authors": [
@@ -19,8 +19,8 @@
     "files": [
         {
             "uri": "RemasterPlayerCoreCharacterSheet.pdf",
-            "name": "PF2e Remaster Character Sheet by Paizo",
-            "description": "The standard Paizo pf2e remaster player character sheet"
+            "name": "Player Character Sheet (Original)",
+            "description": "The standard Paizo PF2e Remaster Player Character Sheet"
         }
     ]
 }
