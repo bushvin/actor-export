@@ -342,6 +342,17 @@ export class pdfProvider extends baseProvider {
                 console.debug('actor-export | PDF | textHeight:', textHeight);
                 console.debug('actor-export | PDF | options:', options);
             }
+            if (!textOptions.overflow) {
+                const lineCount = Math.floor(textHeight / textLineHeight);
+                if (multiLine.lines.length > lineCount) {
+                    modifiedText = multiLine.lines
+                        .map((m) => m.text)
+                        .slice(0, lineCount - 1)
+                        .concat(['. . .'])
+                        .join('\n');
+                }
+            }
+            modifiedText = textOptions.prefix + modifiedText + textOptions.suffix;
         } else {
             // add a single line to the pdf
             // TODO: what if font is undefined?
