@@ -9,6 +9,7 @@ const mapper = new pdfProvider(actor);
 let ref;
 mapper.defaultFont('MarkerFelt.ttf', 12, 12);
 mapper.defaultFontColor('#01579b');
+// mapper.debugProvider = true;
 
 // Font definitions
 const mf_default = {};
@@ -481,7 +482,7 @@ let y = 0;
 y = 48;
 ref = 'held items';
 character.flatItems(character.heldItems).forEach((item) => {
-    if (y <= 568) {
+    if (y <= 192) {
         let pdfStyle = mf_8;
         if (item.isMagical) {
             pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
@@ -497,7 +498,7 @@ character.flatItems(character.heldItems).forEach((item) => {
 y = 203;
 ref = 'consumables';
 character.flatItems(character.consumables).forEach((item) => {
-    if (y <= 568) {
+    if (y <= 353) {
         let pdfStyle = mf_8;
         if (item.isMagical) {
             pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
@@ -513,7 +514,7 @@ character.flatItems(character.consumables).forEach((item) => {
 y = 365;
 ref = 'worn items';
 character.flatItems(character.wornItems).forEach((item) => {
-    if (y <= 568) {
+    if (y <= 580) {
         let pdfStyle = mf_8;
         if (item.isMagical) {
             pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
@@ -539,7 +540,7 @@ mapper.textBox('wealth', fileName, 1, 544, 665, 28, 20, character.coins.pp || 0,
 ref = 'gems and artwork';
 y = 711;
 character.flatItems(character.gemsAndArtwork).forEach((item) => {
-    if (y <= 568) {
+    if (y <= 765) {
         let pdfStyle = mf_8;
         if (item.isMagical) {
             pdfStyle = { ...pdfStyle, ...{ suffix: ' ‡' } };
