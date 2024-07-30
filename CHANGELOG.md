@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.7.4] 2024-07-30
+
+### Changed
+
+- pfrpg-paizo provider: Game system must be at least 10.0
+- pfrpg-paizo provider: correct naming and description.
+
+### Fixed
+
+- pfrpg-paizo provider: actions without conditionals are now handled better (thank you frazhuz)
+- pfrpg-paizo provider: actions without damage are now handled better (thank you frazhuz)
+- pfrpg-paizo provider: languages are arrays, not strings. (thank you frazhuz)
+
 ## [2024.7.3] 2024-07-30
 
 ### Added
