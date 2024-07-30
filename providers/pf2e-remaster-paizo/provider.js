@@ -539,7 +539,7 @@ mapper.textBox('wealth', fileName, 1, 544, 665, 28, 20, character.coins.pp || 0,
 // Gems and Artwork
 ref = 'gems and artwork';
 y = 711;
-character.flatItems(character.consumables).forEach((item) => {
+character.flatItems(character.gemsAndArtwork).forEach((item) => {
     if (y <= 568) {
         let pdfStyle = mf_8;
         if (item.isMagical) {
@@ -869,7 +869,7 @@ character.knownSpells
                     y = y + 5;
                     spellY = spellY + 5;
                 }
-                mapper.textBox(ref, fileName, 3, 30, y, 169, 12, spell.type, mf_10);
+                mapper.textBox(ref, fileName, 3, x, y, 169, 12, spell.type, mf_10);
                 sceType = spell.type;
                 y = spellY;
                 spellY = spellY + 10;
