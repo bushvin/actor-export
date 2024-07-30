@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.7.3] 2024-07-30
+
+### Added
+
+- 'Black Book Éditions Feuilles de personnage en français' provider for French Charactersheets (thank you Morgul)
+
+### Changed
+
+- pf2e-remaster-bushvin provider: correct naming and description.
+- pf2e-remaster-paizo provider: correct naming and description.
+
+### Fixed
+
+- pf2e-remaster-bushvin provider: Gems and Artworks show correct information
+- pf2e-remaster-bushvin provider: Fix position of spell type title
+- pf2e-remaster-bushvin provider: Fix equipment tables
+- pf2e-remaster-paizo provider: Gems and Artworks show correct information
+- pf2e-remaster-paizo provider: Fix position of spell type title
+- pf2e-remaster-paizo provider: Fix equipment tables
+- `PDFProvider.pdfProvider.embedTextBox`: multiline text should not overflow textbox if overflow is disabled.
+
 ## [2024.7.2] 2024-07-22
 
 ### Fixed
