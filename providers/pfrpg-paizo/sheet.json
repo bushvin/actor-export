@@ -1,7 +1,7 @@
 {
     "id": "pfrpg-paizo",
-    "name": "Pathfinder Roleplaying Game",
-    "description": "The official Paizo Pathfinder Roleplaying Game Character Sheet (PF1e).",
+    "name": "Paizo's Pathfinder Roleplaying Game Character Sheets",
+    "description": "The official Paizo Pathfinder Roleplaying Game Character Sheets",
     "icon": "fas fa-file-pdf",
     "type": "pdf",
     "authors": [
@@ -13,14 +13,14 @@
     "requirements": [
         {
             "system": "pf1",
-            "system_version": "9.6"
+            "system_version": "10.0"
         }
     ],
     "files": [
         {
             "uri": "pfrpg-CharacterSheet.pdf",
-            "name": "Pathfinder Roleplaying Game Character Sheet by Paizo",
-            "description": "The standard Paizo pfrpg player character sheet"
+            "name": "Player Character Sheet (Original)",
+            "description": "The standard Paizo pfrpg Player Character Sheet"
         }
     ]
 }
