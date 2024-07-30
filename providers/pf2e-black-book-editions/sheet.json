@@ -1,0 +1,26 @@
+{
+    "id": "pf2e-black-book-editions",
+    "name": "Black Book Éditions Feuilles de personnage en français",
+    "description": "La traduction française des feuille de personnage officielles de Paizo PF2e",
+    "icon": "fas fa-file-pdf",
+    "type": "pdf",
+    "authors": [
+        {
+            "name": "bushvin",
+            "url": "https://github.com/bushvin"
+        }
+    ],
+    "requirements": [
+        {
+            "system": "pf2e",
+            "system_version": "5.9.0"
+        }
+    ],
+    "files": [
+        {
+            "uri": "pf2e-remastered-fr.pdf",
+            "name": "Feuille de personnage PF2e Remaster par Paizo",
+            "description": "La traduction française de la feuille de personnage joueur du remaster pf2e de Paizo"
+        }
+    ]
+}
