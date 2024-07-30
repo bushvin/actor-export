@@ -211,25 +211,32 @@ for (let i = 0; i < weapons.length; i++) {
         mapper.textBox('wp', fileNames, 0, 28, y, 181, 16, w.name, mf_12_centered_middle);
         const action = weaponActions[a];
         const actionAbilityAttackModifier = actor.system.abilities[action.ability.attack].mod;
-        const actionAttackModifier = action.conditionals
-            .map((m) => m.modifiers.filter((f) => f.target === 'attack').map((m) => m.formula))
-            .flat()
-            .map((m) => parseInt(m))
-            .reduce((a, b) => a + b, 0);
-        const actionAbilityDamageModifier = actor.system.abilities[action.ability.damage].mod;
+        let actionAttackModifier = 0;
+        if (typeof action.conditionals !== 'undefined') {
+            actionAttackModifier = action.conditionals
+                .map((m) => m.modifiers.filter((f) => f.target === 'attack').map((m) => m.formula))
+                .flat()
+                .map((m) => parseInt(m))
+                .reduce((a, b) => a + b, 0);
+        }
+        let actionAbilityDamageModifier = 0;
+        if (typeof action.ability.damage !== 'undefined') {
+            actionAbilityDamageModifier = actor.system.abilities[action.ability.damage].mod;
+        }
         const weaponAttackBonus = genericHelper.quantifyNumber(
             actor.system.attributes.bab.total + actionAbilityAttackModifier + actionAttackModifier
         );
-        let damageFormula;
-        if (action.damage.parts[0].formula.startsWith('sizeRoll')) {
+        let damage = 0;
+        if (typeof action.damage !== 'undefined' && action.damage.parts[0].formula.startsWith('sizeRoll')) {
             const formula = action.damage.parts[0].formula.replace('@', 'actor.');
-            damageFormula = eval(`pf1.utils.rollPreProcess.${formula}`);
+            const damageFormula = eval(`pf1.utils.rollPreProcess.${formula}`);
+
+            damage =
+                `${damageFormula[0].number}d${damageFormula[0].faces} ` +
+                genericHelper.quantifyNumber(actionAbilityDamageModifier) +
+                ' ' +
+                action.damage.parts[0].type.values.join(',');
         }
-        const damage =
-            `${damageFormula[0].number}d${damageFormula[0].faces} ` +
-            genericHelper.quantifyNumber(actionAbilityDamageModifier) +
-            ' ' +
-            action.damage.parts[0].type.values.join(',');
 
         mapper.textBox('wp attack bonus', fileNames, 0, 210, y, 64, 16, weaponAttackBonus, mf_10_centered_middle);
         mapper.textBox('wp crit', fileNames, 0, 275, y, 37, 16, action.ability.critRange, mf_10_centered_middle);
@@ -382,11 +389,7 @@ Object.keys(actor.system.skills).forEach((s) => {
     }
 });
 
-//const languages = actor.system.traits.languages.total.map((m) => m.capitalize()).join(', ');
-const languages = actor.system.traits.languages.customTotal
-    .split(';')
-    .map((m) => m.capitalize())
-    .join(', ');
+const languages = actor.system.traits.languages.customTotal.map((m) => m.capitalize()).join(', ');
 mapper.textBox('languages', fileNames, 0, 318, 700, 250, 33, languages, mf_8_top);
 
 // page 2
