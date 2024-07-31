@@ -8,8 +8,7 @@
 
 A system agnostic Foundry VTT module which allows exporting your actors in a variety of formats through the use of (custom) providers.
 
-Feel free to join [#actor-export-general:matrix.elaba.net](https://matrix.to/#/#actor-export-general:matrix.elaba.net), [#actor-export-pf2e:matrix.elaba.net](https://matrix.to/#/#actor-export-pf2e:matrix.elaba.net), [#actor-export-dnd5e:matrix.elaba.net](https://matrix.to/#/#actor-export-dnd5e:matrix.elaba.net) using a [Matrix client](https://matrix.org/ecosystem/clients/)
-for help.
+Feel free to join the [actor-export room](https://matrix.to/#/#actor-export-general:matrix.elaba.net), [actor-export D&D 5e room](https://matrix.to/#/#actor-export-dnd5e:matrix.elaba.net) or [actor-export Pathfinder 2e room](https://matrix.to/#/#actor-export-pf2e:matrix.elaba.net) on Matrix or join the [actor-export Channel](https://discord.gg/6U89NQrtyS) on Discord for help.
 
 ## Installation
 
@@ -49,13 +48,13 @@ A provider is a set of (javascript) instructions to be interpreted in order to g
 
 ### Current providers
 
-Name | System | Description | Type | Author(s)
---- | --- | --- | --- | ---
-Dungeons & Dragons 5th edition Character sheets | dnd5e (3.0.0+) | A set of PDF sheets based on the Official D&D5e Character Sheets by WoTC | pdf | [bushvin](https://github.com/bushvin)
-Pathfinder Roleplaying Game | pf1 (9.6+) | The official Paizo Pathfinder Roleplaying Game Character Sheet (PF1e). | pdf | [bushvin](https://github.com/bushvin)
-PF2e Scribe Generator | pf2e (5.9.0+) | A set of templates to generate scribe.pf2.tools markdown | scribe.pf2.tools | [bushvin](https://github.com/bushvin)
-[Bushvin's modified PF2e Remaster Character sheet](https://github.com/bushvin/actor-export/wiki/pf2e-remaster-bushvin) | pf2e (5.9.0+) | A set of modified charactersheets based on Paizo's | pdf | [bushvin](https://github.com/bushvin)
-[PF2e Remaster Character sheet (original)](https://github.com/bushvin/actor-export/wiki/pf2e-remaster-paizo) | pf2e (5.9.0+) | The official Paizo Remastered Character Sheet | pdf | [bushvin](https://github.com/bushvin)
+| Name                                                                                                                   | System         | Description                                                              | Type             | Author(s)                             |
+| ---------------------------------------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------ | ---------------- | ------------------------------------- |
+| Dungeons & Dragons 5th edition Character sheets                                                                        | dnd5e (3.0.0+) | A set of PDF sheets based on the Official D&D5e Character Sheets by WoTC | pdf              | [bushvin](https://github.com/bushvin) |
+| Pathfinder Roleplaying Game                                                                                            | pf1 (9.6+)     | The official Paizo Pathfinder Roleplaying Game Character Sheet (PF1e).   | pdf              | [bushvin](https://github.com/bushvin) |
+| PF2e Scribe Generator                                                                                                  | pf2e (5.9.0+)  | A set of templates to generate scribe.pf2.tools markdown                 | scribe.pf2.tools | [bushvin](https://github.com/bushvin) |
+| [Bushvin's modified PF2e Remaster Character sheet](https://github.com/bushvin/actor-export/wiki/pf2e-remaster-bushvin) | pf2e (5.9.0+)  | A set of modified charactersheets based on Paizo's                       | pdf              | [bushvin](https://github.com/bushvin) |
+| [PF2e Remaster Character sheet (original)](https://github.com/bushvin/actor-export/wiki/pf2e-remaster-paizo)           | pf2e (5.9.0+)  | The official Paizo Remastered Character Sheet                            | pdf              | [bushvin](https://github.com/bushvin) |
 
 For more, please refer to the [Provider](https://github.com/bushvin/actor-export/wiki#providers) section of the [wiki](https://github.com/bushvin/actor-export/wiki)
 
