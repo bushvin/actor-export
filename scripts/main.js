@@ -610,17 +610,17 @@ Hooks.once('init', () => {
  * Add the 'Export' button in the character's actor dialog
  */
 Hooks.on('getActorSheetHeaderButtons', (sheet, buttons) => {
-    if (!['character', 'PC', 'Player', 'npc', 'pc'].includes(sheet.actor.type ?? sheet.actor.data.type)) return;
-    buttons.unshift({
-        label: 'ACTOR-EXPORT.actor-dialog.header-button.label',
-        class: 'actor-export',
-        icon: 'fa fa-address-card',
-        onclick: () => {
-            new actorExportDialog(sheet.actor).render(true);
-            /* FIXME: is this needed? */
-            // Object.values(ui.windows)
-            //     .filter((w) => w instanceof actorExportDialog)[0]
-            //     ?.bringToTop();
-        },
-    });
+    if (['character', 'familiar', 'npc'].includes(sheet.actor.type)) {
+        buttons.unshift({
+            label: 'ACTOR-EXPORT.actor-dialog.header-button.label',
+            class: 'actor-export',
+            icon: 'fa fa-address-card',
+            onclick: () => {
+                const dialog = new actorExportDialog(sheet.actor).render(true);
+                dialog.bringToTop();
+            },
+        });
+    } else {
+        console.debug('Found an unsupported actor type:', sheet.actor.type);
+    }
 });
