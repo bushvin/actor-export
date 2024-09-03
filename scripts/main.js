@@ -616,8 +616,7 @@ Hooks.on('getActorSheetHeaderButtons', (sheet, buttons) => {
             class: 'actor-export',
             icon: 'fa fa-address-card',
             onclick: () => {
-                const dialog = new actorExportDialog(sheet.actor).render(true);
-                dialog.bringToTop();
+                new actorExportDialog(sheet.actor).render(true);
             },
         });
     } else {
