@@ -283,6 +283,7 @@ class actorExportDialog extends FormApplication {
             downloadEnabled: true,
             previewEnabled: false,
             customProvider: game.settings.get(actorExport.ID, actorExport.SETTINGS.PROVIDER_CUSTOM_CODE).trim() !== '',
+            actorType: this.actor.type,
         };
         const mergedData = foundry.utils.mergeObject(data, overrides);
         return mergedData;
@@ -610,6 +611,23 @@ Hooks.once('init', () => {
  * Add the 'Export' button in the character's actor dialog
  */
 Hooks.on('getActorSheetHeaderButtons', (sheet, buttons) => {
+    Handlebars.registerHelper(`${actorExport.ID}-ifIsNullish`, function (value, options) {
+        if (value == null) {
+            return options.fn(this);
+        }
+        return options.inverse(this);
+    });
+
+    Handlebars.registerHelper(`${actorExport.ID}-ifIn`, function (haystack, needle, options) {
+        if (typeof haystack === 'undefined' || haystack.length == 0) {
+            return options.fn(this);
+        }
+        if (haystack.indexOf(needle) > -1) {
+            return options.fn(this);
+        }
+        return options.inverse(this);
+    });
+
     if (['character', 'familiar', 'npc'].includes(sheet.actor.type)) {
         buttons.unshift({
             label: 'ACTOR-EXPORT.actor-dialog.header-button.label',

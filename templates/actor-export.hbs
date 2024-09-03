@@ -4,11 +4,18 @@
         <h2 class="category-title">{{ name }} <i class="{{ icon }}"></i> </h2>
         <p class="notes">{{ description }}</p>
 {{#each files}}
+    {{#actor-export-ifIn actor_type @root.actorType}}
         <div class="form-group" id="field.{{../id}}.{{ uri }}">
             <label for="{{../id}}.{{ uri }}">{{ name }}</label>
                 <input type="checkbox" data-provider="{{../id}}" data-file="{{uri}}" name="{{ uri }}" id="{{../id}}.{{ uri }}" data-dtype="Boolean" {{checked isSelected}} />
             <p class="notes">{{ description }}</p>
+            {{#actor-export-ifIsNullish actor_type}}
+            <p class="notes">Applicable to all actors</p>
+            {{else}}
+            <p class="notes">Applicable to {{ actor_type }}</p>
+            {{/actor-export-ifIsNullish}}
         </div>
+    {{/actor-export-ifIn}}
 {{/each}}
         <hr />
 {{/each}}
