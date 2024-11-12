@@ -20,7 +20,8 @@
         {
             "uri": "pf2e-remastered-fr.pdf",
             "name": "Feuille de personnage",
-            "description": "La traduction française de la feuille de personnage joueur du Remaster PF2e de Paizo"
+            "description": "La traduction française de la feuille de personnage joueur du Remaster PF2e de Paizo",
+            "actor_type": ["character", "npc"]
         }
     ]
 }

@@ -20,17 +20,20 @@
         {
             "uri": "CharacterSheetComplete.pdf",
             "name": "D&D 5e Official Character Sheet",
-            "description": "All 3 Charactersheet pages"
+            "description": "All 3 Charactersheet pages",
+            "actor_type": ["character", "npc"]
         },
         {
             "uri": "dnd_blankcharactersheet_pt-BR.pdf",
             "name": "D&D 5e Fichas de Personagem Oficiais",
-            "description": "As 3 fichas de personagem numa só"
+            "description": "As 3 fichas de personagem numa só",
+            "actor_type": ["character", "npc"]
         },
         {
             "uri": "dnd_blankcharactersheet_de.pdf",
             "name": "D&D 5e Offizielle Charakterbögen",
-            "description": "Alle 3 Charakterbögen in einem"
+            "description": "Alle 3 Charakterbögen in einem",
+            "actor_type": ["character", "npc"]
         }
     ]
 }

@@ -20,22 +20,26 @@
         {
             "uri": "actor-creature",
             "name": "Export NPC as Creature",
-            "description": "Generate a creature entry."
+            "description": "Generate a creature entry.",
+            "actor_type": ["character", "npc"]
         },
         {
             "uri": "actor-abc",
             "name": "List a character's ABC",
-            "description": "Export a character's ancestry -, background -, class features, spells and formulas"
+            "description": "Export a character's ancestry -, background -, class features, spells and formulas",
+            "actor_type": ["character", "npc"]
         },
         {
             "uri": "actor-actions",
             "name": "List possible actions",
-            "description": "Export a character's actions"
+            "description": "Export a character's actions",
+            "actor_type": ["character", "npc"]
         },
         {
             "uri": "actor-inventory",
             "name": "The actor's inventory",
-            "description": "Export the character's inventory of items (magical and nonmagical)"
+            "description": "Export the character's inventory of items (magical and nonmagical)",
+            "actor_type": ["character", "npc"]
         }
     ]
 }

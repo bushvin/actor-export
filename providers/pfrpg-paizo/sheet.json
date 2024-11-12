@@ -20,7 +20,8 @@
         {
             "uri": "pfrpg-CharacterSheet.pdf",
             "name": "Player Character Sheet (Original)",
-            "description": "The standard Paizo pfrpg Player Character Sheet"
+            "description": "The standard Paizo pfrpg Player Character Sheet",
+            "actor_type": ["character", "npc"]
         }
     ]
 }
