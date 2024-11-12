@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2024.11.1] 2024-11-12
+
+### Added
+
+- `actor.type` which allows to show/hide export options based on the actor's type (character, npc, familiar)
+
+### Fixed
+
+- `.prepareFinalAttributes()` causes issues when called multiple times. fixed by calling `.reset()` see [this](https://github.com/foundryvtt/dnd5e/issues/3630) issue for more info. (thank you yoriik and twarx)
+
 ## [2024.7.4] 2024-07-30
 
 ### Changed
