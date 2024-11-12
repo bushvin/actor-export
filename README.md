@@ -55,7 +55,7 @@ A provider is a set of (javascript) instructions to be interpreted in order to g
 | Black Book Éditions Feuilles de personnage en français                                                                                    | pf2e (5.9.0+)  | La traduction française des feuille de personnage officielles de Paizo PF2e | pdf              | [bushvin](https://github.com/bushvin) |
 | PF2e Scribe Generator                                                                                                                     | pf2e (5.9.0+)  | A set of templates to generate scribe.pf2.tools markdown                    | scribe.pf2.tools | [bushvin](https://github.com/bushvin) |
 | [Bushvin's PF2e Remaster Character sheets]([./pf2e-remaster-bushvin](https://github.com/bushvin/actor-export/wiki/pf2e-remaster-bushvin)) | pf2e (5.9.0+)  | A set of character sheets based on Paizo's PF2e Remaster                    | pdf              | [bushvin](https://github.com/bushvin) |
-| [Paizo's PF2e Remaster Character sheets]([./pf2e-remaster-paizo](https://github.com/bushvin/actor-export/wiki/pf2e-remaster-paiz))        | pf2e (5.9.0+)  | The official Paizo PF2e Remastered Character Sheets                         | pdf              | [bushvin](https://github.com/bushvin) |
+| [Paizo's PF2e Remaster Character sheets]([./pf2e-remaster-paizo](https://github.com/bushvin/actor-export/wiki/pf2e-remaster-paizo))       | pf2e (5.9.0+)  | The official Paizo PF2e Remastered Character Sheets                         | pdf              | [bushvin](https://github.com/bushvin) |
 
 For more, please refer to the [Provider](https://github.com/bushvin/actor-export/wiki#providers) section of the [wiki](https://github.com/bushvin/actor-export/wiki)
 
