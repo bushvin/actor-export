@@ -148,6 +148,7 @@ class dnd5eActor {
                 .filter((i) => i.type === 'weapon' && i.system.activation.type === 'action')
                 .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
                 .forEach((w) => {
+                    w.reset();
                     w.prepareFinalAttributes();
                     if (typeof w.labels.derivedDamage !== 'undefined') {
                         w.labels.derivedDamage.forEach((d) => {
