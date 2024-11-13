@@ -54,3 +54,13 @@ body:
         every other user of actor-export because of Z.
     validations:
       required: true
+
+  - type: input
+    id: game_system
+    attributes:
+      label: Game System
+      description: >
+        Please enter the name of the game system referenced
+
+        Any feature requested will be based on the latest available version
+        of the game system
