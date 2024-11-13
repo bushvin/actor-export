@@ -55,12 +55,25 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: game_system
+    attributes:
+      label: Game system
+      description: Please select the name of your game system
+      options:
+        - NEW SYSTEM
+        - dnd5e
+        - pf2e
+        - pfrpg
+    validations:
+      required: true
+
   - type: input
     id: game_system_url
     attributes:
       label: Game System URL
       description: >
-        Please enter the url to the game system referenced
+        Please enter the url to the game system referenced if not available in the previous field.
 
         Any feature requested will be based on the latest available version
         of the game system.
