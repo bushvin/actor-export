@@ -695,6 +695,29 @@ class scribeCreature extends scribeItem {
     }
 
     /**
+     * Generate other activities for the creature
+     * @returns {array}
+     */
+    async otherActivities() {
+        const otherActivities = [];
+        this._creature.activities
+            .filter((f) => !['offensive', 'defensive'].includes(f.category))
+            .forEach((a) => {
+                const name = a.name;
+                const traits = pf2eHelper.formatTraits(a.traits);
+                const activity = pf2eHelper.formatActivity(a.type, a.actionCount, pf2eHelper.scribeActivityGlyphs);
+                const description = a.description;
+                otherActivities.push(
+                    `**${name}** ` +
+                        (activity !== '' ? `${activity} ` : '') +
+                        (traits.length > 0 ? `(${traits}) ` : '') +
+                        description
+                );
+            });
+        return otherActivities;
+    }
+
+    /**
      * Generate movement for the creature
      * @returns {array}
      */
@@ -830,6 +853,11 @@ class scribeCreature extends scribeItem {
         usage = usage.concat(await this.ranged());
         usage = usage.concat(await this.spells());
         usage = usage.concat(await this.offensiveActivities());
+        let otherActivities = await this.otherActivities();
+        if (otherActivities.length > 0) {
+            usage.push('-');
+            usage = usage.concat(otherActivities);
+        }
 
         this._itemUsage = usage.join('\n\n');
 

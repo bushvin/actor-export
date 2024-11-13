@@ -7,6 +7,10 @@ and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
 ## [unreleased]
 
+### Added
+
+- `ScribeProvider.scribeCreature.otherActivities` to provide activities which are neither `offensive` nor `defensive` (thank you master of old)
+
 ### Fixed
 
 - `PF2eHelper.pf2ePlayer.background` the description should have a default value (thank you master of old)
