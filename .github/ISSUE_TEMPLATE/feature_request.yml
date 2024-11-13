@@ -73,7 +73,7 @@ body:
     attributes:
       label: Game System URL
       description: >
-        Please enter the url to the game system referenced if not available in the previous field.
+        Please enter the url to the game system referenced for New Systems.
 
         Any feature requested will be based on the latest available version
         of the game system.
