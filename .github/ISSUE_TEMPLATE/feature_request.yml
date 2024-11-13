@@ -56,11 +56,13 @@ body:
       required: true
 
   - type: input
-    id: game_system
+    id: game_system_url
     attributes:
-      label: Game System
+      label: Game System URL
       description: >
-        Please enter the name of the game system referenced
+        Please enter the url to the game system referenced
 
         Any feature requested will be based on the latest available version
-        of the game system
+        of the game system.
+      placeholder: >-
+        https://foundryvtt.com/packages/pf2e
