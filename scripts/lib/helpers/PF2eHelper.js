@@ -1863,7 +1863,7 @@ class pf2ePlayer extends pf2eActor {
     get background() {
         const background = {
             name: this.actor.background?.name || 'unknown',
-            description: this.actor.background.system.description.value,
+            description: this.actor.background?.system.description.value || '',
         };
         return background;
     }

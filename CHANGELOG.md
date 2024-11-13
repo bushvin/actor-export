@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [unreleased]
+
+### Fixed
+
+- `PF2eHelper.pf2ePlayer.background` the description should have a default value (thank you master of old)
+
 ## [2024.11.1] 2024-11-12
 
 ### Added
