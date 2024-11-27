@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [unreleased]
+
+### Added
+
+- Functionality to override the font used in PDFs ([Feature 13](https://github.com/bushvin/actor-export/issues/13)).
+  Go to *Game Settings* >> *Configure Settings* >> toggle **Override PDF fonts** and select **Override PDF font selection**
+
 ## [2024.11.2] - 2024-11-13
 
 ### Added

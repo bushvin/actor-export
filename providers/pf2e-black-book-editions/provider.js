@@ -39,6 +39,7 @@ const action_8 = {
     size: 8,
     lineHeight: 8,
     color: '#01579b',
+    overrideFont: false,
 };
 const action_8_right = { ...action_8, ...{ halign: 'right' } };
 
