@@ -65,7 +65,7 @@ class actorExport {
             name: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_CUSTOM}.name`,
             label: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_CUSTOM}.label`,
             hint: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_CUSTOM}.hint`,
-            icon: `fa fa-file-code-o`,
+            icon: `fa fa-file-code`,
             type: actorExportCustomProvider,
             restricted: true,
             requiresReload: true,
