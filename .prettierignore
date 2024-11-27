@@ -1,5 +1,7 @@
 # Ignore certain libraries
 scripts/lib/FileSaver.js
+scripts/lib/providers/fontkit.es.js
+scripts/lib/providers/pako.esm.mjs
 scripts/lib/providers/pdf-lib.esm.js
 scripts/lib/providers/pdf-lib.esm.js.map
 

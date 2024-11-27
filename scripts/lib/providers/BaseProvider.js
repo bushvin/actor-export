@@ -1,3 +1,4 @@
+import { actorExport } from '../../main.js';
 /**
  * BaseProvider module
  * This module should be used as the basis for new providers
@@ -37,10 +38,12 @@ export class providerError extends Error {
  */
 export class baseProvider {
     constructor(actor) {
+        this._moduleID = actorExport.ID;
+        this._moduleSettings = actorExport.SETTINGS;
         this.actor = actor;
         this.actorName = this.actor.name || '';
         this.customProviderFile = undefined;
-        this.logPrefix = 'actor-export';
+        this.logPrefix = this._moduleID;
         this.providerRootPath = undefined;
         this.providerFilePath = undefined;
         this.providerDestinationFileName = undefined;

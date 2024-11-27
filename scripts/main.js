@@ -6,7 +6,7 @@ import './lib/FileSaver.js';
  * @class
  * Class to contain all relevant information and functions for the module
  */
-class actorExport {
+export class actorExport {
     static ID = 'actor-export';
     static SETTINGS = {
         ALL_PROVIDERS: 'allProviders',
@@ -14,6 +14,8 @@ class actorExport {
         PROVIDER_FILTER: 'exportProviderFilter',
         PROVIDER_CUSTOM: 'exportProviderCustom',
         PROVIDER_CUSTOM_CODE: 'exportProviderCustomCode',
+        PROVIDER_OVERRIDE_PDF_FONTS: 'exportProviderOverridePdfFonts',
+        PROVIDER_OVERRIDE_PDF_FONTS_SELECTION: 'exportProviderOverridePdfFontsSelection',
         SELECTED_PROVIDER_FILES: 'exportSelectedProviderFiles',
     };
     static TEMPLATES = {
@@ -65,10 +67,48 @@ class actorExport {
             name: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_CUSTOM}.name`,
             label: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_CUSTOM}.label`,
             hint: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_CUSTOM}.hint`,
-            icon: `fa fa-file-code-o`,
+            icon: `fa fa-file-code`,
             type: actorExportCustomProvider,
             restricted: true,
             requiresReload: true,
+        });
+
+        game.settings.register(this.ID, this.SETTINGS.PROVIDER_OVERRIDE_PDF_FONTS, {
+            name: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_OVERRIDE_PDF_FONTS}.name`,
+            hint: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_OVERRIDE_PDF_FONTS}.hint`,
+            scope: 'client',
+            config: true,
+            type: Boolean,
+            restricted: false,
+            requiresReload: false,
+            default: false,
+        });
+
+        game.settings.register(this.ID, this.SETTINGS.PROVIDER_OVERRIDE_PDF_FONTS_SELECTION, {
+            name: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_OVERRIDE_PDF_FONTS_SELECTION}.name`,
+            hint: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_OVERRIDE_PDF_FONTS_SELECTION}.hint`,
+            scope: 'client',
+            config: true,
+            type: String,
+            choices: {
+                Courier: 'Courier',
+                CourierBold: 'Courier Bold',
+                CourierOblique: 'Courier Oblique',
+                CourierBoldOblique: 'Courier Bold Oblique',
+                Helvetica: 'Helvetica',
+                HelveticaBold: 'Helvetica Bold',
+                HelveticaOblique: 'Helvetica Oblique',
+                HelveticaBoldOblique: 'Helvetica Bold Oblique',
+                TimesRoman: 'Times Roman',
+                TimesRomanBold: 'Times Roman Bold',
+                TimesRomanItalic: 'Times Roman Italic',
+                TimesRomanBoldItalic: 'Times Roman Bold Italic',
+                Symbol: 'Symbol',
+                ZapfDingbats: 'Zapf Dingbats',
+            },
+            restricted: false,
+            requiresReload: false,
+            default: 'Helvetica',
         });
 
         game.settings.register(this.ID, this.SETTINGS.ALL_PROVIDERS, {

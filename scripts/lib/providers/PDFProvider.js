@@ -45,6 +45,12 @@ export class pdfProvider extends baseProvider {
         this.pdfFontLineHeight = 0;
         this.pdfFontColor = '#000000';
 
+        this.pdfOverrideFont = game.settings.get(this._moduleID, this._moduleSettings['PROVIDER_OVERRIDE_PDF_FONTS']);
+        this.pdfOverrideFontName = game.settings.get(
+            this._moduleID,
+            this._moduleSettings['PROVIDER_OVERRIDE_PDF_FONTS_SELECTION']
+        );
+
         this.pdf = undefined;
     }
 
@@ -279,18 +285,24 @@ export class pdfProvider extends baseProvider {
 
         const pageHeight = pdfPages[page].getHeight();
         const textOptions = {
+            lineHeight: options.lineHeight,
+            overflow: this.pdfTextBoxOverflow || false,
+            overrideFont: true,
+            prefix: '',
+            size: this.pdfFontSize,
+            suffix: '',
             ...options,
-            size: options.size || this.pdfFontSize,
             color: rgb(...this.convertHexColorToRgb(options.color || this.pdfFontColor)),
-            lineHeight: options.lineHeight || this.pdfFontLineHeight,
             width: width,
             height: height,
-            overflow: options.overflow || this.pdfTextBoxOverflow || false,
-            suffix: String(options.suffix || ''),
-            prefix: String(options.prefix || ''),
         };
 
-        const fontName = options.font || this.pdfFontName;
+        textOptions.overrideFont = Boolean(textOptions.overrideFont);
+
+        if (this.pdfOverrideFont && textOptions.overrideFont) {
+            textOptions.font = this.pdfOverrideFontName;
+        }
+        const fontName = textOptions.font || this.pdfFontName;
         await this.embedFont(fontName);
 
         const embeddedFontIndex = Object.keys(this.pdfEmbeddedFonts)
@@ -334,13 +346,14 @@ export class pdfProvider extends baseProvider {
             textOptions.maxWidth = textOptions.width;
             if (textOptions.debug || this.debugProvider || false) {
                 console.debug(
-                    'actor-export | PDF | rawText:',
+                    this._moduleID,
+                    '| PDF | rawText:',
                     (textOptions.prefix + modifiedText + textOptions.suffix).trim()
                 );
-                console.debug('actor-export | PDF | multiLine:', multiLine);
-                console.debug('actor-export | PDF | modifiedText:', modifiedText);
-                console.debug('actor-export | PDF | textHeight:', textHeight);
-                console.debug('actor-export | PDF | options:', options);
+                console.debug(this._moduleID, '| PDF | multiLine:', multiLine);
+                console.debug(this._moduleID, '| PDF | modifiedText:', modifiedText);
+                console.debug(this._moduleID, '| PDF | textHeight:', textHeight);
+                console.debug(this._moduleID, '| PDF | options:', options);
             }
             if (!textOptions.overflow) {
                 const lineCount = Math.floor(textHeight / textLineHeight);
@@ -406,9 +419,9 @@ export class pdfProvider extends baseProvider {
         }
 
         if (textOptions.debug || this.debugProvider || false) {
-            console.debug('actor-export | PDF |', reference);
-            console.debug('actor-export | PDF | real x, y:', x, pageHeight - y - textOptions.height);
-            console.debug('actor-export | PDF | textOptions:', textOptions);
+            console.debug(this._moduleID, '| PDF |', reference);
+            console.debug(this._moduleID, '| PDF | real x, y:', x, pageHeight - y - textOptions.height);
+            console.debug(this._moduleID, '| PDF | textOptions:', textOptions);
             pdfPages[page].drawRectangle({
                 x: x,
                 y: pageHeight - y - textOptions.height,
@@ -764,15 +777,19 @@ export class pdfProvider extends baseProvider {
                     type: pdfField.constructor.name.trim(),
                 });
             }
-            console.debug(`actor-export | PDF | ${this.providerFilePath} contains ${pdfFormSchema.length} form fields`);
-            console.debug(`actor-export | PDF | fields:`, pdfFormSchema);
+            console.debug(
+                this._moduleID,
+                `| PDF | ${this.providerFilePath} contains ${pdfFormSchema.length} form fields`
+            );
+            console.debug(this._moduleID, '| PDF | fields:', pdfFormSchema);
 
             const pdfPages = this.pdf.getPages();
             for (let c = 0; c < pdfPages.length; c++) {
                 const pageHeight = pdfPages[c].getHeight();
                 const pageWidth = pdfPages[c].getWidth();
                 console.debug(
-                    `actor-export | PDF | ${this.providerFilePath} page ${c} WxH dimensions: ${pageWidth} x ${pageHeight} pixels`
+                    this._moduleID,
+                    `| PDF | ${this.providerFilePath} page ${c} WxH dimensions: ${pageWidth} x ${pageHeight} pixels`
                 );
             }
         }
