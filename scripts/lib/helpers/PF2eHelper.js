@@ -81,7 +81,7 @@ class pf2eActor {
     get ancestry() {
         const ancestry = {
             name: this.actor.ancestry?.name || 'unknown',
-            description: actor.ancestry?.system.description.value,
+            description: this.actor.ancestry?.system.description.value,
         };
         return ancestry;
     }
@@ -145,7 +145,7 @@ class pf2eActor {
     get class() {
         const classInfo = {
             name: this.actor.class?.name || 'unknown',
-            description: actor.class?.system.description.value,
+            description: this.actor.class?.system.description.value,
             subClass: '',
             id: this.actor.class?._id || '',
         };
@@ -409,7 +409,7 @@ class pf2eActor {
                     .map((i) => i.modifier)
                     .reduce((a, b) => a + b, 0);
                 savingThrows[save]['rank'] = this.actor.saves[save].rank;
-                savingThrows[save]['modifier'] = actor.saves[save].mod - savingThrows[save]['statusModifier'];
+                savingThrows[save]['modifier'] = this.actor.saves[save].mod - savingThrows[save]['statusModifier'];
             });
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'savingThrows', error.message);
@@ -598,7 +598,7 @@ class pf2eActor {
                 .filter((i) => i.type === 'item' && i.enabled)
                 .map((i) => i.modifier)
                 .reduce((a, b) => a + b, 0);
-            perception['rank'] = actor.perception.rank || 0;
+            perception['rank'] = this.actor.perception.rank || 0;
             perception['modifier'] = this.actor.perception.mod - perception['statusModifier'];
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'perception', error.message);
@@ -616,7 +616,7 @@ class pf2eActor {
                 .filter((i) => i.type)
                 .map((i) => i.label)
                 .concat(
-                    actor.system.perception.modifiers
+                    this.actor.system.perception.modifiers
                         .filter((i) => i.type === 'item' || i.type === 'untyped')
                         .map((i) => ' ' + (i.slug ? i.slug : i.label) + ' ' + (i.modifier < 0 ? '' : '+') + i.modifier)
                 )
@@ -626,7 +626,7 @@ class pf2eActor {
                 .filter((i) => i.type)
                 .map((i) => i.label)
                 .concat(
-                    actor.system.attributes.perception.modifiers
+                    this.actor.system.attributes.perception.modifiers
                         .filter((i) => i.type === 'item' || i.type === 'untyped')
                         .map((i) => ' ' + (i.slug ? i.slug : i.label) + ' ' + (i.modifier < 0 ? '' : '+') + i.modifier)
                 )
@@ -866,6 +866,7 @@ class pf2eActor {
     get ancestryAndHeritageAbilities() {
         const ancestryAndHeritageAbilities = [];
         try {
+            /* get regular ancestry & heritage features */
             this.actor.items
                 .filter((i) => i.type === 'feat' && (i.category === 'ancestryfeature' || i.category == 'heritage'))
                 .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
@@ -875,11 +876,31 @@ class pf2eActor {
                         displayName: a.name,
                         description: a.system.description?.value,
                     };
-                    const sub = actor.items.filter((i) => i.flags?.pf2e?.grantedBy?.id === a._id).map((i) => i.name);
+                    const sub = this.actor.items
+                        .filter((i) => i.flags?.pf2e?.grantedBy?.id === a._id)
+                        .map((i) => i.name);
                     if (sub.length > 0) {
                         feature['displayName'] = `${a.name} (${sub.join(', ')})`;
                     }
                     ancestryAndHeritageAbilities.push(feature);
+                });
+            /* get the hidden heritage features */
+            this.actor.items
+                .filter(
+                    (f) => f.type === 'feat' && f.system.location === null && f.flags.pf2e.grantedBy?.id !== undefined
+                )
+                .forEach((a) => {
+                    const grantedBy = this.actor.items.filter(
+                        (i) => i._id === a.flags?.pf2e?.grantedBy?.id && i.type === 'heritage'
+                    );
+                    if (grantedBy.length > 0) {
+                        const feature = {
+                            name: a.name,
+                            displayName: a.name,
+                            description: a.system.description?.value,
+                        };
+                        ancestryAndHeritageAbilities.push(feature);
+                    }
                 });
         } catch (error) {
             throw new pf2eActorPropertyError(
@@ -1055,6 +1076,32 @@ class pf2eActor {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'attributeBoosts', error.message);
         }
         return attributeBoosts;
+    }
+
+    /**
+     * actor bonus feats
+     * @type {Feat[]}
+     */
+    get bonusFeats() {
+        const bonusFeats = [];
+        try {
+            this.actor.items
+                .filter(
+                    (f) => f.type === 'feat' && f.system.location === null && f.flags.pf2e.grantedBy?.id === undefined
+                )
+                .forEach((feat) => {
+                    bonusFeats.push({
+                        level: -1,
+                        name: feat.name,
+                        description: feat.system.description.value,
+                        prerequisites: feat.system.prerequisites.value,
+                        traits: [feat.system.traits.rarity].concat(feat.system.traits.value),
+                    });
+                });
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'bonusFeats', error.message);
+        }
+        return bonusFeats;
     }
 
     /**
@@ -1356,7 +1403,7 @@ class pf2eActor {
             details['weight'] = this.actor.system.details.weight?.value || '';
             details['deity'] = this.actor.deity?.name || '';
             details['biography'] = {
-                appearance: actor.system.details.biography?.appearance || '',
+                appearance: this.actor.system.details.biography?.appearance || '',
                 attitude: this.actor.system.details.biography?.attitude || '',
                 edicts: this.actor.system.details.biography?.edicts || '',
                 anathema: this.actor.system.details.biography?.anathema || '',
@@ -1796,7 +1843,7 @@ class pf2eActor {
     get knownRituals() {
         const knownRituals = [];
         try {
-            actor.items
+            this.actor.items
                 .filter((f) => f.isRitual)
                 .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
                 .forEach((r) => {
@@ -1898,7 +1945,7 @@ class pf2ePlayer extends pf2eActor {
             '3,500 gp',
         ];
         try {
-            actor.system.crafting.formulas.forEach((f) => {
+            this.actor.system.crafting.formulas.forEach((f) => {
                 const el = fromUuidSync(f.uuid);
                 knownFormulas.push({
                     name: el.name,

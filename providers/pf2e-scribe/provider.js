@@ -65,7 +65,8 @@ const feats = character.classFeats
     .concat(character.ancestryFeats)
     .concat(character.backgroundSkillFeats)
     .concat(character.skillFeats)
-    .concat(character.generalFeats);
+    .concat(character.generalFeats)
+    .concat(character.bonusFeats);
 if (feats.length > 0) {
     mapper.scribe(fileName, new scribeProvider.class.scribeHeader(1, 'Feats'));
     feats

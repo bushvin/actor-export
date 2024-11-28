@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [unreleased]
+
+### Added
+
+- `PF2eHelper.pf2ePlayer.bonusFeats` to provide a list of bonus feats
+
+### Fixed
+
+- Include heritage bonus feats in ancestry and heritage abilities (`PF2eHelper.pf2ePlayer.ancestryAndHeritageAbilities`)
+- pf2e-remaster-bushvin provider to show bonus feats
+- pf2e-remaster-paizo provider to show bonus feats
+- pf2e-black-book-editions provider to show bonus feats
+- pf2e-scribe provider to show bonus feats
+- `PF2eHelper` invalid actor references
+
 ## [2024.11.3] 2024-11-27
 
 ### Added

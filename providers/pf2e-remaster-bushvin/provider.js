@@ -465,6 +465,12 @@ for (let level = 1; level <= 20; level = level + 2) {
     }
 }
 
+// Bonus Feats
+if (character.bonusFeats.length > 0) {
+    const bonusFeats = 'Bonus Feats:\n' + character.bonusFeats.map((m) => m.name).join(', ');
+    mapper.textBox('Bonus Feats', fileName, 1, 216, 108, 179, 58, bonusFeats, mf_8_multiline);
+}
+
 // Class Feats
 const class_feats_y = [176, 239, 302, 365, 428, 491, 554, 617, 680, 742];
 for (let level = 2; level <= 20; level = level + 2) {
