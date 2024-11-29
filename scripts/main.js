@@ -179,7 +179,7 @@ export class actorExport {
     /**
      * Evaluate and enrich the provider information. Returns the same object
      * with an additional property indicating if the provider is available to the current
-     * game system and version.
+     * game version, system version and module version(s)
      * @param {Object} provider - The provider object to evaluate
      * @returns {Object}
      */
@@ -187,24 +187,28 @@ export class actorExport {
         const foundryvtt_version = game.version;
         const system = game.system.id;
         const system_version = game.system.version;
+        const modules = game.modules.filter((f) => f.active);
 
         provider.allowed = false;
         if (provider.requirements.length === 0) {
             provider.allowed = true;
         }
+        const allowed = [];
         provider.requirements.forEach((req) => {
-            if (
-                (typeof req.foundryvtt_version === 'undefined' ||
-                    (typeof req.foundryvtt_version !== 'undefined' &&
-                        this.evalVersion(foundryvtt_version, req.foundryvtt_version, req.foundryvtt_operator))) &&
-                (typeof req.system === 'undefined' || (typeof req.system !== 'undefined' && req.system === system)) &&
-                (typeof req.system_version === 'undefined' ||
-                    (typeof req.system_version !== 'undefined' &&
-                        this.evalVersion(system_version, req.system_version, req.system_operator)))
-            ) {
-                provider.allowed = true;
+            if (typeof req.foundryvtt_version !== 'undefined') {
+                allowed.push(this.evalVersion(foundryvtt_version, req.foundryvtt_version, req.foundryvtt_operator));
+            } else if (typeof req.system !== 'undefined' && req.system === system) {
+                allowed.push(this.evalVersion(system_version, req.system_version, req.system_operator));
+            } else if (typeof req.module !== 'undefined' && modules.map((m) => m.name).includes(req.module)) {
+                const module = modules.filter((f) => f.name === req.module)[0];
+                allowed.push(this.evalVersion(module.version, req.module_version, req.module_operator));
+            } else {
+                allowed.push(false);
             }
         });
+        if (allowed.filter((f) => f).length === provider.requirements.length) {
+            provider.allowed = true;
+        }
         return provider;
     }
 
