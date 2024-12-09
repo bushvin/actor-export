@@ -258,6 +258,16 @@ export class pdfProvider extends baseProvider {
      * @param {number} textBoxData.height the height of the textbox
      * @param {string} textBoxData.text the text to be printer
      * @param {Object} textBoxData.options the options for the text to be printed
+     * @param {Number} textBoxData.options.lineHeight textbox line height
+     * @param {Boolean} textBoxData.options.overflow allow textbox to overflow the boundaries
+     * @param {Boolean} textBoxData.options.overrideFont allow the font to be overridden by the override font
+     * @param {String} textBoxData.options.prefix A prefix to be added before the text
+     * @param {Number} textBoxData.options.size size of the font
+     * @param {Function} textBoxData.options.sizeParser provide a function to calculate fontsize based on the result of the Promised text value
+     * @param {Function} textBoxData.options.suffix A suffix to be added to the text
+     * @param {Function} textBoxData.options.color hexadecimal color for the text
+     * @param {Function} textBoxData.options.width maximum width of the textbox
+     * @param {Function} textBoxData.options.height maximum height of the textbox
      */
     async embedTextBox(textBoxData) {
         const { reference, file, page, x, y, width, height, text, options } = textBoxData;
@@ -290,6 +300,7 @@ export class pdfProvider extends baseProvider {
             overrideFont: true,
             prefix: '',
             size: this.pdfFontSize,
+            sizeParser: undefined,
             suffix: '',
             ...options,
             color: rgb(...this.convertHexColorToRgb(options.color || this.pdfFontColor)),
@@ -320,6 +331,9 @@ export class pdfProvider extends baseProvider {
             String(await this.parseValue(text, textOptions.valueParser)),
             genericHelper
         );
+        if (typeof textOptions.sizeParser == 'function' && !isNaN(textOptions.sizeParser(modifiedText))) {
+            textOptions.size = textOptions.sizeParser(modifiedText);
+        }
         if (textOptions.multiline !== undefined && textOptions.multiline === true) {
             // add multiline text to the pdf
             const multiLineOptions = {
