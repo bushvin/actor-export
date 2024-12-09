@@ -244,7 +244,11 @@ class scribeCharacterStrike extends scribeBase {
             scribify.push('(' + pf2eHelper.formatTraits(this._strike.traits) + ')');
         }
         scribify.push('**Damage**');
-        scribify.push(await this._strike.damageFormula);
+        let dmg = await this._strike.damageFormula;
+        if (this._strike.sneakAttackDamage !== '') {
+            dmg = `${dmg} *(+${this._strike.sneakAttackDamage} sneak attack damage)*`;
+        }
+        scribify.push(dmg);
         return scribify.join(' ');
     }
 }
@@ -694,6 +698,9 @@ class scribeCreature extends scribeItem {
         return offensiveActivities;
     }
 
+    async passiveActivities() {
+        const passiveActivities = [];
+    }
     /**
      * Generate other activities for the creature
      * @returns {array}
