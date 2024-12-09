@@ -716,6 +716,19 @@ class pf2eActor {
     }
 
     /**
+     * actor Sneak Attack Damage
+     * @type {String}
+     */
+    get sneakAttackDamage() {
+        if (typeof this.actor.flags.pf2e.sneakAttackDamage !== 'undefined') {
+            const sad = this.actor.flags.pf2e.sneakAttackDamage;
+            return `${sad.number}d${sad.faces}`;
+        } else {
+            return '';
+        }
+    }
+
+    /**
      * actor strikes
      * @type {Object[]}
      */
@@ -775,6 +788,7 @@ class pf2eActor {
                         rawStrike.item.system.traits.value.includes('versatile-s') ||
                         false,
                     damageFormula: rawStrike.damage({ getFormula: true }),
+                    sneakAttackDamage: this.sneakAttackDamage,
                     traits: pf2eHelper
                         .runesToTraits(rawStrike.item.system.runes)
                         .concat(rawStrike.item.system.traits.value)
@@ -1442,7 +1456,7 @@ class pf2eActor {
     get activities() {
         const activities = [];
         try {
-            const actionTypes = ['action', 'reaction', 'free'];
+            const actionTypes = ['action', 'free', 'reaction'];
             this.actor.items
                 .filter((i) => actionTypes.includes(i.system.actionType?.value))
                 .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
