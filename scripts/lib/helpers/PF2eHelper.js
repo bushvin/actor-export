@@ -1449,7 +1449,6 @@ class pf2eActor {
                 .forEach((a) => {
                     const activity = {
                         name: a.name,
-                        traits: [a.system.traits.rarity].concat(a.system.traits.value),
                         reference: a.system.publication?.title || a.system.source?.value || '',
                         frequency: '',
                         type: a.system.actionType.value,
@@ -1457,6 +1456,11 @@ class pf2eActor {
                         actionCount: a.system.actions.value,
                         category: a.system.category,
                     };
+                    if (typeof a.system.traits.rarity === 'undefined') {
+                        activity['traits'] = a.system.traits.value;
+                    } else {
+                        activity['traits'] = [a.system.traits.rarity].concat(a.system.traits.value);
+                    }
                     activity['glyph'] = pf2eHelper.formatActivity(
                         a.system.actionType.value,
                         a.system.actions.value,
