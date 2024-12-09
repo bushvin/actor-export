@@ -373,6 +373,15 @@ character.strikes.forEach((strike) => {
         if (traitsAndNotes.length > 77) {
             pdfTraitsStyle = mf_6;
         }
+        const dmgSizeParser = function (label) {
+            if (label.length > 32) {
+                return 6;
+            } else if (label.length > 18) {
+                return 8;
+            } else {
+                return 10;
+            }
+        };
 
         mapper.textBox(ref, fileName, 0, 296, y, 84, 16, strike.label, pdfNameStyle);
         mapper.textBox(ref, fileName, 0, 388, y, 26, 16, modifier, mf_12_centered);
@@ -384,7 +393,7 @@ character.strikes.forEach((strike) => {
         mapper.textBox(ref, fileName, 0, 456, y + 3, 17, 10, strike.itemModifier, mf_10_centered);
         mapper.textBox(ref, fileName, 0, 481, y + 1, 74, 14, strike.damageFormula, {
             ...mf_10,
-            ...{ valueParser: dmgParser },
+            ...{ valueParser: dmgParser, sizeParser: dmgSizeParser },
         });
 
         mapper.textBox(ref, fileName, 0, 340, y + 23, 225, 10, traitsAndNotes, pdfTraitsStyle);

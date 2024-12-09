@@ -316,7 +316,11 @@ character.strikes.forEach((strike) => {
         const modifier = pf2eHelper.quantifyNumber(strike.modifier);
         const attributeName = pf2eHelper.capitalize(strike.attributeName);
         const dmgParser = function (value) {
-            return value.replace(/(piercing|bludgeoning|slashing)/gi, '').replace(/\s+/g, ' ');
+            value = value.replace(/(piercing|bludgeoning|slashing)/gi, '');
+            if (character.sneakAttackDamage !== '') {
+                value = `${value} (+${character.sneakAttackDamage} sneak)`;
+            }
+            return value.replace(/\s+/g, ' ');
         };
         const traitsAndNotes = pf2eHelper.formatTraits(strike.traits);
         const hasBludgeoningDamage = strike.hasBludgeoningDamage;
@@ -333,7 +337,15 @@ character.strikes.forEach((strike) => {
         if (traitsAndNotes.length > 77) {
             pdfTraitsStyle = mf_6;
         }
-
+        const dmgSizeParser = function (label) {
+            if (label.length > 32) {
+                return 6;
+            } else if (label.length > 18) {
+                return 8;
+            } else {
+                return 10;
+            }
+        };
         mapper.textBox(ref, fileName, 0, 311, y - 5, 84, 17, strike.label, pdfNameStyle);
         mapper.textBox(ref, fileName, 0, 404, y - 5, 26, 17, modifier, mf_12_centered);
         mapper.textBox(ref, fileName, 0, 436, y + 1, 18, 10, strike.attributeModifier, mf_10_centered);
@@ -344,7 +356,7 @@ character.strikes.forEach((strike) => {
         mapper.textBox(ref, fileName, 0, 472, y + 1, 17, 10, strike.itemModifier, mf_10_centered);
         mapper.textBox(ref, fileName, 0, 499, y - 5, 74, 17, strike.damageFormula, {
             ...mf_10,
-            ...{ valueParser: dmgParser },
+            ...{ valueParser: dmgParser, sizeParser: dmgSizeParser },
         });
 
         mapper.textBox(ref, fileName, 0, 365, y + 22, 219, 10, traitsAndNotes, pdfTraitsStyle);
@@ -353,7 +365,6 @@ character.strikes.forEach((strike) => {
         mapper.textBox(ref, fileName, 0, 576, y + 12, 5, 5, pf2eHelper.evalCheckMark(hasSlashingDamage), mf_8_centered);
     }
 });
-
 // Weapon proficiencies
 const wp_x = [314, 336, 360, 381];
 ['unarmed', 'simple', 'martial', 'advanced'].forEach((a) => {
