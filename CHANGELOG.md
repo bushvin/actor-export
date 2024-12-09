@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [unreleased]
+
+### Added
+
+- `PF2eHelper.pf2eActor.sneakAttackDamage` to represent the possible sneak damage a character has
+- `PDFProvider.pdfProvider.embedTextBox` allow size to be modified when text is a `Promise` and has to be `await`ed
+- `ScribeProvider.scribeCharacterStrike` add sneak attack damage
+- `pf2e-black-book-editions` add sneam attack damage
+- `pf2e-remaster-bushvin` add sneam attack damage
+- `pf2e-remaster-paizo` add sneam attack damage
+
+### Fixed
+
+- `PF2eHelper.pf2eActor.activities` action rarity could be `undefined`
+
 ## [2024.11.4] 2024-11-28
 
 ### Added
