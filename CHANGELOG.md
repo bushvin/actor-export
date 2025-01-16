@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
-## [unreleased]
+## [2025.1.1] 2025-01-16
 
 ### Added
 
@@ -15,10 +15,19 @@ and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 - `pf2e-black-book-editions` add sneam attack damage
 - `pf2e-remaster-bushvin` add sneam attack damage
 - `pf2e-remaster-paizo` add sneam attack damage
+- `SF2eHelper` module for Starfinder 2e Playtes characters
+- new provider: sf2e-playtest-paizo for Starfinder Second Edition Playtest
+
+### Changed
+
+- manage the generation of the strike information by a dedicated function (`PF2eHelper.pf2eActor._strike`) for easy override (for eg Starfinder 2e)
+- export `PF2eHelper.pf2ePlayer` to allow overrides
+- export `PF2eHelper.pf2eNPC` to allow overrides
 
 ### Fixed
 
 - `PF2eHelper.pf2eActor.activities` action rarity could be `undefined`
+- when debugging with `PDFProvider.pdfProvider.textBox`, print a dot if the provided text is empty
 
 ## [2024.11.4] 2024-11-28
 
