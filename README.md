@@ -8,7 +8,7 @@
 
 A system agnostic Foundry VTT module which allows exporting your actors in a variety of formats through the use of (custom) providers.
 
-Feel free to join the [actor-export room](https://matrix.to/#/#actor-export-general:matrix.elaba.net), [actor-export D&D 5e room](https://matrix.to/#/#actor-export-dnd5e:matrix.elaba.net) or [actor-export Pathfinder 2e room](https://matrix.to/#/#actor-export-pf2e:matrix.elaba.net) on Matrix or join the [actor-export Channel](https://discord.gg/6U89NQrtyS) on Discord for help.
+Feel free to join the [actor-export room](https://matrix.to/#/#actor-export-general:matrix.elaba.net), [actor-export D&D 5e room](https://matrix.to/#/#actor-export-dnd5e:matrix.elaba.net), [actor-export Pathfinder 2e room](https://matrix.to/#/#actor-export-pf2e:matrix.elaba.net) or [actor-export Starfinder 2e playtest room](https://matrix.to/#/#actor-export-sf2e:matrix.elaba.net) on Matrix or join the [actor-export Channel](https://discord.gg/6U89NQrtyS) on Discord for help.
 
 ## Installation
 
