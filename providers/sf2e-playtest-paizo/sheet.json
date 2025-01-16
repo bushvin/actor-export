@@ -1,0 +1,31 @@
+{
+    "id": "sf2e-playtest-paizo",
+    "name": "Paizo's Starfinder 2e Playtest Character sheets",
+    "description": "The official Paizo Starfinder 2e Playtest Character Sheets. This character sheet is subject to change as the game rules evolve.",
+    "icon": "fas fa-file-pdf",
+    "type": "pdf",
+    "authors": [
+        {
+            "name": "bushvin",
+            "url": "https://github.com/bushvin"
+        }
+    ],
+    "requirements": [
+        {
+            "system": "pf2e",
+            "system_version": "6.5.0"
+        },
+        {
+            "module": "starfinder-field-test-for-pf2e",
+            "module_version": "6.7"
+        }
+    ],
+    "files": [
+        {
+            "uri": "sf2e-playtest-paizo.pdf",
+            "name": "Player Character Sheet (Original)",
+            "description": "The standard Paizo Starfinder 2e Playtest Player Character Sheet",
+            "actor_type": ["character", "npc"]
+        }
+    ]
+}
