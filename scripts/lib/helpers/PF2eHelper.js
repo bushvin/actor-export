@@ -729,6 +729,76 @@ class pf2eActor {
     }
 
     /**
+     * Return a single strike with all calculated information
+     * @param {Object} rawStrike
+     * @returns {Object} formatted strike
+     */
+    _strike(rawStrike) {
+        const strModifier = rawStrike.modifiers
+            .filter((i) => i.type === 'ability' && i.slug === 'str' && i.enabled)
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        const dexModifier = rawStrike.modifiers
+            .filter((i) => i.type === 'ability' && i.slug === 'dex' && i.enabled)
+            .map((i) => i.modifier)
+            .reduce((a, b) => a + b, 0);
+        const strike = {
+            label: rawStrike.label,
+            readied: rawStrike.ready,
+            isMelee: rawStrike.options.includes('melee'),
+            isRanged: rawStrike.options.includes('ranged'),
+            hasFinesse: rawStrike.item.system.traits.value.includes('finesse'),
+            statusModifier: rawStrike.modifiers
+                .filter((i) => i.type === 'status' && i.enabled)
+                .map((i) => i.modifier)
+                .reduce((a, b) => a + b, 0),
+            proficiencyModifier: rawStrike.modifiers
+                .filter((i) => i.type === 'proficiency' && i.enabled)
+                .map((i) => i.modifier)
+                .reduce((a, b) => a + b, 0),
+            itemModifier: rawStrike.modifiers
+                .filter((i) => i.type === 'item' && i.enabled)
+                .map((i) => i.modifier)
+                .reduce((a, b) => a + b, 0),
+            hasBludgeoningDamage:
+                rawStrike.item.system.damage.damageType === 'bludgeoning' ||
+                rawStrike.item.system.traits.value.includes('versatile-b') ||
+                false,
+            hasPiercingDamage:
+                rawStrike.item.system.damage.damageType === 'piercing' ||
+                rawStrike.item.system.traits.value.includes('versatile-p') ||
+                false,
+            hasSlashingDamage:
+                rawStrike.item.system.damage.damageType === 'slashing' ||
+                rawStrike.item.system.traits.value.includes('versatile-s') ||
+                false,
+            damageFormula: rawStrike.damage({ getFormula: true }),
+            sneakAttackDamage: this.sneakAttackDamage,
+            traits: pf2eHelper
+                .runesToTraits(rawStrike.item.system.runes)
+                .concat(rawStrike.item.system.traits.value)
+                .sort(),
+        };
+        if (strike.isRanged && typeof rawStrike.item.system.range !== 'undefined') {
+            strike['traits'].push(`range-${rawStrike.item.system.range}`);
+            strike['traits'].sort();
+        }
+        strike['modifier'] = rawStrike.totalModifier - strike.statusModifier;
+
+        if (strike.isRanged) {
+            strike['attributeModifier'] = dexModifier;
+            strike['attributeName'] = 'dex';
+        } else if (strike.isMelee && strike.hasFinesse && dexModifier > strModifier) {
+            strike['attributeModifier'] = dexModifier;
+            strike['attributeName'] = 'dex';
+        } else {
+            strike['attributeModifier'] = strModifier;
+            strike['attributeName'] = 'str';
+        }
+        return strike;
+    }
+
+    /**
      * actor strikes
      * @type {Object[]}
      */
@@ -749,67 +819,8 @@ class pf2eActor {
                 });
             for (let i = 0; i < rawStrikes.length; i++) {
                 const rawStrike = rawStrikes[i];
-                const strModifier = rawStrike.modifiers
-                    .filter((i) => i.type === 'ability' && i.slug === 'str' && i.enabled)
-                    .map((i) => i.modifier)
-                    .reduce((a, b) => a + b, 0);
-                const dexModifier = rawStrike.modifiers
-                    .filter((i) => i.type === 'ability' && i.slug === 'dex' && i.enabled)
-                    .map((i) => i.modifier)
-                    .reduce((a, b) => a + b, 0);
-                const strike = {
-                    label: rawStrike.label,
-                    readied: rawStrike.ready,
-                    isMelee: rawStrike.options.includes('melee'),
-                    isRanged: rawStrike.options.includes('ranged'),
-                    hasFinesse: rawStrike.item.system.traits.value.includes('finesse'),
-                    statusModifier: rawStrike.modifiers
-                        .filter((i) => i.type === 'status' && i.enabled)
-                        .map((i) => i.modifier)
-                        .reduce((a, b) => a + b, 0),
-                    proficiencyModifier: rawStrike.modifiers
-                        .filter((i) => i.type === 'proficiency' && i.enabled)
-                        .map((i) => i.modifier)
-                        .reduce((a, b) => a + b, 0),
-                    itemModifier: rawStrike.modifiers
-                        .filter((i) => i.type === 'item' && i.enabled)
-                        .map((i) => i.modifier)
-                        .reduce((a, b) => a + b, 0),
-                    hasBludgeoningDamage:
-                        rawStrike.item.system.damage.damageType === 'bludgeoning' ||
-                        rawStrike.item.system.traits.value.includes('versatile-b') ||
-                        false,
-                    hasPiercingDamage:
-                        rawStrike.item.system.damage.damageType === 'piercing' ||
-                        rawStrike.item.system.traits.value.includes('versatile-p') ||
-                        false,
-                    hasSlashingDamage:
-                        rawStrike.item.system.damage.damageType === 'slashing' ||
-                        rawStrike.item.system.traits.value.includes('versatile-s') ||
-                        false,
-                    damageFormula: rawStrike.damage({ getFormula: true }),
-                    sneakAttackDamage: this.sneakAttackDamage,
-                    traits: pf2eHelper
-                        .runesToTraits(rawStrike.item.system.runes)
-                        .concat(rawStrike.item.system.traits.value)
-                        .sort(),
-                };
-                if (strike.isRanged && typeof rawStrike.item.system.range !== 'undefined') {
-                    strike['traits'].push(`range-${rawStrike.item.system.range}`);
-                    strike['traits'].sort();
-                }
-                strike['modifier'] = rawStrike.totalModifier - strike.statusModifier;
 
-                if (strike.isRanged) {
-                    strike['attributeModifier'] = dexModifier;
-                    strike['attributeName'] = 'dex';
-                } else if (strike.isMelee && strike.hasFinesse && dexModifier > strModifier) {
-                    strike['attributeModifier'] = dexModifier;
-                    strike['attributeName'] = 'dex';
-                } else {
-                    strike['attributeModifier'] = strModifier;
-                    strike['attributeName'] = 'str';
-                }
+                const strike = this._strike(rawStrike);
                 strikes.push(strike);
             }
         } catch (error) {
@@ -1916,7 +1927,7 @@ class pf2eActorPropertyError extends genericPropertyError {
  * @param {Object} game the Foundry VTT game object
  * @param {Object} actor the Foundry VTT actor object
  */
-class pf2ePlayer extends pf2eActor {
+export class pf2ePlayer extends pf2eActor {
     constructor(game, actor) {
         super(game, actor);
     }
@@ -1988,7 +1999,7 @@ class pf2ePlayer extends pf2eActor {
  * @param {Object} game the Foundry VTT game object
  * @param {Object} actor the Foundry VTT actor object
  */
-class pf2eNPC extends pf2eActor {
+export class pf2eNPC extends pf2eActor {
     constructor(game, actor) {
         super(game, actor);
     }
