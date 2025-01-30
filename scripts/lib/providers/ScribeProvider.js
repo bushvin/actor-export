@@ -245,7 +245,7 @@ class scribeCharacterStrike extends scribeBase {
         }
         scribify.push('**Damage**');
         let dmg = await this._strike.damageFormula;
-        if (this._strike.sneakAttackDamage !== '') {
+        if (this._strike.sneakAttackDamage !== undefined) {
             dmg = `${dmg} *(+${this._strike.sneakAttackDamage} sneak attack damage)*`;
         }
         scribify.push(dmg);
