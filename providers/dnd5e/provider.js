@@ -234,7 +234,7 @@ mapper.textBox(ref, fileNames, 0, 408, 382, 174, 384, featuresAndTraits.join('; 
 let attackY = 392;
 ref = 'attacks';
 character.attacks
-    .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
+    .sort((a, b) => a.label.localeCompare(b.label))
     .sort((a, b) => (a.isMelee < b.isMelee ? 1 : a.isMelee > b.isMelee ? -1 : 0))
     .forEach((a) => {
         mapper.textBox(ref, fileNames, 0, 223, attackY, 64, 16, a.label, mf_8_middle);
@@ -488,7 +488,7 @@ mapper.textBox(ref, fileNames, 0, 395, 371, 173, 373, featuresAndTraits.join('; 
 attackY = 381;
 ref = 'attacks';
 character.attacks
-    .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
+    .sort((a, b) => a.label.localeCompare(b.label))
     .sort((a, b) => (a.isMelee < b.isMelee ? 1 : a.isMelee > b.isMelee ? -1 : 0))
     .forEach((a) => {
         mapper.textBox(ref, fileNames, 0, 217, attackY, 62, 16, a.label, mf_8_middle);
@@ -731,7 +731,7 @@ mapper.textBox(ref, fileNames, 0, 399, 396, 178, 385, featuresAndTraits.join('; 
 attackY = 406;
 ref = 'attacks';
 character.attacks
-    .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
+    .sort((a, b) => a.label.localeCompare(b.label))
     .sort((a, b) => (a.isMelee < b.isMelee ? 1 : a.isMelee > b.isMelee ? -1 : 0))
     .forEach((a) => {
         mapper.textBox(ref, fileNames, 0, 216, attackY, 64, 16, a.label, mf_8_middle);
