@@ -50,7 +50,7 @@ class dnd5eActor {
                     slug: a,
                     modifier: this.actor.system.abilities[a].mod,
                     value: this.actor.system.abilities[a].value,
-                    save: this.actor.system.abilities[a].save,
+                    save: this.actor.system.abilities[a].save.value,
                     isProficient: this.actor.system.abilities[a].proficient > 0,
                 };
             });
@@ -79,8 +79,8 @@ class dnd5eActor {
         const actions = [];
         try {
             this.actor.items
-                .filter((i) => i.system.activation.type === 'action')
-                .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+                .filter((i) => i.system.activities.filter((a) => a.activation.type === 'action').length > 0)
+                .sort((a, b) => a.name.localeCompare(b.name))
                 .forEach((a) => {
                     a.prepareFinalAttributes();
                     if (a.type === 'weapon') {
@@ -145,8 +145,12 @@ class dnd5eActor {
         const attacks = [];
         try {
             this.actor.items
-                .filter((i) => i.type === 'weapon' && i.system.activation.type === 'action')
-                .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+                .filter(
+                    (i) =>
+                        i.type === 'weapon' &&
+                        i.system.activities.filter((a) => a.activation.type === 'action').length > 0
+                )
+                .sort((a, b) => a.name.localeCompare(b.name))
                 .forEach((w) => {
                     w.reset();
                     w.prepareFinalAttributes();
@@ -276,7 +280,7 @@ class dnd5eActor {
         const equipmentTypes = ['backpack', 'consumable', 'container', 'equipment', 'loot', 'weapon'];
         this.actor.items
             .filter((f) => equipmentTypes.includes(f.type))
-            .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+            .sort((a, b) => a.name.localeCompare(b.name))
             .forEach((i) => {
                 const item = {
                     name: i.name.trim(),
@@ -304,7 +308,7 @@ class dnd5eActor {
         const features = [];
         this.actor.items
             .filter((f) => f.type === 'feat')
-            .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+            .sort((a, b) => a.name.localeCompare(b.name))
             .forEach((f) => {
                 const feature = {
                     name: f.name,
@@ -369,7 +373,7 @@ class dnd5eActor {
         try {
             this.actor.items
                 .filter((i) => i.type === 'spell')
-                .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+                .sort((a, b) => a.name.localeCompare(b.name))
                 .sort((a, b) => (a.system.level < b.system.level ? -1 : a.system.level > b.system.level ? 1 : 0))
                 .forEach((s) => {
                     const spell = {
@@ -466,7 +470,7 @@ class dnd5eActor {
                     label: this.game.dnd5e.config.movementTypes[m],
                     value: this.actor.system.attributes.movement[m],
                     canHover: this.actor.system.attributes.movement.hover,
-                    units: this.game.dnd5e.config.movementUnits[this.actor.system.attributes.movement.units],
+                    units: this.game.dnd5e.config.movementUnits[this.actor.system.attributes.movement.units].label,
                     isPrimary: false,
                     l10n: {
                         label: this.game.i18n.localize(this.game.dnd5e.config.movementTypes[m]),
@@ -577,7 +581,7 @@ class dnd5eActor {
      * @type {number}
      */
     get spellSaveDC() {
-        return this.actor.system.attributes.spelldc || 0;
+        return this.actor.system.attributes.spell.dc || 0;
     }
 
     /**
@@ -638,7 +642,7 @@ class dnd5eActor {
         const traits = [];
         this.actor.items
             .filter((f) => f.type === 'trait')
-            .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+            .sort((a, b) => a.name.localeCompare(b.name))
             .forEach((f) => {
                 const trait = {
                     name: f.name,
