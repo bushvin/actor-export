@@ -5,11 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2025.3.2] 2025-03-10
+
+### Fixed
+
+- `PF2eHelper.pf2eActor.skills` *null* `attributeModifiers` cause the export to fail (thank you Adam)
+
 ## [2025.3.1] 2025-03-10
 
 ### Fixed
 
-- `dnd5e` localization issues while sorting with accented characters (thank you @qw3ry)
+- `dnd5e` localization issues while sorting with accented characters (thank you @qw3ry [PR](https://github.com/bushvin/actor-export/pull/17))
 - `DND5eHelper` fixed deprecated properties
 - `main.js` fixed deprecated properties
 
