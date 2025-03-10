@@ -86,7 +86,7 @@ mapper.textBox('proficiency bonus', fileNames, 0, 95, 165, 25, 25, proficiencyBo
 // skills
 let skillsY = [316, 328, 343, 356, 370, 383, 397, 410, 424, 437, 451, 464, 478, 491, 505, 518, 532, 545];
 Object.values(character.skills)
-    .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
+    .sort((a, b) => a.label.localeCompare(b.label))
     .forEach((s) => {
         let skillY;
         if (skillsY.length > 0) {
@@ -392,7 +392,7 @@ mapper.textBox('proficiency bonus', fileNames, 0, 92, 160, 25, 24, proficiencyBo
 skillsY = [306, 320, 333, 346, 359, 372, 385, 398, 411, 424, 438, 451, 464, 477, 490, 503, 516, 529];
 
 Object.values(character.skills)
-    .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
+    .sort((a, b) => a.label.localeCompare(b.label))
     .forEach((s) => {
         let skillY;
         if (skillsY.length > 0) {
@@ -635,7 +635,7 @@ mapper.textBox('proficiency bonus', fileNames, 0, 88, 179, 25, 24, proficiencyBo
 // skills
 skillsY = [330, 344, 357, 371, 384, 398, 411, 425, 438, 452, 465, 479, 492, 506, 519, 533, 546, 560];
 Object.values(character.skills)
-    .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0))
+    .sort((a, b) => a.label.localeCompare(b.label))
     .forEach((s) => {
         let skillY;
         if (skillsY.length > 0) {
