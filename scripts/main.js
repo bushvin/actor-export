@@ -672,7 +672,7 @@ Hooks.on('getActorSheetHeaderButtons', (sheet, buttons) => {
         return options.inverse(this);
     });
 
-    if (['character', 'familiar', 'npc'].includes(sheet.actor.type)) {
+    if (['character', 'familiar', 'npc', 'pc'].includes(sheet.actor.type)) {
         buttons.unshift({
             label: 'ACTOR-EXPORT.actor-dialog.header-button.label',
             class: 'actor-export',
