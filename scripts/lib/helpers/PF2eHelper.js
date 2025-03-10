@@ -532,7 +532,11 @@ class pf2eActor {
                         skills[skill.slug]['label'] = skill.label.trim();
                     }
                     skills[skill.slug]['isLore'] = skill.lore;
-                    skills[skill.slug]['attributeModifier'] = skill.attributeModifier.modifier || '0';
+                    if (skill.attributeModifier === null || typeof skill.attributeModifier === 'undefined') {
+                        skills[skill.slug]['attributeModifier'] = 0;
+                    } else {
+                        skills[skill.slug]['attributeModifier'] = skill.attributeModifier.modifier || '0';
+                    }
                     skills[skill.slug]['statusModifier'] = skill.modifiers
                         .filter((i) => i.type == 'status')
                         .map((i) => i.modifier)
