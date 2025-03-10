@@ -199,8 +199,8 @@ export class actorExport {
                 allowed.push(this.evalVersion(foundryvtt_version, req.foundryvtt_version, req.foundryvtt_operator));
             } else if (typeof req.system !== 'undefined' && req.system === system) {
                 allowed.push(this.evalVersion(system_version, req.system_version, req.system_operator));
-            } else if (typeof req.module !== 'undefined' && modules.map((m) => m.name).includes(req.module)) {
-                const module = modules.filter((f) => f.name === req.module)[0];
+            } else if (typeof req.module !== 'undefined' && modules.map((m) => m.id).includes(req.module)) {
+                const module = modules.filter((f) => f.id === req.module)[0];
                 allowed.push(this.evalVersion(module.version, req.module_version, req.module_operator));
             } else {
                 allowed.push(false);
