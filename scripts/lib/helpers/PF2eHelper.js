@@ -272,7 +272,7 @@ class pf2eActor {
         const ac = {};
         try {
             ac['statusModifier'] = this.actor.armorClass.modifiers
-                .filter((i) => i.type === 'status')
+                .filter((i) => i.type === 'status' && i.enabled)
                 .map((i) => i.modifier)
                 .reduce((a, b) => a + b, 0);
             ac['attributeModifier'] = this.actor.armorClass.modifiers
@@ -538,7 +538,7 @@ class pf2eActor {
                         skills[skill.slug]['attributeModifier'] = skill.attributeModifier.modifier || '0';
                     }
                     skills[skill.slug]['statusModifier'] = skill.modifiers
-                        .filter((i) => i.type == 'status')
+                        .filter((i) => i.type == 'status' && i.enabled)
                         .map((i) => i.modifier)
                         .reduce((a, b) => a + b, 0);
                     skills[skill.slug]['proficiencyModifier'] = skill.modifiers
@@ -860,7 +860,7 @@ class pf2eActor {
         const classDC = {};
         try {
             classDC['statusModifier'] = (this.actor.classDC?.modifiers || [])
-                .filter((i) => i.type === 'status')
+                .filter((i) => i.type === 'status' && i.enabled)
                 .map((i) => i.modifier)
                 .reduce((a, b) => a + b, 0);
             classDC['proficiencyModifier'] = (this.actor.classDC?.modifiers || [])
@@ -1621,7 +1621,7 @@ class pf2eActor {
         try {
             return this.spellCastingEntries.map((m) => {
                 const dcStatusModifier = m.statistic.modifiers
-                    .filter((f) => f.type === 'status')
+                    .filter((f) => f.type === 'status' && f.enabled)
                     .map((i) => i.modifier)
                     .reduce((a, b) => a + b, 0);
                 const spellStatusModifier = dcStatusModifier;
