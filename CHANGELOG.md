@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
-## [2025.1.2] 2025-01.31
+## [2025.3.1] 2025-03-10
+
+### Fixed
+
+- `dnd5e` localization issues while sorting with accented characters (thank you @qw3ry)
+- `DND5eHelper` fixed deprecated properties
+- `main.js` fixed deprecated properties
+
+## [2025.1.2] 2025-01-31
 
 ### Fixed
 
