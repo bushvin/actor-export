@@ -378,7 +378,6 @@ class actorExportDialog extends FormApplication {
     }
 
     downloadFiles(event) {
-        ui.notifications.info('Please wait, this may take a while...');
         const selectedFiles = {};
         document
             .getElementById('actor-export-form')
@@ -394,6 +393,11 @@ class actorExportDialog extends FormApplication {
                     selectedFiles[input.getAttribute('data-provider')].push(input.getAttribute('data-file'));
                 }
             });
+        if (Object.keys(selectedFiles).length === 0) {
+            ui.notifications.warn('You must select at least one provider to export your character!');
+            return false;
+        }
+        ui.notifications.info('Please wait, this may take a while...');
         for (let p = 0; p < Object.keys(selectedFiles).length; p++) {
             let providerId = Object.keys(selectedFiles)[p];
             let dataUri = '';
