@@ -5,11 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
-## [unreleased]
+## [2025.3.5] 2025-03-13
 
 ### Added
 
 - notification when no provider is selected on clicking download
+- console logging indicating a specific *HEAD* error is not an actual error. The error is caused by a fetch of a file to see if it exists (hence *HEAD*). It is needed by the module to be able to be able to create new (pdf) files
+
+### Fixed
+
+- don't notify about PDFButton not known. it's known now, and we don't want to treat it. (thank you blueflash41)
 
 ## [2025.3.4] 2025-03-10
 
