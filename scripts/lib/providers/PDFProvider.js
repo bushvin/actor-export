@@ -741,6 +741,9 @@ export class pdfProvider extends baseProvider {
                             );
                             booleanValue ? pdfField.check() : pdfField.uncheck();
                             break;
+                        case 'PDFButton':
+                            // This is not a form field type we want to handle
+                            break;
                         default:
                             this.notify(
                                 'warning',
