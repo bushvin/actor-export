@@ -145,6 +145,7 @@ export class baseProvider {
             .then(async (headResponse) => {
                 if (!headResponse.ok) {
                     // File does not exist, try to create a new one from scratch
+                    console.log(`The previous 'HEAD ${this.providerFullFilePath}' error can be disregarded.`);
                     try {
                         return await this.createFile();
                     } catch (error) {
