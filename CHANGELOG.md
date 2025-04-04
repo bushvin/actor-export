@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## unreleased
+
+## Changed
+
+- A character now list's it's class in the creature's heading instead of 'creature' in the `pf2e-scribe` provider. (thank you @master-of-old) [FR](https://github.com/bushvin/actor-export/issues/18)
+
 ## [2025.3.5] 2025-03-13
 
 ### Added

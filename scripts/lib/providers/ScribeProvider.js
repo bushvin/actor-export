@@ -838,7 +838,11 @@ class scribeCreature extends scribeItem {
      */
     async scribify() {
         this._itemName = await this._creature.name;
-        this._itemType = 'creature';
+        if (this._creature.actor.type == 'character') {
+            this._itemType = this._creature.class.name;
+        } else {
+            this._itemType = 'creature';
+        }
         this._itemRank = await this._creature.level;
         this._itemTraits = await this._creature.traits;
         this._itemDescription = ''; // TODO
