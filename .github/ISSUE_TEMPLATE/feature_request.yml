@@ -9,6 +9,9 @@ body:
     attributes:
       value: >
         **Thank you for wanting to suggest a feature for actor-export!**
+
+
+
         💡
         Before you go ahead with your request, please first consider if it
         would be useful for majority of the actor-export module users.
@@ -19,9 +22,8 @@ body:
         [#actor-export](https://discord.gg/6U89NQrtyS) Discord channel.
 
         Verify first that your idea is not [already requested on
-        GitHub][issue search].
+        GitHub](../search?q=is%3Aissue&type=issues).
 
-        [issue search]: ../search?q=is%3Aissue&type=issues
 
   - type: textarea
     attributes:
@@ -67,6 +69,21 @@ body:
         - pfrpg
     validations:
       required: true
+
+  - type: dropdown
+    id: provider
+    attributes:
+      label: What Provider is your request for?
+      multiple: true
+      options:
+        - Black Book Éditions Feuilles de personnage en français
+        - Bushvin's PF2e Remaster Character sheets
+        - Dungeons & Dragons 5th edition Character sheets
+        - Paizo's Pathfinder Roleplaying Game Character Sheets
+        - Paizo's PF2e Remaster Character sheets
+        - Paizo's Starfinder 2e Playtest Character sheets
+        - PF2e Scribe Generator
+        - No existing provider
 
   - type: input
     id: game_system_url

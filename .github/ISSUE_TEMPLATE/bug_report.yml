@@ -75,11 +75,14 @@ body:
       label: What Provider is affected?
       multiple: true
       options:
-        - Bushvin's modified PF2e Remaster Character sheet
-        - Bushvin's PF2e Remaster Character sheet (deprecated)
+        - Black Book Éditions Feuilles de personnage en français
+        - Bushvin's PF2e Remaster Character sheets
         - Dungeons & Dragons 5th edition Character sheets
-        - PF2e Remaster Character sheet (original)
+        - Paizo's Pathfinder Roleplaying Game Character Sheets
+        - Paizo's PF2e Remaster Character sheets
+        - Paizo's Starfinder 2e Playtest Character sheets
         - PF2e Scribe Generator
+
   - type: textarea
     id: what-happened
     attributes:
