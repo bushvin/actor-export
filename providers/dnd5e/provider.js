@@ -88,19 +88,13 @@ mapper.textBox('proficiency bonus', fileNames, 0, 95, 165, 25, 25, proficiencyBo
 let skillsY = [316, 328, 343, 356, 370, 383, 397, 424, 410, 437, 451, 491, 464, 478, 505, 518, 532, 545];
 Object.values(character.skills)
     .sort((a, b) => a.slug.localeCompare(b.slug))
-    .forEach((s) => {
-        let skillY;
-        if (skillsY.length > 0) {
-            skillY = skillsY[0];
-            skillsY.shift();
-        }
-        if (typeof skillY !== 'undefined') {
-            ref = `${s.label} skill`;
-            const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
-            const skillModifier = dnd5eHelper.quantifyNumber(s.modifier);
-            mapper.textBox(ref, fileNames, 0, 101, skillY + 5, 7, 10, isProficient, mf_8_centered);
-            mapper.textBox(ref, fileNames, 0, 111, skillY, 16, 14, skillModifier, mf_12_centered);
-        }
+    .forEach((s, idx) => {
+        let skillY = skillsY[idx];
+        ref = `${s.label} skill`;
+        const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
+        const skillModifier = dnd5eHelper.quantifyNumber(s.modifier);
+        mapper.textBox(ref, fileNames, 0, 101, skillY + 5, 7, 10, isProficient, mf_8_centered);
+        mapper.textBox(ref, fileNames, 0, 111, skillY, 16, 14, skillModifier, mf_12_centered);
     });
 
 // AC
@@ -395,19 +389,13 @@ skillsY = [306, 438, 320, 333, 359, 385, 411, 424, 398, 451, 464, 490, 477, 346,
 
 Object.values(character.skills)
     .sort((a, b) => a.slug.localeCompare(b.slug))
-    .forEach((s) => {
-        let skillY;
-        if (skillsY.length > 0) {
-            skillY = skillsY[0];
-            skillsY.shift();
-        }
-        if (typeof skillY !== 'undefined') {
+    .forEach((s, idx) => {
+            let skillY = skillsY[idx];
             ref = `${s.label} skill`;
             const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
             const skillModifier = dnd5eHelper.quantifyNumber(s.modifier);
             mapper.textBox(ref, fileNames, 0, 98, skillY + 3, 7, 10, isProficient, mf_8_centered);
             mapper.textBox(ref, fileNames, 0, 109, skillY, 14, 14, skillModifier, mf_12_centered);
-        }
     });
 
 // AC
@@ -639,19 +627,13 @@ mapper.textBox('proficiency bonus', fileNames, 0, 88, 179, 25, 24, proficiencyBo
 skillsY = [330, 452, 344, 357, 519, 411, 465, 479, 384, 425, 492, 546, 560, 371, 506, 398, 438, 533];
 Object.values(character.skills)
     .sort((a, b) => a.slug.localeCompare(b.slug))
-    .forEach((s) => {
-        let skillY;
-        if (skillsY.length > 0) {
-            skillY = skillsY[0];
-            skillsY.shift();
-        }
-        if (typeof skillY !== 'undefined') {
-            ref = `${s.label} skill`;
-            const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
-            const skillModifier = dnd5eHelper.quantifyNumber(s.modifier);
-            mapper.textBox(ref, fileNames, 0, 94, skillY + 3, 7, 10, isProficient, mf_8_centered);
-            mapper.textBox(ref, fileNames, 0, 105, skillY, 14, 14, skillModifier, mf_12_centered);
-        }
+    .forEach((s, idx) => {
+        let skillY = skillsY[idx];
+        ref = `${s.label} skill`;
+        const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
+        const skillModifier = dnd5eHelper.quantifyNumber(s.modifier);
+        mapper.textBox(ref, fileNames, 0, 94, skillY + 3, 7, 10, isProficient, mf_8_centered);
+        mapper.textBox(ref, fileNames, 0, 105, skillY, 14, 14, skillModifier, mf_12_centered);
     });
 
 // AC
