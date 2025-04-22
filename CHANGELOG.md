@@ -5,11 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
-## unreleased
+## [2025.4.1] - 2025-04-22
 
 ## Changed
 
+- dnd5e: A corrected sorting of skills in English, German and Portuguese (and probably all other languages as well, shoutout to @qw3ry for providing the time and code!)
 - A character now list's it's class in the creature's heading instead of 'creature' in the `pf2e-scribe` provider. (thank you @master-of-old) [FR](https://github.com/bushvin/actor-export/issues/18)
+
+## Fixed
+
+- an issue when there are rituals in both ritual panes
+- sf2e-playtest-paizo: an issue when there are rituals in both ritual panes (Thank you @SoilentBrad)
+- sf2e-playtest-paizo: multiple focus spell types rendered badly
+- pf2e-remaster-bushvin: an issue when there are rituals in both ritual panes (Thank you @SoilentBrad)
+- pf2e-remaster-bushvin: multiple focus spell types rendered badly
+- pf2e-remaster-paizo: an issue when there are rituals in both ritual panes (Thank you @SoilentBrad)
+- pf2e-remaster-paizo: multiple focus spell types rendered badly
+- pf2e-black-book-editions: an issue when there are rituals in both ritual panes (Thank you @SoilentBrad)
+- pf2e-black-book-editions: multiple focus spell types rendered badly
 
 ## [2025.3.5] 2025-03-13
 
