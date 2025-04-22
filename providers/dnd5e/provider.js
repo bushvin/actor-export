@@ -35,6 +35,26 @@ const f_debug = { debug: true };
 let ref;
 let fileNames;
 
+/**
+ * Prints the skills to the sheet in the given order
+ *
+ * @param skills {number[]} the character's skills
+ * @param verticalPositioning {number[]} the vertical offset for each skill as an array. With this parameter, you can control the skill ordering.
+ * @param horizontalPositioning {number} the horizontal offset of the skills box
+ */
+function printSkills(skills, verticalPositioning, horizontalPositioning) {
+    Object.values(skills)
+        .sort((a, b) => a.slug.localeCompare(b.slug))
+        .forEach((skill, idx) => {
+            const skillY = verticalPositioning[idx];
+            const ref = `${skill.label} skill`;
+            const isProficient = dnd5eHelper.evalCheckMark(skill.isProficient);
+            const skillModifier = dnd5eHelper.quantifyNumber(skill.modifier);
+            mapper.textBox(ref, fileNames, 0, horizontalPositioning, skillY + 3, 7, 10, isProficient, mf_8_centered);
+            mapper.textBox(ref, fileNames, 0, horizontalPositioning + 10, skillY, 16, 14, skillModifier, mf_12_centered);
+        });
+}
+
 const character = dnd5eHelper.getActorObject(game, actor);
 mapper.pdfTitle = character.name;
 
@@ -83,24 +103,10 @@ const proficiencyBonus = dnd5eHelper.quantifyNumber(character.proficiencyBonus);
 mapper.textBox('inspiration', fileNames, 0, 95, 130, 25, 19, hasInspiration, mf_12_centered_middle);
 mapper.textBox('proficiency bonus', fileNames, 0, 95, 165, 25, 25, proficiencyBonus, mf_17_centered_middle);
 
-// skills
-let skillsY = [316, 328, 343, 356, 370, 383, 397, 410, 424, 437, 451, 464, 478, 491, 505, 518, 532, 545];
-Object.values(character.skills)
-    .sort((a, b) => a.label.localeCompare(b.label))
-    .forEach((s) => {
-        let skillY;
-        if (skillsY.length > 0) {
-            skillY = skillsY[0];
-            skillsY.shift();
-        }
-        if (typeof skillY !== 'undefined') {
-            ref = `${s.label} skill`;
-            const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
-            const skillModifier = dnd5eHelper.quantifyNumber(s.modifier);
-            mapper.textBox(ref, fileNames, 0, 101, skillY + 5, 7, 10, isProficient, mf_8_centered);
-            mapper.textBox(ref, fileNames, 0, 111, skillY, 16, 14, skillModifier, mf_12_centered);
-        }
-    });
+// skills      acr  ani  arc  ath  dec  his  ins  inv  itm  med  nat  per  prc  prf  rel  slt  ste  sur
+// english     acr  ani  arc  ath  dec  his  ins  itm  inv  med  nat  prc  prf  per  rel  slt  ste  sur
+let skillsY = [316, 328, 343, 356, 370, 383, 397, 424, 410, 437, 451, 491, 464, 478, 505, 518, 532, 545];
+printSkills(character.skills, skillsY, 101);
 
 // AC
 ref = 'AC';
@@ -388,25 +394,10 @@ Object.values(character.abilities).forEach((a) => {
 mapper.textBox('inspiration', fileNames, 0, 92, 126, 25, 19, hasInspiration, mf_12_centered_middle);
 mapper.textBox('proficiency bonus', fileNames, 0, 92, 160, 25, 24, proficiencyBonus, mf_17_centered_middle);
 
-// skills
-skillsY = [306, 320, 333, 346, 359, 372, 385, 398, 411, 424, 438, 451, 464, 477, 490, 503, 516, 529];
-
-Object.values(character.skills)
-    .sort((a, b) => a.label.localeCompare(b.label))
-    .forEach((s) => {
-        let skillY;
-        if (skillsY.length > 0) {
-            skillY = skillsY[0];
-            skillsY.shift();
-        }
-        if (typeof skillY !== 'undefined') {
-            ref = `${s.label} skill`;
-            const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
-            const skillModifier = dnd5eHelper.quantifyNumber(s.modifier);
-            mapper.textBox(ref, fileNames, 0, 98, skillY + 3, 7, 10, isProficient, mf_8_centered);
-            mapper.textBox(ref, fileNames, 0, 109, skillY, 14, 14, skillModifier, mf_12_centered);
-        }
-    });
+// skills  acr  ani  arc  ath  dec  his  ins  inv  itm  med  nat  per  prc  prf  rel  slt  ste  sur
+// portug  acr  arc  ath  prf  dec  ste  his  itm  ins  inv  ani  med  nat  prc  per  slt  rel  sur
+skillsY = [306, 438, 320, 333, 359, 385, 411, 424, 398, 451, 464, 490, 477, 346, 516, 503, 372, 529];
+printSkills(character.skills, skillsY, 98);
 
 // AC
 ref = 'AC';
@@ -632,24 +623,10 @@ Object.values(character.abilities).forEach((a) => {
 mapper.textBox('inspiration', fileNames, 0, 88, 144, 25, 19, hasInspiration, mf_12_centered_middle);
 mapper.textBox('proficiency bonus', fileNames, 0, 88, 179, 25, 24, proficiencyBonus, mf_17_centered_middle);
 
-// skills
-skillsY = [330, 344, 357, 371, 384, 398, 411, 425, 438, 452, 465, 479, 492, 506, 519, 533, 546, 560];
-Object.values(character.skills)
-    .sort((a, b) => a.label.localeCompare(b.label))
-    .forEach((s) => {
-        let skillY;
-        if (skillsY.length > 0) {
-            skillY = skillsY[0];
-            skillsY.shift();
-        }
-        if (typeof skillY !== 'undefined') {
-            ref = `${s.label} skill`;
-            const isProficient = dnd5eHelper.evalCheckMark(s.isProficient);
-            const skillModifier = dnd5eHelper.quantifyNumber(s.modifier);
-            mapper.textBox(ref, fileNames, 0, 94, skillY + 3, 7, 10, isProficient, mf_8_centered);
-            mapper.textBox(ref, fileNames, 0, 105, skillY, 14, 14, skillModifier, mf_12_centered);
-        }
-    });
+// skills  acr  ani  arc  ath  dec  his  ins  inv  itm  med  nat  per  prc  prf  rel  slt  ste  sur
+// german  acr  arc  ath  prf  itm  slt  his  med  ste  ani  ins  inv  nat  rel  dec  sur  per  prc
+skillsY = [330, 452, 344, 357, 519, 411, 465, 479, 384, 425, 492, 546, 560, 371, 506, 398, 438, 533];
+printSkills(character.skills, skillsY, 94);
 
 // AC
 ref = 'AC';
