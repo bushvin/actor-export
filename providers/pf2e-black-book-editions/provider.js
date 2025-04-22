@@ -837,8 +837,13 @@ character.knownSpells
                 }
                 mapper.textBox(ref, fileName, 3, 31, y, 175, 12, spell.type, mf_10);
                 sceType = spell.type;
-                y = focusY;
-                focusY = focusY + 10;
+                if (endingWhiteSpace) {
+                    y = focusY + 5;
+                    focusY = focusY + 15;
+                } else {
+                    y = focusY;
+                    focusY = focusY + 10;
+                }
                 endingWhiteSpace = true;
             }
             mapper.textBox(ref, fileName, 3, 31, y, 144, 10, spell.name, mf_8);
@@ -962,7 +967,7 @@ character.knownSpells
     });
 
 // Rituals
-const ritualX = 217;
+let ritualX = 217;
 const ritualMinY = 709;
 let ritualY = ritualMinY;
 const ritualMaxY = 752;
