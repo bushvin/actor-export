@@ -51,7 +51,17 @@ function printSkills(skills, verticalPositioning, horizontalPositioning) {
             const isProficient = dnd5eHelper.evalCheckMark(skill.isProficient);
             const skillModifier = dnd5eHelper.quantifyNumber(skill.modifier);
             mapper.textBox(ref, fileNames, 0, horizontalPositioning, skillY + 3, 7, 10, isProficient, mf_8_centered);
-            mapper.textBox(ref, fileNames, 0, horizontalPositioning + 10, skillY, 16, 14, skillModifier, mf_12_centered);
+            mapper.textBox(
+                ref,
+                fileNames,
+                0,
+                horizontalPositioning + 10,
+                skillY,
+                16,
+                14,
+                skillModifier,
+                mf_12_centered
+            );
         });
 }
 
