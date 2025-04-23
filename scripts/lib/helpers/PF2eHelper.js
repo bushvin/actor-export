@@ -1980,13 +1980,24 @@ export class pf2ePlayer extends pf2eActor {
         try {
             this.actor.system.crafting.formulas.forEach((f) => {
                 const el = fromUuidSync(f.uuid);
-                knownFormulas.push({
-                    name: el.name,
-                    level: el.system.level.value,
-                    description: el.system.description.value,
-                    traits: [el.system.traits.rarity].concat(el.system.traits.value),
-                    cost: formulaCost[el.system.level.value],
-                });
+                if (el !== null) {
+                    knownFormulas.push({
+                        name: el.name,
+                        level: el.system.level.value,
+                        description: el.system.description.value,
+                        traits: [el.system.traits.rarity].concat(el.system.traits.value),
+                        cost: formulaCost[el.system.level.value],
+                    });
+                } else {
+                    knownFormulas.push({
+                        name: 'Unknown Formula',
+                        level: 0,
+                        description:
+                            'This is probably a custom formula, which is not available in any of the compendiums in your instance of FoundryVTT',
+                        traits: [],
+                        cost: '',
+                    });
+                }
             });
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'knownFormulas', error.message);
