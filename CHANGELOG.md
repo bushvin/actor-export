@@ -5,13 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
-## [unreleased]
+## [2025.5.1]
+
+This update brings compatibility for Foundry VTT v13
 
 ### Added
 
 - Support for Foundry VTT v13.x
 - pf2e support for Foundry VTT v13.x and pf2e system v7.0.2
 - d&d5e support for Foundry VTT v13.x and d&d system v5.0.2
+- d&d5e support for v3.3.1
 
 ### Fixed
 
