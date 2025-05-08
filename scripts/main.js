@@ -158,7 +158,11 @@ export class actorExport {
         let providers = [];
         let ls;
         if (game.user.isGM) {
-            ls = await FilePicker.browse('data', `modules/${this.ID}/providers`);
+            if (parseFloat(game.version) >= 13) {
+                ls = await foundry.applications.apps.FilePicker.browse('data', `modules/${this.ID}/providers`);
+            } else {
+                ls = await FilePicker.browse('data', `modules/${this.ID}/providers`);
+            }
             for (let i = 0; i < ls.dirs.length; i++) {
                 let dir = ls.dirs[i];
                 let response = await fetch(`${dir}/sheet.json`);
@@ -270,6 +274,8 @@ export class actorExport {
  * A form class for the Actor Export Dialog
  * @param {Object} actor the Foundry VTT actor object
  * @extends FormApplication
+ * NOTE: This is deprecated and should be replaced by V2 Application Framework
+ * foundry.applications.api.ApplicationV2
  */
 class actorExportDialog extends FormApplication {
     constructor(actor) {
@@ -532,6 +538,7 @@ class actorExportDialog extends FormApplication {
  * @class
  * A form class for the Actor Export Custom Dialog
  * @extends FormApplication
+ * NOTE: This is deprecated and should be replaced by V2 Application Framework
  */
 class actorExportCustomProvider extends FormApplication {
     static get defaultOptions() {
@@ -597,6 +604,7 @@ class actorExportCustomProvider extends FormApplication {
  * @class
  * A form class for the providers settings dialog
  * @extends FormApplication
+ * NOTE: This is deprecated and should be replaced by V2 Application Framework
  */
 class actorExportProvidersDialog extends FormApplication {
     static get defaultOptions() {
