@@ -1,5 +1,5 @@
 import { genericPropertyError, genericHelper } from './GenericHelper.js';
-// import { semVer } from '../SemVer.js';
+import { semVer } from '../SemVer.js';
 
 /** DND5eHelper module
  * @module DND5eHelper
@@ -144,12 +144,19 @@ class dnd5eActor {
     get attacks() {
         const attacks = [];
         try {
-            this.actor.items
-                .filter(
+            let attackList;
+            if (semVer.lt(game.system.version, '4.0.0')) {
+                attackList = this.actor.items.filter(
+                    (i) => i.type === 'weapon' && i.system.activation.type === 'action'
+                );
+            } else {
+                attackList = this.actor.items.filter(
                     (i) =>
                         i.type === 'weapon' &&
                         i.system.activities.filter((a) => a.activation.type === 'action').length > 0
-                )
+                );
+            }
+            attackList
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .forEach((w) => {
                     w.reset();
@@ -581,7 +588,11 @@ class dnd5eActor {
      * @type {number}
      */
     get spellSaveDC() {
-        return this.actor.system.attributes.spell.dc || 0;
+        if (semVer.lt(game.system.version, '4.0.0')) {
+            return this.actor.system.attributes.spelldc || 0;
+        } else {
+            return this.actor.system.attributes.spell.dc || 0;
+        }
     }
 
     /**

@@ -7,7 +7,11 @@ and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
 ## [unreleased]
 
-## Fixed
+### Added
+
+- Support for dnd5e system v3.3.1
+
+### Fixed
 
 - `pf2ePlayer.pf2eActor.knownFormulas` threw an error when a formula is non-exitant, probably because it is a custom one.
 - `Pf2eHelper.pf2eActor._strike` returns a (empty) `sneakAttackDamage` property, which was displayed by `ScribeProvider.scribeCharacterStrike.scribify` (Thank you @master-of-old)
@@ -15,12 +19,12 @@ and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
 ## [2025.4.1] - 2025-04-22
 
-## Changed
+### Changed
 
 - dnd5e: A corrected sorting of skills in English, German and Portuguese (and probably all other languages as well, shoutout to @qw3ry for providing the time and code!)
 - A character now list's it's class in the creature's heading instead of 'creature' in the `pf2e-scribe` provider. (thank you @master-of-old) [FR](https://github.com/bushvin/actor-export/issues/18)
 
-## Fixed
+### Fixed
 
 - an issue when there are rituals in both ritual panes
 - sf2e-playtest-paizo: an issue when there are rituals in both ritual panes (Thank you @SoilentBrad)
