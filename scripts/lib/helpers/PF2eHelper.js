@@ -872,7 +872,7 @@ class pf2eActor {
                 .map((i) => i.modifier)
                 .reduce((a, b) => a + b, 0);
             classDC['modifier'] = 10 + (this.actor.classDC?.mod || 0) - classDC['statusModifier'];
-            classDC['attributeModifier'] = this.actor.classDC?.attributeModifier.value || 0;
+            classDC['attributeModifier'] = this.actor.classDC?.attributeModifier?.value || 0;
             classDC['rank'] = this.actor.classDC?.rank || 0;
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'weaponProficiencies', error.message);
