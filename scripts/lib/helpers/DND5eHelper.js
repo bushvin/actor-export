@@ -50,7 +50,7 @@ class dnd5eActor {
                     slug: a,
                     modifier: this.actor.system.abilities[a].mod,
                     value: this.actor.system.abilities[a].value,
-                    save: this.actor.system.abilities[a].save.value,
+                    save: this.actor.system.abilities[a].save?.value || this.actor.system.abilities[a].save,
                     isProficient: this.actor.system.abilities[a].proficient > 0,
                 };
             });
