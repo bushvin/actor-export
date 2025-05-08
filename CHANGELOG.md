@@ -9,11 +9,13 @@ and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
 ### Added
 
-- Support for dnd5e system v3.3.1
+- Support for Foundry VTT v13.x
+- pf2e support for Foundry VTT v13.x and pf2e system v7.0.2
+- d&d5e support for Foundry VTT v13.x and d&d system v5.0.2
 
 ### Fixed
 
-- `pf2ePlayer.pf2eActor.knownFormulas` threw an error when a formula is non-exitant, probably because it is a custom one.
+- `pf2ePlayer.pf2eActor.knownFormulas` threw an error when a formula is non-existant, probably because it is a custom one.
 - `Pf2eHelper.pf2eActor._strike` returns a (empty) `sneakAttackDamage` property, which was displayed by `ScribeProvider.scribeCharacterStrike.scribify` (Thank you @master-of-old)
 - `Pf2eHelper.pf2eActor.classDC` failed on retrieving `actor.classDC.attributeModifier.value` when `attributeModifier` is undefined (Thank you @cass-zdanko)
 

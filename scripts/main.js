@@ -52,7 +52,7 @@ export class actorExport {
      * The initialization function for the module
      */
     static init() {
-        this.log('info', 'starting');
+        this.log('info', 'Starting');
         game.settings.registerMenu(this.ID, this.SETTINGS.PROVIDER_FILTER, {
             name: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_FILTER}.name`,
             label: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_FILTER}.label`,
@@ -158,7 +158,11 @@ export class actorExport {
         let providers = [];
         let ls;
         if (game.user.isGM) {
-            ls = await FilePicker.browse('data', `modules/${this.ID}/providers`);
+            if (parseFloat(game.version) >= 13) {
+                ls = await foundry.applications.apps.FilePicker.browse('data', `modules/${this.ID}/providers`);
+            } else {
+                ls = await FilePicker.browse('data', `modules/${this.ID}/providers`);
+            }
             for (let i = 0; i < ls.dirs.length; i++) {
                 let dir = ls.dirs[i];
                 let response = await fetch(`${dir}/sheet.json`);
@@ -270,6 +274,8 @@ export class actorExport {
  * A form class for the Actor Export Dialog
  * @param {Object} actor the Foundry VTT actor object
  * @extends FormApplication
+ * NOTE: This is deprecated and should be replaced by V2 Application Framework
+ * foundry.applications.api.ApplicationV2
  */
 class actorExportDialog extends FormApplication {
     constructor(actor) {
@@ -532,6 +538,7 @@ class actorExportDialog extends FormApplication {
  * @class
  * A form class for the Actor Export Custom Dialog
  * @extends FormApplication
+ * NOTE: This is deprecated and should be replaced by V2 Application Framework
  */
 class actorExportCustomProvider extends FormApplication {
     static get defaultOptions() {
@@ -597,6 +604,7 @@ class actorExportCustomProvider extends FormApplication {
  * @class
  * A form class for the providers settings dialog
  * @extends FormApplication
+ * NOTE: This is deprecated and should be replaced by V2 Application Framework
  */
 class actorExportProvidersDialog extends FormApplication {
     static get defaultOptions() {
@@ -656,7 +664,7 @@ Hooks.once('init', () => {
 });
 
 /**
- * Add the 'Export' button in the character's actor dialog
+ * Add the 'Export' button in the character's actor dialog for ApplicationV1
  */
 Hooks.on('getActorSheetHeaderButtons', (sheet, buttons) => {
     Handlebars.registerHelper(`${actorExport.ID}-ifIsNullish`, function (value, options) {
@@ -682,6 +690,41 @@ Hooks.on('getActorSheetHeaderButtons', (sheet, buttons) => {
             class: 'actor-export',
             icon: 'fa fa-address-card',
             onclick: () => {
+                new actorExportDialog(sheet.actor).render(true);
+            },
+        });
+    } else {
+        console.debug('Found an unsupported actor type:', sheet.actor.type);
+    }
+});
+
+/**
+ * Add the 'Export' button in the character's actor dialog for ApplicationV2
+ */
+Hooks.on('getHeaderControlsApplicationV2', (sheet, buttons) => {
+    Handlebars.registerHelper(`${actorExport.ID}-ifIsNullish`, function (value, options) {
+        if (value == null) {
+            return options.fn(this);
+        }
+        return options.inverse(this);
+    });
+
+    Handlebars.registerHelper(`${actorExport.ID}-ifIn`, function (haystack, needle, options) {
+        if (typeof haystack === 'undefined' || haystack.length == 0) {
+            return options.fn(this);
+        }
+        if (haystack.indexOf(needle) > -1) {
+            return options.fn(this);
+        }
+        return options.inverse(this);
+    });
+    if (['character', 'familiar', 'npc', 'pc'].includes(sheet.actor.type)) {
+        buttons.unshift({
+            label: 'ACTOR-EXPORT.actor-dialog.header-button.label',
+            class: 'actor-export',
+            icon: 'fa fa-address-card',
+            onClick: () => {
+                console.log('Clicked');
                 new actorExportDialog(sheet.actor).render(true);
             },
         });
