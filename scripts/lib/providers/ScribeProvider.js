@@ -1179,7 +1179,13 @@ export class scribeProvider extends baseProvider {
      */
     async saveFile() {
         if (this.scribeFile !== undefined && this.scribeFile != '') {
-            saveDataToFile(
+            let saveMethod;
+            if (parseFloat(game.version) >= 13) {
+                saveMethod = foundry.utils.saveDataToFile;
+            } else {
+                saveMethod = saveDataToFile;
+            }
+            saveMethod(
                 this.scribeFile,
                 'text/plain',
                 this.overrideDestinationFileName || this.providerDestinationFileName
