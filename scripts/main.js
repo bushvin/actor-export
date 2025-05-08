@@ -52,7 +52,7 @@ export class actorExport {
      * The initialization function for the module
      */
     static init() {
-        this.log('info', 'starting');
+        this.log('info', 'Starting');
         game.settings.registerMenu(this.ID, this.SETTINGS.PROVIDER_FILTER, {
             name: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_FILTER}.name`,
             label: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_FILTER}.label`,
@@ -664,7 +664,7 @@ Hooks.once('init', () => {
 });
 
 /**
- * Add the 'Export' button in the character's actor dialog
+ * Add the 'Export' button in the character's actor dialog for ApplicationV1
  */
 Hooks.on('getActorSheetHeaderButtons', (sheet, buttons) => {
     Handlebars.registerHelper(`${actorExport.ID}-ifIsNullish`, function (value, options) {
@@ -690,6 +690,41 @@ Hooks.on('getActorSheetHeaderButtons', (sheet, buttons) => {
             class: 'actor-export',
             icon: 'fa fa-address-card',
             onclick: () => {
+                new actorExportDialog(sheet.actor).render(true);
+            },
+        });
+    } else {
+        console.debug('Found an unsupported actor type:', sheet.actor.type);
+    }
+});
+
+/**
+ * Add the 'Export' button in the character's actor dialog for ApplicationV2
+ */
+Hooks.on('getHeaderControlsApplicationV2', (sheet, buttons) => {
+    Handlebars.registerHelper(`${actorExport.ID}-ifIsNullish`, function (value, options) {
+        if (value == null) {
+            return options.fn(this);
+        }
+        return options.inverse(this);
+    });
+
+    Handlebars.registerHelper(`${actorExport.ID}-ifIn`, function (haystack, needle, options) {
+        if (typeof haystack === 'undefined' || haystack.length == 0) {
+            return options.fn(this);
+        }
+        if (haystack.indexOf(needle) > -1) {
+            return options.fn(this);
+        }
+        return options.inverse(this);
+    });
+    if (['character', 'familiar', 'npc', 'pc'].includes(sheet.actor.type)) {
+        buttons.unshift({
+            label: 'ACTOR-EXPORT.actor-dialog.header-button.label',
+            class: 'actor-export',
+            icon: 'fa fa-address-card',
+            onClick: () => {
+                console.log('Clicked');
                 new actorExportDialog(sheet.actor).render(true);
             },
         });
