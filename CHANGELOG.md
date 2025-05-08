@@ -10,6 +10,7 @@ and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 ## Fixed
 
 - `pf2ePlayer.pf2eActor.knownFormulas` threw an error when a formula is non-exitant, probably because it is a custom one.
+- `Pf2eHelper.pf2eActor._strike` returns a (empty) `sneakAttackDamage` property, which was displayed by `ScribeProvider.scribeCharacterStrike.scribify` (Thank you @master-of-old)
 
 ## [2025.4.1] - 2025-04-22
 

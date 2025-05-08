@@ -245,7 +245,7 @@ class scribeCharacterStrike extends scribeBase {
         }
         scribify.push('**Damage**');
         let dmg = await this._strike.damageFormula;
-        if (this._strike.sneakAttackDamage !== undefined) {
+        if (this._strike.sneakAttackDamage !== undefined && this._strike.sneakAttackDamage !== '') {
             dmg = `${dmg} *(+${this._strike.sneakAttackDamage} sneak attack damage)*`;
         }
         scribify.push(dmg);
@@ -655,9 +655,13 @@ class scribeCreature extends scribeItem {
 
     /**
      * Generate defensive activities for the creature
+     * @param {boolean} showDescription Include the full description
      * @returns {array}
      */
-    async defensiveActivities() {
+    async defensiveActivities(showDescription) {
+        if (typeof showDescription === 'undefined') {
+            showDescription = true;
+        }
         const defensiveActivities = [];
         this._creature.activities
             .filter((f) => f.category === 'defensive')
@@ -669,7 +673,7 @@ class scribeCreature extends scribeItem {
                 defensiveActivities.push(
                     `**${name}** ` +
                         (activity !== '' ? `${activity} ` : '') +
-                        (traits.length > 0 ? `(${traits}) ` : '' + description)
+                        (traits.length > 0 ? `(${traits}) ` : '' + (showDescription ? description : ''))
                 );
             });
         return defensiveActivities;
@@ -677,9 +681,13 @@ class scribeCreature extends scribeItem {
 
     /**
      * Generate offensive activities for the creature
+     * @param {boolean} showDescription Include the full description
      * @returns {array}
      */
-    async offensiveActivities() {
+    async offensiveActivities(showDescription) {
+        if (typeof showDescription === 'undefined') {
+            showDescription = true;
+        }
         const offensiveActivities = [];
         this._creature.activities
             .filter((f) => f.category === 'offensive')
@@ -692,20 +700,26 @@ class scribeCreature extends scribeItem {
                     `**${name}** ` +
                         (activity !== '' ? `${activity} ` : '') +
                         (traits.length > 0 ? `(${traits}) ` : '') +
-                        description
+                        (showDescription ? description : '')
                 );
             });
         return offensiveActivities;
     }
 
-    async passiveActivities() {
+    async passiveActivities(showDescription) {
         const passiveActivities = [];
+        /* TODO: update this */
     }
+
     /**
      * Generate other activities for the creature
+     * @param {boolean} showDescription Include the full description
      * @returns {array}
      */
-    async otherActivities() {
+    async otherActivities(showDescription) {
+        if (typeof showDescription === 'undefined') {
+            showDescription = true;
+        }
         const otherActivities = [];
         this._creature.activities
             .filter((f) => !['offensive', 'defensive'].includes(f.category))
@@ -718,7 +732,7 @@ class scribeCreature extends scribeItem {
                     `**${name}** ` +
                         (activity !== '' ? `${activity} ` : '') +
                         (traits.length > 0 ? `(${traits}) ` : '') +
-                        description
+                        (showDescription ? description : '')
                 );
             });
         return otherActivities;
