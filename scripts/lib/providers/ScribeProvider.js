@@ -825,7 +825,6 @@ class scribeCreature extends scribeItem {
         Object.keys(spells)
             .sort()
             .forEach((sce) => {
-                console.log('spellProficiency', this._creature.spellProficiency);
                 const spellProficiency = this._creature.spellProficiency.filter((f) => f.name === sce)[0];
                 const entry = [
                     `**${sce}** DC ${spellProficiency.spell.modifier}, attack ${pf2eHelper.quantifyNumber(spellProficiency.attack.modifier)}`,
