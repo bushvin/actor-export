@@ -763,7 +763,7 @@ class dnd5ePlayer extends dnd5eActor {
     get background() {
         const background = super.background;
         try {
-            if (typeof this.actor.system.details.background.name !== 'undefined') {
+            if (typeof this.actor.system.details.background?.name !== 'undefined') {
                 background['name'] = this.actor.system.details.background.name;
             } else if (typeof this.actor.system.details.background === 'string') {
                 background['name'] = this.actor.system.details.background;
