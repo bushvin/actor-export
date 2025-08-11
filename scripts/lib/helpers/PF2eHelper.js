@@ -1984,7 +1984,7 @@ export class pf2ePlayer extends pf2eActor {
                     knownFormulas.push({
                         name: el.name,
                         level: el.system.level.value,
-                        description: el.system.description.value,
+                        description: el.system.description?.value || '',
                         traits: [el.system.traits.rarity].concat(el.system.traits.value),
                         cost: formulaCost[el.system.level.value],
                     });
