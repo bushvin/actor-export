@@ -234,6 +234,11 @@ export class actorExport {
         }
     }
 
+    /**
+     *
+     * @param {string} provider - unique identifier for the provider
+     * @returns
+     */
     static providerPath(provider) {
         return `/modules/${this.ID}/providers/${provider}`;
     }
