@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [unreleased]
+
+- fixed url generation for foundryvtt instances not running on the root of the webserver (thank you @patagrain)
+
 ## [2025.8.1] - 2025-08-11
 
 ### Fixed
