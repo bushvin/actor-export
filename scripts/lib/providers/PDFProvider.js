@@ -215,7 +215,7 @@ export class pdfProvider extends baseProvider {
 
         if (standardFontIndex === -1) {
             // A font file is specified
-            const moduleRootPath = this.providerRootPath.split('/').slice(0, 3).join('/');
+            const moduleRootPath = this.providerRootPath.split('/').slice(0, this.providerRootPath.split('/').length - 2).join('/');
             const fontURIs = [
                 `${this.providerRootPath}/fonts/${fontName}?t=${Date.now()}`,
                 `${moduleRootPath}/fonts/${fontName}?t=${Date.now()}`,

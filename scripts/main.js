@@ -240,7 +240,7 @@ export class actorExport {
      * @returns
      */
     static providerPath(provider) {
-        return `/modules/${this.ID}/providers/${provider}`;
+        return foundry.utils.getRoute(`/modules/${this.ID}/providers/${provider}`);
     }
 
     /**
@@ -464,7 +464,7 @@ class actorExportDialog extends FormApplication {
                         actorExport.providerFileProgress(document.getElementById('field._custom_._custom_'));
                     });
             } else {
-                dataUri = `/modules/${actorExport.ID}/providers/${providerId}/provider.js?t=${Date.now()}`;
+                dataUri = foundry.utils.getRoute(`/modules/${actorExport.ID}/providers/${providerId}/provider.js?t=${Date.now()}`);
                 import(dataUri)
                     .then((module) => {
                         if (module.mapper === undefined) {
@@ -566,9 +566,9 @@ class actorExportCustomProvider extends FormApplication {
 
     async getData() {
         const data = super.getData();
-        let exampleCode = `import { baseProvider } from '${window.location.protocol}//${window.location.hostname}/modules/actor-export/scripts/lib/providers/BaseProvider.js';
-        import { pdfProvider } from '${window.location.protocol}//${window.location.hostname}/modules/actor-export/scripts/lib/providers/PDFProvider.js';
-        import { scribeProvider } from '${window.location.protocol}//${window.location.hostname}/modules/actor-export/scripts/lib/providers/ScribeProvider.js';
+        let exampleCode = `import { baseProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute("/modules/actor-export/scripts/lib/providers/BaseProvider.js")}';
+        import { pdfProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute("/modules/actor-export/scripts/lib/providers/PDFProvider.js")}';
+        import { scribeProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute("/modules/actor-export/scripts/lib/providers/ScribeProvider.js")}';
 
         // The full URI above must be specified.
 
