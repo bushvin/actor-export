@@ -1,3 +1,5 @@
+**This repository has been relocated at [codeberg.org/bushvin/actor-export](https://codeberg.org/bushvin/actor-export)**
+
 # Export Actors
 
 ![badge_version] ![badge_issues] ![badge_downloads]
@@ -6,7 +8,6 @@
 
 ![badge_mastodon] ![badge_discord]
 
-**This repository has been relocated at [codeberg.org/bushvin/actor-export](https://codeberg.org/bushvin/actor-export)**
 
 A system agnostic Foundry VTT module which allows exporting your actors in a variety of formats through the use of (custom) providers.
 
