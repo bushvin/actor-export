@@ -474,13 +474,13 @@ class dnd5eActor {
             if (actor.system.attributes.movement[m] !== null) {
                 const move = {
                     slug: m,
-                    label: this.game.dnd5e.config.movementTypes[m],
+                    label: this.game.dnd5e.config.movementTypes[m]?.label || this.game.dnd5e.config.movementTypes[m],
                     value: this.actor.system.attributes.movement[m],
                     canHover: this.actor.system.attributes.movement.hover,
                     units: this.game.dnd5e.config.movementUnits[this.actor.system.attributes.movement.units].label,
                     isPrimary: false,
                     l10n: {
-                        label: this.game.i18n.localize(this.game.dnd5e.config.movementTypes[m]),
+                        label: this.game.i18n.localize(this.game.dnd5e.config.movementTypes[m]?.label || this.game.dnd5e.config.movementTypes[m]),
                     },
                 };
                 if (m === 'walk') {
